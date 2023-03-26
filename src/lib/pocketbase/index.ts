@@ -24,10 +24,24 @@ export class PocketBase {
     };
   }
 
-  public static getImage<
-    T extends Pick<DBRecord, "id" | "collectionId"> & { image: string }
-  >({ id, collectionId, image }: T): string {
-    return `${process.env.POCKETBASE_URL}/api/files/${collectionId}/${id}/${image}`;
+  public static async getImageUrl({
+    record,
+    fileName,
+    thumb,
+  }: {
+    fileName: string;
+    record: Pick<DBRecord, "id" | "collectionId" | "collectionName">;
+    thumb?: boolean;
+  }): Promise<string | Buffer> {
+    const url = pb.getFileUrl(record, fileName, {
+      thumb: thumb ? "512x512" : undefined,
+    });
+    if (url.startsWith("http://localhost")) {
+      const response = await fetch(url);
+      const buffer = Buffer.from(await response.arrayBuffer());
+      return buffer;
+    }
+    return url;
   }
 
   public static async validateRecord<
