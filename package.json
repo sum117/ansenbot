@@ -20,6 +20,7 @@
     "discord.js": "^14.7.1",
     "discordx": "^11.7.0",
     "dotenv": "^16.0.3",
+    "lodash.split": "^4.4.2",
     "pocketbase": "^0.13.0"
   },
   "devDependencies": {
