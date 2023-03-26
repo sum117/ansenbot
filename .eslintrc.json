@@ -45,7 +45,10 @@
       "@typescript-eslint/no-use-before-define": "error",
       "@typescript-eslint/no-shadow": "error",
       "@typescript-eslint/prefer-optional-chain": "error",
-      "@typescript-eslint/no-unused-vars": "error",
+      "@typescript-eslint/no-unused-vars": ["error", {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }],
       "@typescript-eslint/semi": "error",
       "@typescript-eslint/no-loss-of-precision": "error",
       "@typescript-eslint/quotes": ["error", "double", { "avoidEscape": true }],

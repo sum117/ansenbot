@@ -8,9 +8,9 @@
   "scripts": {
     "build": "tsc",
     "build:changelog": "npx @discordx/changelog --src src",
-    "dev": "ts-node-esm src/main.ts",
-    "start": "node build/main.js",
-    "watch": "nodemon --exec ts-node-esm src/main.ts",
+    "dev": "ts-node-esm --experimental-specifier-resolution=node src/main.ts",
+    "start": "node --experimental-specifier-resolution=node build/main.js",
+    "watch": "nodemon --exec ts-node-esm --experimental-specifier-resolution=node src/main.ts",
     "lint": "eslint --ext .ts src --fix",
     "format": "prettier --write src/**/*.ts"
   },
@@ -19,10 +19,12 @@
     "@discordx/pagination": "^3.4.0",
     "discord.js": "^14.7.1",
     "discordx": "^11.7.0",
+    "dotenv": "^16.0.3",
     "pocketbase": "^0.13.0"
   },
   "devDependencies": {
-    "@types/node": "^18.13.0",
+    "@types/node": "^18.15.9",
+    "@types/prettier": "^2.7.2",
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "eslint-plugin-import": "^2.27.5",
@@ -32,6 +34,7 @@
     "nodemon": "^2.0.20",
     "prettier": "^2.8.4",
     "ts-node": "^10.9.1",
+    "tslib": "^2.5.0",
     "typescript": "4.9.5"
   },
   "engines": {
