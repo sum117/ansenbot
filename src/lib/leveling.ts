@@ -8,7 +8,7 @@ export class Leveling {
   public characterLevel: number;
   public characterSpareSkillPoints: number;
   public characterPoints: number;
-  public skills: Record<string, number>;
+  public characterSkills: Record<string, number>;
   public costPerLevel: number[];
 
   constructor(
@@ -23,7 +23,7 @@ export class Leveling {
     this.characterLevel = characterLevel;
     this.characterSpareSkillPoints = characterSpareSkillPoints;
     this.characterPoints = characterPoints;
-    this.skills = skills;
+    this.characterSkills = skills;
     this.costPerLevel = this.calculateCostPerLevel(increaseFactor);
   }
 
@@ -60,12 +60,15 @@ export class Leveling {
   }
 
   public canIncreaseSkill(skill: string): boolean {
-    return this.skills[skill] < 99 && this.characterLevel > this.skills[skill];
+    return (
+      this.characterSkills[skill] < 99 &&
+      this.characterLevel > this.characterSkills[skill]
+    );
   }
 
   public increaseSkill(skill: string): boolean {
     if (this.canIncreaseSkill(skill)) {
-      this.skills[skill]++;
+      this.characterSkills[skill]++;
       this.characterSpareSkillPoints--;
       return true;
     } else {

@@ -68,7 +68,7 @@ export class CharacterFetcher extends PocketBase {
 
   public async updateCharacter(char: CharacterData): Promise<CharacterData> {
     const {
-      id: _id,
+      id,
       collectionId: _collectionId,
       collectionName: _collectionName,
       updated: _updated,
@@ -88,11 +88,7 @@ export class CharacterFetcher extends PocketBase {
 
     const response = await this.pb
       .collection(COLLECTIONS.characters)
-      .update<CharacterData>(
-        char.id,
-        body,
-        PocketBase.expand("skills", "status")
-      );
+      .update<CharacterData>(id, body, PocketBase.expand("skills", "status"));
 
     return response;
   }
