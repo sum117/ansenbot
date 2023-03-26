@@ -1,16 +1,19 @@
 # AnsenBot - TypeScript Roleplaying System with DiscordX, PocketBase, and OpenAI API
 
-This project is a roleplaying system for Discord that integrates DiscordX, PocketBase, and the OpenAI API to provide an immersive and interactive experience for users. With features such as leveling, AI-generated quests, and a range of roleplaying utilities, this system offers a unique and engaging way for users to participate in roleplaying games within a Discord server.  
+This project is a roleplaying system for Discord that integrates DiscordX, PocketBase, and the OpenAI API to provide an immersive and interactive experience for users. With features such as leveling, AI-generated quests, and a range of roleplaying utilities, this system offers a unique and engaging way for users to participate in roleplaying games within a Discord server.
 
 ## Table of Contents
 
-- [Features](#features)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+- [AnsenBot - TypeScript Roleplaying System with DiscordX, PocketBase, and OpenAI API](#ansenbot---typescript-roleplaying-system-with-discordx-pocketbase-and-openai-api)
+  - [Table of Contents](#table-of-contents)
+  - [Features](#features)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Configuration](#configuration)
+    - [Bot Settings](#bot-settings)
+    - [Docker Settings for PocketBase](#docker-settings-for-pocketbase)
+  - [Usage](#usage)
+  - [License](#license)
 
 ## Features
 
