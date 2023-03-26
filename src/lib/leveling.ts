@@ -1,13 +1,29 @@
+type CharacterLeveling = {
+  characterLevel?: number;
+  characterPoints?: number;
+  characterSpareSkillPoints?: number;
+};
+
 export class Leveling {
   public characterLevel: number;
+  public characterSpareSkillPoints: number;
   public characterPoints: number;
-  public skills: number[];
+  public skills: Record<string, number>;
   public costPerLevel: number[];
 
-  constructor(increaseFactor: number) {
-    this.characterLevel = 1;
-    this.characterPoints = 0;
-    this.skills = new Array(10).fill(0);
+  constructor(
+    increaseFactor: number,
+    skills: Record<string, number> = {},
+    {
+      characterLevel = 1,
+      characterSpareSkillPoints = 0,
+      characterPoints = 0,
+    }: CharacterLeveling
+  ) {
+    this.characterLevel = characterLevel;
+    this.characterSpareSkillPoints = characterSpareSkillPoints;
+    this.characterPoints = characterPoints;
+    this.skills = skills;
     this.costPerLevel = this.calculateCostPerLevel(increaseFactor);
   }
 
@@ -36,20 +52,21 @@ export class Leveling {
     if (this.canLevelUpCharacter()) {
       this.characterPoints -= this.costPerLevel[this.characterLevel + 1];
       this.characterLevel++;
+      this.characterSpareSkillPoints++;
       return true;
     } else {
       return false;
     }
   }
 
-  public canIncreaseSkill(skill: number): boolean {
+  public canIncreaseSkill(skill: string): boolean {
     return this.skills[skill] < 99 && this.characterLevel > this.skills[skill];
   }
 
-  public increaseSkill(skill: number): boolean {
+  public increaseSkill(skill: string): boolean {
     if (this.canIncreaseSkill(skill)) {
       this.skills[skill]++;
-      this.characterLevel--;
+      this.characterSpareSkillPoints--;
       return true;
     } else {
       return false;
@@ -57,10 +74,6 @@ export class Leveling {
   }
 }
 
-// const user = new Leveling(7.01);
-// console.log(user.costPerLevel);
-// user.addCharacterPoints(4096);
-
 // while (user.canLevelUpCharacter()) {
-//   user.levelUpCharacter();
+//   console.log(user.levelUpCharacter());
 // }
