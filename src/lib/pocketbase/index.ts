@@ -1,6 +1,6 @@
 import PB, { type Record as DBRecord } from "pocketbase";
 
-import type { COLLECTIONS } from "./constants";
+import type { RELATION_FIELD_NAMES } from "./constants";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(
@@ -17,7 +17,7 @@ export class PocketBase {
   }
 
   public static expand(
-    ...relations: (typeof COLLECTIONS)[keyof typeof COLLECTIONS][]
+    ...relations: (typeof RELATION_FIELD_NAMES)[keyof typeof RELATION_FIELD_NAMES][]
   ): Record<string, string> {
     return {
       expand: relations.join(","),
