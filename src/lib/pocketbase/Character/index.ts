@@ -1,9 +1,9 @@
 import type { Snowflake } from "discord.js";
 import type { ListResult } from "pocketbase";
 
+import type { CharacterData, CreateCharacterData } from "../../../types";
 import { PocketBase } from "../";
 import { COLLECTIONS } from "../constants";
-import type { CharacterData, CreateCharacterData } from "../types";
 
 export class CharacterFetcher extends PocketBase {
   constructor() {
