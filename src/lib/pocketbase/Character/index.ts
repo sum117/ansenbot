@@ -91,11 +91,17 @@ export class CharacterFetcher extends PocketBase {
     skills: CreateData<Skills>,
     char: CreateData<Character>
   ): Promise<Character> {
-    const baseSkills = await this.createBaseSkills(skills);
-    const baseStatus = await this.createBaseStatus({
-      health: 100,
-      money: 100,
-      stamina: 100,
+    const baseSkills = await this.createEntity<Skills>({
+      entityData: skills,
+      entityType: "skills",
+    });
+    const baseStatus = await this.createEntity<Status>({
+      entityData: {
+        health: 100,
+        money: 0,
+        stamina: 100,
+      },
+      entityType: "status",
     });
     const raceToAddCharacter = await this.getEntityById<Race>({
       entityType: "races",
@@ -128,19 +134,16 @@ export class CharacterFetcher extends PocketBase {
     return response;
   }
 
-  public async createBaseSkills(skills: CreateData<Skills>): Promise<Skills> {
+  public async createEntity<T>({
+    entityType,
+    entityData,
+  }: {
+    entityData: CreateData<T>;
+    entityType: keyof typeof COLLECTIONS;
+  }): Promise<T> {
     const response = await this.pb
-      .collection(COLLECTIONS.skills)
-      .create<Skills>(skills);
-
-    return response;
-  }
-
-  public async createBaseStatus(status: CreateData<Status>): Promise<Status> {
-    const response = await this.pb
-      .collection(COLLECTIONS.status)
-      .create<Status>(status);
-
+      .collection(COLLECTIONS[entityType])
+      .create<T>(entityData);
     return response;
   }
 
