@@ -35,6 +35,7 @@ export class CharacterFetcher extends PocketBase {
       .collection(COLLECTIONS.characters)
       .getList<Character>(page, 10, {
         filter: `userId="${userId}"`,
+        ...PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)),
       });
 
     return response;
