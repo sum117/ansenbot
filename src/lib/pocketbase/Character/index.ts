@@ -2,10 +2,12 @@ import type { Snowflake } from "discord.js";
 import type { ListResult } from "pocketbase";
 
 import type {
+  AllowedEntityTypes,
   Character,
   CreateData,
   Faction,
   Race,
+  RelationFields,
   Skills,
   Status,
 } from "../../../types";
@@ -50,7 +52,7 @@ export class CharacterFetcher extends PocketBase {
     return response;
   }
 
-  public async getEntityById<T>({
+  public async getEntityById<T extends AllowedEntityTypes>({
     entityType,
     id,
     expandFields = false,
@@ -134,7 +136,7 @@ export class CharacterFetcher extends PocketBase {
     return response;
   }
 
-  public async createEntity<T>({
+  public async createEntity<T extends RelationFields>({
     entityType,
     entityData,
   }: {
@@ -147,7 +149,7 @@ export class CharacterFetcher extends PocketBase {
     return response;
   }
 
-  public async updateEntity<T>(
+  public async updateEntity<T extends RelationFields>(
     entityType: keyof typeof COLLECTIONS,
     entity: T
   ): Promise<T> {
@@ -160,14 +162,17 @@ export class CharacterFetcher extends PocketBase {
       ...body
     } = entity as any;
 
-    if (entityType === "characters") {
+    const isCharacter = (e: unknown): e is Character =>
+      entityType === "characters";
+
+    if (isCharacter(entity)) {
       const prevData = await PocketBase.validateRecord(
-        entity as Character,
+        entity,
         // TODO: Update this to be able to use this.getEntityById
         this.getCharacterById
       );
 
-      if (!this.isOwner((entity as Character).userId, prevData.userId)) {
+      if (!this.isOwner(entity.userId, prevData.userId)) {
         throw new Error("You are not the owner of this Character");
       }
     }

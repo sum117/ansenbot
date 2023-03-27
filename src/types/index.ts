@@ -93,4 +93,17 @@ type Skills = {
   vigor: number;
 };
 
-export { Character, CreateData, Expand, Faction, Race, Skills, Status };
+type RelationFields = Skills | Race | Faction | Status;
+type AllowedEntityTypes = RelationFields | Character;
+
+export {
+  AllowedEntityTypes,
+  Character,
+  CreateData,
+  Expand,
+  Faction,
+  Race,
+  RelationFields,
+  Skills,
+  Status,
+};
