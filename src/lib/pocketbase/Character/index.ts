@@ -2,27 +2,21 @@ import type { Snowflake } from "discord.js";
 import type { ListResult } from "pocketbase";
 
 import type {
-  AllowedEntityTypes,
   Character,
   CreateData,
   Faction,
   Race,
-  RelationFields,
   Skills,
   Status,
 } from "../../../types";
 import { PocketBase } from "../";
-import { COLLECTIONS, RELATION_FIELD_NAMES } from "../constants";
+import { RELATION_FIELD_NAMES } from "../constants";
 
-export class CharacterFetcher extends PocketBase {
-  constructor() {
-    super();
-  }
-
+export class CharacterFetcher {
   public async getAllCharacters(): Promise<Character[]> {
-    const response = await this.pb
-      .collection(COLLECTIONS.characters)
-      .getFullList<Character>();
+    const response = await PocketBase.getAllEntities<Character>({
+      entityType: "characters",
+    });
     return response;
   }
 
@@ -33,42 +27,26 @@ export class CharacterFetcher extends PocketBase {
     page: number;
     userId: Snowflake;
   }): Promise<ListResult<Character>> {
-    const response = await this.pb
-      .collection(COLLECTIONS.characters)
-      .getList<Character>(page, 10, {
-        filter: `userId="${userId}"`,
-        ...PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)),
-      });
+    const response = await PocketBase.getEntitiesByFilter<Character>({
+      entityType: "characters",
+      filter: [
+        page,
+        10,
+        {
+          filter: `userId="${userId}"`,
+          ...PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)),
+        },
+      ],
+    });
 
     return response;
   }
 
-  // TODO: Update Validate Record so this code can be removed as getEntityById already does this
   public async getCharacterById(id: Character["id"]): Promise<Character> {
-    const response = await this.pb
-      .collection(COLLECTIONS.characters)
-      .getOne<Character>(id);
-
-    return response;
-  }
-
-  public async getEntityById<T extends AllowedEntityTypes>({
-    entityType,
-    id,
-    expandFields = false,
-  }: {
-    entityType: keyof typeof COLLECTIONS;
-    expandFields?: boolean;
-    id: string;
-  }): Promise<T> {
-    const response = await this.pb
-      .collection(COLLECTIONS[entityType])
-      .getOne<T>(
-        id,
-        expandFields
-          ? PocketBase.expand(...Object.values(RELATION_FIELD_NAMES))
-          : undefined
-      );
+    const response = await PocketBase.getEntityById<Character>({
+      entityType: "characters",
+      id,
+    });
 
     return response;
   }
@@ -77,7 +55,7 @@ export class CharacterFetcher extends PocketBase {
     userId: Snowflake,
     id: Character["id"]
   ): Promise<void> {
-    const { userId: prevUserId } = await this.getEntityById<Character>({
+    const { userId: prevUserId } = await PocketBase.getEntityById<Character>({
       entityType: "characters",
       id,
     });
@@ -86,18 +64,19 @@ export class CharacterFetcher extends PocketBase {
       throw new Error("You cannot delete another user's character");
     }
 
-    await this.pb.collection(COLLECTIONS.characters).delete(id);
+    await PocketBase.deleteEntity({ entityType: "characters", id });
   }
 
   public async createCharacter(
     skills: CreateData<Skills>,
     char: CreateData<Character>
   ): Promise<Character> {
-    const baseSkills = await this.createEntity<Skills>({
+    const baseSkills = await PocketBase.createEntity<Skills>({
       entityData: skills,
       entityType: "skills",
     });
-    const baseStatus = await this.createEntity<Status>({
+
+    const baseStatus = await PocketBase.createEntity<Status>({
       entityData: {
         health: 100,
         money: 0,
@@ -105,26 +84,28 @@ export class CharacterFetcher extends PocketBase {
       },
       entityType: "status",
     });
-    const raceToAddCharacter = await this.getEntityById<Race>({
+
+    const raceToAddCharacter = await PocketBase.getEntityById<Race>({
       entityType: "races",
       id: char.raceId,
     });
+
     const factionToAddCharacter = char.factionId
-      ? await this.getEntityById<Faction>({
+      ? await PocketBase.getEntityById<Faction>({
           entityType: "factions",
           id: char.factionId,
         })
       : null;
-    const response = await this.pb
-      .collection(COLLECTIONS.characters)
-      .create<Character>(
-        {
-          ...char,
-          skills: baseSkills.id,
-          status: baseStatus.id,
-        },
-        PocketBase.expand(...Object.values(RELATION_FIELD_NAMES))
-      );
+
+    const response = await PocketBase.createEntity<Character>({
+      entityType: "characters",
+      entityData: {
+        ...char,
+        skills: baseSkills.id,
+        status: baseStatus.id,
+      },
+      expandFields: true,
+    });
 
     await this.syncCharacterRelations({
       baseSkills,
@@ -136,48 +117,22 @@ export class CharacterFetcher extends PocketBase {
     return response;
   }
 
-  public async createEntity<T extends RelationFields>({
-    entityType,
-    entityData,
-  }: {
-    entityData: CreateData<T>;
-    entityType: keyof typeof COLLECTIONS;
-  }): Promise<T> {
-    const response = await this.pb
-      .collection(COLLECTIONS[entityType])
-      .create<T>(entityData);
-    return response;
-  }
+  public async updateCharacter({ character }: { character: Character }) {
+    const prevData = await PocketBase.validateRecord(
+      character,
+      this.getCharacterById
+    );
 
-  public async updateEntity<T extends RelationFields>(
-    entityType: keyof typeof COLLECTIONS,
-    entity: T
-  ): Promise<T> {
-    const {
-      id,
-      collectionId: _collectionId,
-      collectionName: _collectionName,
-      updated: _updated,
-      created: _created,
-      ...body
-    } = entity as any;
-
-    const isCharacter = (e: unknown): e is Character =>
-      entityType === "characters";
-
-    if (isCharacter(entity)) {
-      const prevData = await PocketBase.validateRecord(
-        entity,
-        // TODO: Update this to be able to use this.getEntityById
-        this.getCharacterById
-      );
-
-      if (!this.isOwner(entity.userId, prevData.userId)) {
-        throw new Error("You are not the owner of this Character");
-      }
+    if (!this.isOwner(character.userId, prevData.userId)) {
+      throw new Error("You are not the owner of this Character");
     }
 
-    return this.pb.collection(COLLECTIONS[entityType]).update<T>(id, body);
+    const response = await PocketBase.updateEntity<Character>({
+      entityData: character,
+      entityType: "characters",
+    });
+
+    return response;
   }
 
   private isOwner(userId: Snowflake, prevUserId: Snowflake): boolean {
@@ -198,22 +153,36 @@ export class CharacterFetcher extends PocketBase {
     raceToAddCharacter: Race;
   }) {
     if (factionToAddCharacter) {
-      await this.updateEntity<Faction>("factions", {
-        ...factionToAddCharacter,
-        characters: [...factionToAddCharacter.characters, character.id],
+      await PocketBase.updateEntity<Faction>({
+        entityType: "factions",
+        entityData: {
+          ...factionToAddCharacter,
+          characters: [...factionToAddCharacter.characters, character.id],
+        },
       });
     }
-    await this.updateEntity<Race>("races", {
-      ...raceToAddCharacter,
-      characters: [...raceToAddCharacter.characters, character.id],
+    await PocketBase.updateEntity<Race>({
+      entityType: "races",
+      entityData: {
+        ...raceToAddCharacter,
+        characters: [...raceToAddCharacter.characters, character.id],
+      },
     });
-    await this.updateEntity<Skills>("skills", {
-      ...baseSkills,
-      character: character.id,
+
+    await PocketBase.updateEntity<Skills>({
+      entityType: "skills",
+      entityData: {
+        ...baseSkills,
+        character: character.id,
+      },
     });
-    await this.updateEntity<Status>("status", {
-      ...baseStatus,
-      character: character.id,
+
+    await PocketBase.updateEntity<Status>({
+      entityType: "status",
+      entityData: {
+        ...baseStatus,
+        character: character.id,
+      },
     });
   }
 }
