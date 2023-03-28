@@ -1,6 +1,16 @@
-import type { Snowflake } from "discord.js";
+import type { ColorResolvable, Snowflake } from "discord.js";
 
-export type CharacterData = {
+type PocketBaseConstants =
+  | "collectionId"
+  | "collectionName"
+  | "created"
+  | "id"
+  | "updated";
+type CreateData<T> = T extends Character
+  ? Omit<T, PocketBaseConstants> & { factionId: string; raceId: string }
+  : Omit<T, PocketBaseConstants>;
+
+type Character = {
   age: number;
   appearance: string;
   backstory: string;
@@ -8,7 +18,6 @@ export type CharacterData = {
   collectionName: string;
   created: string;
   expand: Expand;
-  faction: string;
   gender: string;
   id: string;
   image: string;
@@ -16,7 +25,6 @@ export type CharacterData = {
   name: string;
   personality: string;
   profession: string;
-  race: string;
   skills: string;
   spec: string;
   status: string;
@@ -26,16 +34,36 @@ export type CharacterData = {
   userId: Snowflake;
 };
 
-export type CreateCharacterData = Omit<
-  CharacterData,
-  "collectionId" | "collectionName" | "created" | "expand" | "id" | "updated"
->;
-export type Expand = {
+type Expand = {
+  faction: Faction;
+  race: Race;
   skills: Skills;
   status: Status;
 };
 
+type Race = {
+  characters: string[];
+  collectionId: string;
+  collectionName: string;
+  color: ColorResolvable;
+  created: string;
+  id: string;
+  name: string;
+  updated: string;
+};
+
+type Faction = {
+  characters: string[];
+  collectionId: string;
+  collectionName: string;
+  created: string;
+  id: string;
+  name: string;
+  updated: string;
+};
+
 type Status = {
+  character?: string;
   collectionId: string;
   collectionName: string;
   created: string;
@@ -47,6 +75,7 @@ type Status = {
 };
 
 type Skills = {
+  character?: string;
   charisma: number;
   collectionId: string;
   collectionName: string;
@@ -63,3 +92,20 @@ type Skills = {
   updated: string;
   vigor: number;
 };
+
+type RelationFields = Skills | Race | Faction | Status;
+type AllowedEntityTypes = RelationFields | Character;
+
+export {
+  AllowedEntityTypes,
+  Character,
+  CreateData,
+  Expand,
+  Faction,
+  Race,
+  RelationFields,
+  Skills,
+  Status,
+};
+
+export * from "./PocketBaseCRUD";

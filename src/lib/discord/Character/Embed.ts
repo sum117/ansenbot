@@ -2,16 +2,15 @@ import type { BaseMessageOptions } from "discord.js";
 import {
   AttachmentBuilder,
   Collection,
-  Colors,
   EmbedBuilder,
   userMention,
 } from "discord.js";
 
-import type { CharacterData } from "../../../types";
+import type { Character } from "../../../types";
 import { PocketBase } from "../../pocketbase";
 
 export class CharacterPost {
-  constructor(private character: CharacterData) {
+  constructor(private character: Character) {
     this.character = character;
   }
 
@@ -51,16 +50,16 @@ export class CharacterPost {
     embed.setAuthor(
       this.character.title ? { name: this.character.title } : null
     );
-    embed.setColor(Colors.Blurple);
+    embed.setColor(this.character.expand.race.color);
 
     const fields = new Collection<string, string>();
     fields.set("Dono", userMention(this.character.userId));
     fields.set("Gênero", this.formatCharacterGender(this.character));
     fields.set("Idade", this.character.age.toString());
     fields.set("Nível", this.character.level.toString());
-    fields.set("Raça", this.character.race);
+    fields.set("Raça", this.character.expand.race.name);
     fields.set("Classe", this.character.spec);
-    fields.set("Facção", this.character.faction);
+    fields.set("Facção", this.character.expand.faction.name);
     embed.addFields(
       fields
         .filter((value) => Boolean(value))
@@ -73,7 +72,7 @@ export class CharacterPost {
   private formatCharacterDescription({
     backstory,
     personality,
-  }: CharacterData): string | null {
+  }: Character): string | null {
     const hasBackstory = Boolean(backstory);
     const hasPersonality = Boolean(personality);
     const description =
@@ -83,8 +82,7 @@ export class CharacterPost {
 
     return description ? description : null;
   }
-
-  private formatCharacterGender({ gender }: CharacterData) {
+  private formatCharacterGender({ gender }: Character) {
     return gender === "male" ? "Masculino" : "Feminino";
   }
 }
