@@ -12,6 +12,7 @@ import type {
 import { PocketBase } from "../";
 import { RELATION_FIELD_NAMES } from "../constants";
 
+
 export class CharacterFetcher {
   public async getAllCharacters(): Promise<Character[]> {
     const response = await PocketBase.getAllEntities<Character>({
