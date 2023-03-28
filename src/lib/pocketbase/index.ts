@@ -1,15 +1,6 @@
-import PB, {
-  ListResult,
-  RecordListQueryParams,
-  type Record as DBRecord,
-} from "pocketbase";
+import PB, { type ListResult, type Record as DBRecord } from "pocketbase";
+import type { AllowedEntityTypes } from "../../types";
 import type {
-  AllowedEntityTypes,
-  Character,
-  CreateData,
-  RelationFields,
-} from "../../types";
-import {
   CreateEntityParams,
   DeleteEntityParams,
   GetAllEntitiesParams,
