@@ -12,7 +12,6 @@ import type {
 import { PocketBase } from "../";
 import { RELATION_FIELD_NAMES } from "../constants";
 
-
 export class CharacterFetcher {
   public async getAllCharacters(): Promise<Character[]> {
     const response = await PocketBase.getAllEntities<Character>({
@@ -99,12 +98,12 @@ export class CharacterFetcher {
       : null;
 
     const response = await PocketBase.createEntity<Character>({
-      entityType: "characters",
       entityData: {
         ...char,
         skills: baseSkills.id,
         status: baseStatus.id,
       },
+      entityType: "characters",
       expandFields: true,
     });
 
@@ -118,7 +117,11 @@ export class CharacterFetcher {
     return response;
   }
 
-  public async updateCharacter({ character }: { character: Character }) {
+  public async updateCharacter({
+    character,
+  }: {
+    character: Character;
+  }): Promise<Character> {
     const prevData = await PocketBase.validateRecord(
       character,
       this.getCharacterById
@@ -155,35 +158,35 @@ export class CharacterFetcher {
   }) {
     if (factionToAddCharacter) {
       await PocketBase.updateEntity<Faction>({
-        entityType: "factions",
         entityData: {
           ...factionToAddCharacter,
           characters: [...factionToAddCharacter.characters, character.id],
         },
+        entityType: "factions",
       });
     }
     await PocketBase.updateEntity<Race>({
-      entityType: "races",
       entityData: {
         ...raceToAddCharacter,
         characters: [...raceToAddCharacter.characters, character.id],
       },
+      entityType: "races",
     });
 
     await PocketBase.updateEntity<Skills>({
-      entityType: "skills",
       entityData: {
         ...baseSkills,
         character: character.id,
       },
+      entityType: "skills",
     });
 
     await PocketBase.updateEntity<Status>({
-      entityType: "status",
       entityData: {
         ...baseStatus,
         character: character.id,
       },
+      entityType: "status",
     });
   }
 }

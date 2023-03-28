@@ -52,7 +52,6 @@ export class CharacterPost {
     );
     embed.setColor(this.character.expand.race.color);
 
-
     const fields = new Collection<string, string>();
     fields.set("Dono", userMention(this.character.userId));
     fields.set("Gênero", this.formatCharacterGender(this.character));
@@ -74,7 +73,6 @@ export class CharacterPost {
     backstory,
     personality,
   }: Character): string | null {
-
     const hasBackstory = Boolean(backstory);
     const hasPersonality = Boolean(personality);
     const description =
@@ -85,7 +83,6 @@ export class CharacterPost {
     return description ? description : null;
   }
   private formatCharacterGender({ gender }: Character) {
-
     return gender === "male" ? "Masculino" : "Feminino";
   }
 }

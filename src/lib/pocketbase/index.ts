@@ -1,4 +1,5 @@
 import PB, { type ListResult, type Record as DBRecord } from "pocketbase";
+
 import type { AllowedEntityTypes } from "../../types";
 import type {
   CreateEntityParams,
@@ -8,7 +9,6 @@ import type {
   GetEntityParams,
   UpdateEntityParams,
 } from "../../types/PocketBaseCRUD";
-
 import { COLLECTIONS, RELATION_FIELD_NAMES } from "./constants";
 
 const pb = new PB(process.env.POCKETBASE_URL);
@@ -117,7 +117,7 @@ export class PocketBase {
     return response;
   }
 
-  public static async updateEntity<T extends AllowedEntityTypes>({
+  public static updateEntity<T extends AllowedEntityTypes>({
     entityType,
     entityData,
   }: UpdateEntityParams<T>): Promise<T> {
@@ -133,7 +133,7 @@ export class PocketBase {
     return pb.collection(COLLECTIONS[entityType]).update<T>(id, body);
   }
 
-  public static async deleteEntity({
+  public static deleteEntity({
     entityType,
     id,
   }: DeleteEntityParams): Promise<boolean> {

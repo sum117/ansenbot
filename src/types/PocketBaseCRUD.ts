@@ -1,11 +1,12 @@
 import type { RecordListQueryParams } from "pocketbase";
-import type { AllowedEntityTypes, CreateData } from ".";
+
 import type { COLLECTIONS } from "../lib/pocketbase/constants";
+import type { AllowedEntityTypes, CreateData } from ".";
 
 export type GetEntityParams = {
   entityType: keyof typeof COLLECTIONS;
-  id: string;
   expandFields?: boolean;
+  id: string;
 };
 
 export type CreateEntityParams<T extends AllowedEntityTypes> = {
@@ -20,8 +21,8 @@ export type GetEntitiesByFilterParams = {
 };
 
 export type UpdateEntityParams<T extends AllowedEntityTypes> = {
-  entityType: keyof typeof COLLECTIONS;
   entityData: T;
+  entityType: keyof typeof COLLECTIONS;
 };
 
 export type DeleteEntityParams = {

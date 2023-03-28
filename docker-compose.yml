@@ -24,7 +24,6 @@ services:
     command: node build/main.js
     environment:
       - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
-
 # Docker Run for PocketBase
 
 # docker run -d \

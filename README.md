@@ -42,11 +42,13 @@ This project is a roleplaying system for Discord that integrates DiscordX, Pocke
 ```bash
 git clone https://github.com/yourusername/ansenbot.git
 ```
+
 2. Change the working directory:
 
 ```bash
 cd ansenbot
 ```
+
 3. Install the dependencies:
 
 ```bash
@@ -58,6 +60,7 @@ npm install
 ```bash
 cp .env.example .env
 ```
+
 5. Update the `.env` file with your Discord bot token, PocketBase database credentials, and OpenAI API key.
 
 6. Start the bot:
@@ -109,10 +112,6 @@ Invite the bot to your Discord server and grant it the necessary permissions. On
 
 For a list of available commands, type `/help` in a text channel the bot can read and respond to.
 
-
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
-
-
-
