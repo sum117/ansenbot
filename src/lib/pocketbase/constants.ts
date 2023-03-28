@@ -11,4 +11,4 @@ export const RELATION_FIELD_NAMES = {
   races: "race",
   skills: "skills",
   status: "status",
-};
+} as const;
