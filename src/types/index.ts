@@ -107,3 +107,5 @@ export {
   Skills,
   Status,
 };
+
+export * from "./PocketBaseCRUD";
