@@ -96,12 +96,35 @@ type Skills = {
 type RelationFields = Skills | Race | Faction | Status;
 type AllowedEntityTypes = RelationFields | Character;
 
+type GPTChatMessageTemplateKeys =
+  | "ai_name"
+  | "user_name"
+  | "world"
+  | "class"
+  | "personality"
+  | "local"
+  | "subject"
+  | "text";
+
+type GPTChatMessageTemplate = {
+  [K in GPTChatMessageTemplateKeys]: string;
+};
+
+type GPTChatOptions = {
+  debug?: boolean;
+  templateName: string;
+  templateValues: GPTChatMessageTemplate;
+  tokenLimit: number;
+};
+
 export {
   AllowedEntityTypes,
   Character,
   CreateData,
   Expand,
   Faction,
+  GPTChatMessageTemplate,
+  GPTChatOptions,
   Race,
   RelationFields,
   Skills,

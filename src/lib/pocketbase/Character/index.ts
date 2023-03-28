@@ -45,9 +45,10 @@ export class CharacterFetcher extends PocketBase {
 
   // TODO: Update Validate Record so this code can be removed as getEntityById already does this
   public async getCharacterById(id: Character["id"]): Promise<Character> {
-    const response = await this.pb
-      .collection(COLLECTIONS.characters)
-      .getOne<Character>(id);
+    const response = await this.getEntityById<Character>({
+      entityType: "characters",
+      id,
+    });
 
     return response;
   }

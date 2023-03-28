@@ -73,14 +73,15 @@ export class CharacterPost {
     backstory,
     personality,
   }: Character): string | null {
-    const hasBackstory = Boolean(backstory);
-    const hasPersonality = Boolean(personality);
-    const description =
-      (hasBackstory ? `**História:** ${backstory}` : "") +
-      (hasBackstory && hasPersonality ? "\n\n" : "") +
-      (hasPersonality ? `**Personalidade:** ${personality}` : "");
+    const parts = [];
+    if (backstory) {
+      parts.push(`**História:** ${backstory}`);
+    }
+    if (personality) {
+      parts.push(`**Personalidade:** ${personality}`);
+    }
 
-    return description ? description : null;
+    return parts.length ? parts.join("\n\n") : null;
   }
 
   private formatCharacterGender({ gender }: Character) {

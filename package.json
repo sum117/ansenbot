@@ -21,7 +21,9 @@
     "discordx": "^11.7.0",
     "dotenv": "^16.0.3",
     "lodash.split": "^4.4.2",
-    "pocketbase": "^0.13.0"
+    "pocketbase": "^0.13.0",
+    "hnswlib-node": "^1.4.2",
+    "langchain": "^0.0.42"
   },
   "devDependencies": {
     "@types/node": "^18.15.9",
