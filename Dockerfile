@@ -8,6 +8,9 @@ WORKDIR /tmp/app
 COPY package.json .
 
 # Install dependencies
+RUN apk add --no-cache --virtual .build-deps make gcc g++ python3 && \
+    npm install && \
+    apk del .build-deps
 RUN npm install
 
 # Move source files
@@ -27,10 +30,13 @@ WORKDIR /app
 COPY --from=build-runner /tmp/app/package.json /app/package.json
 
 # Install dependencies
+RUN apk add --no-cache --virtual .build-deps make gcc g++ python3 && \
+    npm install && \
+    apk del .build-deps
 RUN npm install --omit=dev
 
 # Move build files
 COPY --from=build-runner /tmp/app/build /app/build
-
+COPY data ./data
 # Start bot
-CMD [ "npm", "run", "start" ]
+CMD [ "npm",  "start" ]

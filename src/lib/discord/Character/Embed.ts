@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 
 import type { Character } from "../../../types";
-import { PocketBase } from "../../pocketbase";
+import { PocketBase } from "../../pocketbase/PocketBase";
 
 export class CharacterPost {
   constructor(private character: Character) {
@@ -73,15 +73,17 @@ export class CharacterPost {
     backstory,
     personality,
   }: Character): string | null {
-    const hasBackstory = Boolean(backstory);
-    const hasPersonality = Boolean(personality);
-    const description =
-      (hasBackstory ? `**História:** ${backstory}` : "") +
-      (hasBackstory && hasPersonality ? "\n\n" : "") +
-      (hasPersonality ? `**Personalidade:** ${personality}` : "");
+    const parts = [];
+    if (backstory) {
+      parts.push(`**História:** ${backstory}`);
+    }
+    if (personality) {
+      parts.push(`**Personalidade:** ${personality}`);
+    }
 
-    return description ? description : null;
+    return parts.length ? parts.join("\n\n") : null;
   }
+
   private formatCharacterGender({ gender }: Character) {
     return gender === "male" ? "Masculino" : "Feminino";
   }
