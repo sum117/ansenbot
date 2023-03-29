@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 
 import type { Character } from "../../../types";
-import { PocketBase } from "../../pocketbase";
+import { PocketBase } from "../../pocketbase/PocketBase";
 
 export class CharacterPost {
   constructor(private character: Character) {

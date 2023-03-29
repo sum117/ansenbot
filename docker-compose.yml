@@ -4,27 +4,31 @@ services:
     image: ghcr.io/muchobien/pocketbase:latest
     container_name: pocketbase
     restart: unless-stopped
-    command:
-      #- --encryptionEnv #optional
-      # - ENCRYPTION #optional
-    environment:
-      # ENCRYPTION: example #optional
+    #command:
+    #- --encryptionEnv #optional
+    # - ENCRYPTION #optional
+    #environment:
+    # ENCRYPTION: example #optional
     ports:
       - "8090:8090"
     volumes:
-      - ./pb_data/:/pb_data
-      - ./pb_migrations/:/pb_migrations
+      - /pb_data/:/pb_data
+      - /pb_migrations/:/pb_migrations
     healthcheck: #optional (recommended) since v0.10.0
       test: wget --no-verbose --tries=1 --spider http://localhost:8090/api/health || exit 1
       interval: 5s
       timeout: 5s
       retries: 5
-  app:
+  ansenbot:
+    image: sum117/ansenbot:1.0
     build: .
-    command: node build/main.js
+    command: npm start
     environment:
       - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
-
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - POCKETBASE_ADMIN_EMAIL=${POCKETBASE_ADMIN_EMAIL}
+      - POCKETBASE_ADMIN_PASSWORD=${POCKETBASE_ADMIN_PASSWORD}
+      - POCKETBASE_URL=${POCKETBASE_URL}
 # Docker Run for PocketBase
 
 # docker run -d \

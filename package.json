@@ -4,12 +4,12 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "main": "build/main.js",
+  "main": "build/src/main.js",
   "scripts": {
     "build": "tsc",
     "build:changelog": "npx @discordx/changelog --src src",
     "dev": "ts-node-esm --experimental-specifier-resolution=node src/main.ts",
-    "start": "node --experimental-specifier-resolution=node build/main.js",
+    "start": "node --experimental-specifier-resolution=node build/src/main.js",
     "watch": "nodemon --exec ts-node-esm --experimental-specifier-resolution=node src/main.ts",
     "lint": "eslint --ext .ts src --fix",
     "format": "prettier --write src/**/*.ts"

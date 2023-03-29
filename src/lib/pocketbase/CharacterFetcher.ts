@@ -10,9 +10,9 @@ import type {
   RelationFields,
   Skills,
   Status,
-} from "../../../types";
-import { PocketBase } from "../";
-import { COLLECTIONS, RELATION_FIELD_NAMES } from "../constants";
+} from "../../types";
+import { COLLECTIONS, RELATION_FIELD_NAMES } from "./constants";
+import { PocketBase } from "./PocketBase";
 
 export class CharacterFetcher extends PocketBase {
   constructor() {
