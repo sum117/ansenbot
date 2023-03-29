@@ -27,8 +27,8 @@ export class Example {
     }
 
     const isValidMessage =
-      message.channel.id === "1090234136951799818" ||
-      !message.author.bot ||
+      message.channel.id === "1090234136951799818" &&
+      !message.author.bot &&
       message.mentions.has(message.client.user.id);
 
     const isClearCommand =
