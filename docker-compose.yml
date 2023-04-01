@@ -21,6 +21,8 @@ services:
       retries: 5
   ansenbot:
     image: sum117/ansenbot:1.0
+    container_name: ansenbot
+    restart: unless-stopped
     build: .
     command: npm start
     environment:
