@@ -6,12 +6,21 @@ import {
   userMention,
 } from "discord.js";
 
-import type { Character } from "../../../types";
-import { PocketBase } from "../../pocketbase/PocketBase";
+import { skillsDictionary } from "../../../../data/translations";
+import type { Character } from "../../../../types/Character";
+import getSafeEntries from "../../../../utils/getSafeEntries";
+import PocketBase from "../../../pocketbase/classes/PocketBase";
 
-export class CharacterPost {
+export default class CharacterPostEmbed {
+  public embed: EmbedBuilder = new EmbedBuilder();
   constructor(private character: Character) {
     this.character = character;
+    this.embed.setTitle(`${this.character.name} ${this.character.surname}`);
+    this.embed.setDescription(this.formatCharacterDescription(this.character));
+    this.embed.setAuthor(
+      this.character.title ? { name: this.character.title } : null
+    );
+    this.embed.setColor(this.character.expand.race.color);
   }
 
   public async createMessageOptions({
@@ -43,15 +52,16 @@ export class CharacterPost {
     return options;
   }
 
+  private getPostEmbed<T extends { attachmentUrl: string; content: string }>({
+    content,
+    attachmentUrl,
+  }: T): EmbedBuilder {
+    this.embed.setDescription(content ?? null);
+    this.embed.setImage(attachmentUrl ?? null);
+    this.embed.setTimestamp(Date.now());
+    return this.embed;
+  }
   private getProfileEmbed(): EmbedBuilder {
-    const embed = new EmbedBuilder();
-    embed.setTitle(`${this.character.name} ${this.character.surname}`);
-    embed.setDescription(this.formatCharacterDescription(this.character));
-    embed.setAuthor(
-      this.character.title ? { name: this.character.title } : null
-    );
-    embed.setColor(this.character.expand.race.color);
-
     const fields = new Collection<string, string>();
     fields.set("Dono", userMention(this.character.userId));
     fields.set("Gênero", this.formatCharacterGender(this.character));
@@ -60,13 +70,38 @@ export class CharacterPost {
     fields.set("Raça", this.character.expand.race.name);
     fields.set("Classe", this.character.spec);
     fields.set("Facção", this.character.expand.faction.name);
-    embed.addFields(
+    fields.set("Skills", this.formatCharacterSkills(this.character));
+
+    this.embed.addFields(
       fields
         .filter((value) => Boolean(value))
-        .map((value, key) => ({ inline: true, name: key, value }))
+        .map((value, key) => ({
+          inline: key !== "Skills",
+          name: key,
+          value,
+        }))
     );
+    return this.embed;
+  }
 
-    return embed;
+  private formatCharacterSkills({ expand: { skills } }: Character) {
+    const {
+      collectionId: _collectionId,
+      collectionName: _collectionName,
+      id: _id,
+      character: _character,
+      created: _created,
+      updated: _updated,
+      expand: _expand,
+      ...rest
+    } = skills;
+
+    const skillRows = getSafeEntries(rest).map(([skillName, skillLevel]) => {
+      const skill = skillsDictionary[skillName];
+      return `${skill}: ${skillLevel}`;
+    });
+
+    return skillRows.join("\n");
   }
 
   private formatCharacterDescription({

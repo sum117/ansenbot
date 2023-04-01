@@ -1,10 +1,10 @@
-type CharacterLeveling = {
+export type TCharacterLeveling = {
   characterLevel?: number;
   characterPoints?: number;
   characterSpareSkillPoints?: number;
 };
 
-export class Leveling {
+export class CharacterLeveling {
   public characterLevel: number;
   public characterSpareSkillPoints: number;
   public characterPoints: number;
@@ -18,7 +18,7 @@ export class Leveling {
       characterLevel = 1,
       characterSpareSkillPoints = 0,
       characterPoints = 0,
-    }: CharacterLeveling
+    }: TCharacterLeveling
   ) {
     this.characterLevel = characterLevel;
     this.characterSpareSkillPoints = characterSpareSkillPoints;

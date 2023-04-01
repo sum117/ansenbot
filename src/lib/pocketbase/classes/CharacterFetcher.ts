@@ -1,20 +1,20 @@
 import type { Snowflake } from "discord.js";
 import type { ListResult } from "pocketbase";
 
+import { COLLECTIONS, RELATION_FIELD_NAMES } from "../../../data/constants";
 import type {
   AllowedEntityTypes,
   Character,
-  CreateData,
   Faction,
   Race,
   RelationFields,
   Skills,
   Status,
-} from "../../types";
-import { COLLECTIONS, RELATION_FIELD_NAMES } from "./constants";
-import { PocketBase } from "./PocketBase";
+} from "../../../types/Character";
+import type { CreateData } from "../../../types/PocketBaseCRUD";
+import PocketBase from "./PocketBase";
 
-export class CharacterFetcher extends PocketBase {
+export default class CharacterFetcher extends PocketBase {
   constructor() {
     super();
   }
@@ -43,7 +43,6 @@ export class CharacterFetcher extends PocketBase {
     return response;
   }
 
-  // TODO: Update Validate Record so this code can be removed as getEntityById already does this
   public async getCharacterById(id: Character["id"]): Promise<Character> {
     const response = await this.getEntityById<Character>({
       entityType: "characters",
