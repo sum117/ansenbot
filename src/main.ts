@@ -5,6 +5,8 @@ import type { Interaction, Message } from "discord.js";
 import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 
+import server from "./server";
+
 export const bot = new Client({
   intents: [
     IntentsBitField.Flags.Guilds,
@@ -41,4 +43,7 @@ async function run() {
   }
   await bot.login(process.env.DISCORD_BOT_TOKEN);
 }
+server.listen(8000, () => {
+  console.log("Server started");
+});
 run();
