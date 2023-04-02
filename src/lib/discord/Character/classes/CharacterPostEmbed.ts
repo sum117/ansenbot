@@ -9,7 +9,7 @@ import {
 import { skillsDictionary } from "../../../../data/translations";
 import type { Character } from "../../../../types/Character";
 import getSafeEntries from "../../../../utils/getSafeEntries";
-import PocketBase from "../../../pocketbase/classes/PocketBase";
+import PocketBase from "../../../pocketbase/PocketBase";
 
 export default class CharacterPostEmbed {
   public embed: EmbedBuilder = new EmbedBuilder();
@@ -25,14 +25,28 @@ export default class CharacterPostEmbed {
 
   public async createMessageOptions({
     to,
+    content,
+    attachmentUrl,
   }: {
-    to: "profile" | "message";
+    attachmentUrl?: string;
+    content?: string;
+    to: "message" | "profile";
   }): Promise<BaseMessageOptions> {
     const options: BaseMessageOptions = {};
     let embed: EmbedBuilder = new EmbedBuilder();
+
     if (to === "profile") {
+      if (content) {
+        throw new Error("You can't provide content to a profile!");
+      }
       embed = this.getProfileEmbed();
+    } else {
+      if (!content) {
+        throw new Error("You must provide content to post!");
+      }
+      embed = this.getPostEmbed({ attachmentUrl, content });
     }
+
     const image = await PocketBase.getImageUrl({
       fileName: this.character.image,
       record: this.character,
@@ -45,17 +59,16 @@ export default class CharacterPostEmbed {
       const attachment = new AttachmentBuilder(image);
       attachment.setName(this.character.image);
       options.files = [attachment];
-      embed.setImage("attachment://" + this.character.image);
+      embed.setThumbnail("attachment://" + this.character.image);
     }
 
     options.embeds = [embed];
     return options;
   }
 
-  private getPostEmbed<T extends { attachmentUrl: string; content: string }>({
-    content,
-    attachmentUrl,
-  }: T): EmbedBuilder {
+  private getPostEmbed<
+    T extends { attachmentUrl: string | undefined; content: string }
+  >({ content, attachmentUrl }: T): EmbedBuilder {
     this.embed.setDescription(content ?? null);
     this.embed.setImage(attachmentUrl ?? null);
     this.embed.setTimestamp(Date.now());
