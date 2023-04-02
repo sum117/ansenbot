@@ -1,16 +1,6 @@
 import type { ColorResolvable, Snowflake } from "discord.js";
 
-type PocketBaseConstants =
-  | "collectionId"
-  | "collectionName"
-  | "created"
-  | "id"
-  | "updated";
-type CreateData<T> = T extends Character
-  ? Omit<T, PocketBaseConstants> & { factionId: string; raceId: string }
-  : Omit<T, PocketBaseConstants>;
-
-type Character = {
+export type Character = {
   age: number;
   appearance: string;
   backstory: string;
@@ -34,14 +24,14 @@ type Character = {
   userId: Snowflake;
 };
 
-type Expand = {
+export type Expand = {
   faction: Faction;
   race: Race;
   skills: Skills;
   status: Status;
 };
 
-type Race = {
+export type Race = {
   characters: string[];
   collectionId: string;
   collectionName: string;
@@ -52,7 +42,7 @@ type Race = {
   updated: string;
 };
 
-type Faction = {
+export type Faction = {
   characters: string[];
   collectionId: string;
   collectionName: string;
@@ -62,7 +52,7 @@ type Faction = {
   updated: string;
 };
 
-type Status = {
+export type Status = {
   character?: string;
   collectionId: string;
   collectionName: string;
@@ -74,7 +64,7 @@ type Status = {
   updated: string;
 };
 
-type Skills = {
+export type Skills = {
   character?: string;
   charisma: number;
   collectionId: string;
@@ -83,6 +73,7 @@ type Skills = {
   darkness: number;
   dexterity: number;
   discovery: number;
+  expand: Character;
   fortitude: number;
   id: string;
   intelligence: number;
@@ -93,40 +84,5 @@ type Skills = {
   vigor: number;
 };
 
-type RelationFields = Skills | Race | Faction | Status;
-type AllowedEntityTypes = RelationFields | Character;
-
-type GPTChatMessageTemplateKeys =
-  | "ai_name"
-  | "user_name"
-  | "world"
-  | "class"
-  | "personality"
-  | "local"
-  | "subject"
-  | "text";
-
-type GPTChatMessageTemplate = {
-  [K in GPTChatMessageTemplateKeys]: string;
-};
-
-type GPTChatOptions = {
-  debug?: boolean;
-  templateName: string;
-  templateValues: GPTChatMessageTemplate;
-  tokenLimit: number;
-};
-
-export {
-  AllowedEntityTypes,
-  Character,
-  CreateData,
-  Expand,
-  Faction,
-  GPTChatMessageTemplate,
-  GPTChatOptions,
-  Race,
-  RelationFields,
-  Skills,
-  Status,
-};
+export type RelationFields = Skills | Race | Faction | Status;
+export type AllowedEntityTypes = RelationFields | Character;

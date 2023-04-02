@@ -1,7 +1,7 @@
 import type { RecordListQueryParams } from "pocketbase";
 
-import type { COLLECTIONS } from "../lib/pocketbase/constants";
-import type { AllowedEntityTypes, CreateData } from ".";
+import type { COLLECTIONS } from "../data/constants";
+import type { AllowedEntityTypes, Character } from "./Character";
 
 export type GetEntityParams = {
   entityType: keyof typeof COLLECTIONS;
@@ -33,3 +33,13 @@ export type DeleteEntityParams = {
 export type GetAllEntitiesParams = {
   entityType: keyof typeof COLLECTIONS;
 };
+
+export type PocketBaseConstants =
+  | "collectionId"
+  | "collectionName"
+  | "created"
+  | "id"
+  | "updated";
+export type CreateData<T> = T extends Character
+  ? Omit<T, PocketBaseConstants> & { factionId: string; raceId: string }
+  : Omit<T, PocketBaseConstants>;

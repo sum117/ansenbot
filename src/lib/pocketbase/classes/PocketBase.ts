@@ -1,6 +1,6 @@
 import PB, { type Record as DBRecord } from "pocketbase";
 
-import type { RELATION_FIELD_NAMES } from "./constants";
+import type { RELATION_FIELD_NAMES } from "../../../data/constants";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(
@@ -10,7 +10,7 @@ await pb.admins.authWithPassword(
     (console.log("No admin password provided"), process.exit(1))
 );
 
-export class PocketBase {
+export default class PocketBase {
   protected readonly pb: PB;
   public constructor() {
     this.pb = pb;
