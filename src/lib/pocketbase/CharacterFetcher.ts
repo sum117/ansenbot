@@ -1,7 +1,7 @@
 import type { Snowflake } from "discord.js";
 import type { ListResult } from "pocketbase";
 
-import { COLLECTIONS, RELATION_FIELD_NAMES } from "../../../data/constants";
+import { COLLECTIONS, RELATION_FIELD_NAMES } from "../../data/constants";
 import type {
   AllowedEntityTypes,
   Character,
@@ -10,8 +10,8 @@ import type {
   RelationFields,
   Skills,
   Status,
-} from "../../../types/Character";
-import type { CreateData } from "../../../types/PocketBaseCRUD";
+} from "../../types/Character";
+import type { CreateData } from "../../types/PocketBaseCRUD";
 import PocketBase from "./PocketBase";
 
 export default class CharacterFetcher extends PocketBase {
