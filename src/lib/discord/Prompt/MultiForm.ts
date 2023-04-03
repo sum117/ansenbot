@@ -1,4 +1,9 @@
-import type { Message, StringSelectMenuBuilder } from "discord.js";
+import type {
+  Message,
+  StringSelectMenuBuilder,
+  TextBasedChannel,
+  UserSelectMenuBuilder,
+} from "discord.js";
 import { ActionRowBuilder, EmbedBuilder } from "discord.js";
 
 import type { Prompt } from "../../../types/MultiForm";
@@ -11,25 +16,28 @@ export default class MultiForm {
       new EmbedBuilder()
         .setTitle(this.prompt.title)
         .setDescription(this.prompt.description)
-        .setColor("Random"),
+        .setImage(this.prompt.imageUrl ?? null)
+        .setColor(this.prompt.embedColor ?? "Random"),
     ]);
 
-    if (this.prompt.type === "textSelect") {
-      if (this.prompt.fields.length > 5) {
-        throw new Error(
-          "You can only have 5 Select Menus in a Message (Discord limits for Action Rows)"
-        );
-      }
-      const { fields } = this.prompt;
-      this.promptMessage.setComponents([
-        ...fields.map((field) =>
-          new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(field)
-        ),
-      ]);
+    if (this.prompt.fields.length > 5) {
+      throw new Error(
+        "You can only have 5 Select Menus in a Message (Discord limits for Action Rows)"
+      );
     }
-  }
+    const { fields } = this.prompt;
 
-  public sendPrompt(message: Message): void {
-    message.channel.send(this.promptMessage);
+    this.promptMessage.setComponents([
+      ...fields.map((field) =>
+        new ActionRowBuilder<StringSelectMenuBuilder | UserSelectMenuBuilder>().addComponents(field)
+      ),
+    ]);
+  }
+  public setMessageContent(content: string): this {
+    this.promptMessage.setContent(content);
+    return this;
+  }
+  public sendPrompt(channel: TextBasedChannel): Promise<Message> {
+    return channel.send(this.promptMessage);
   }
 }

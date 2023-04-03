@@ -1,10 +1,5 @@
 import type { BaseMessageOptions } from "discord.js";
-import {
-  AttachmentBuilder,
-  Collection,
-  EmbedBuilder,
-  userMention,
-} from "discord.js";
+import { AttachmentBuilder, Collection, EmbedBuilder, userMention } from "discord.js";
 
 import { skillsDictionary } from "../../../../data/translations";
 import type { Character } from "../../../../types/Character";
@@ -17,9 +12,7 @@ export default class CharacterPostEmbed {
     this.character = character;
     this.embed.setTitle(`${this.character.name} ${this.character.surname}`);
     this.embed.setDescription(this.formatCharacterDescription(this.character));
-    this.embed.setAuthor(
-      this.character.title ? { name: this.character.title } : null
-    );
+    this.embed.setAuthor(this.character.title ? { name: this.character.title } : null);
     this.embed.setColor(this.character.expand.race.color);
   }
 
@@ -66,9 +59,10 @@ export default class CharacterPostEmbed {
     return options;
   }
 
-  private getPostEmbed<
-    T extends { attachmentUrl: string | undefined; content: string }
-  >({ content, attachmentUrl }: T): EmbedBuilder {
+  private getPostEmbed<T extends { attachmentUrl: string | undefined; content: string }>({
+    content,
+    attachmentUrl,
+  }: T): EmbedBuilder {
     this.embed.setDescription(content ?? null);
     this.embed.setImage(attachmentUrl ?? null);
     this.embed.setTimestamp(Date.now());
@@ -117,10 +111,7 @@ export default class CharacterPostEmbed {
     return skillRows.join("\n");
   }
 
-  private formatCharacterDescription({
-    backstory,
-    personality,
-  }: Character): string | null {
+  private formatCharacterDescription({ backstory, personality }: Character): string | null {
     const parts = [];
     if (backstory) {
       parts.push(`**História:** ${backstory}`);

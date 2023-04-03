@@ -34,12 +34,7 @@ export type GetAllEntitiesParams = {
   entityType: keyof typeof COLLECTIONS;
 };
 
-export type PocketBaseConstants =
-  | "collectionId"
-  | "collectionName"
-  | "created"
-  | "id"
-  | "updated";
+export type PocketBaseConstants = "collectionId" | "collectionName" | "created" | "id" | "updated";
 export type CreateData<T> = T extends Character
   ? Omit<T, PocketBaseConstants> & { factionId: string; raceId: string }
   : Omit<T, PocketBaseConstants>;

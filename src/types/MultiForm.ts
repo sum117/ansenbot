@@ -1,19 +1,9 @@
-import type { StringSelectMenuBuilder } from "discord.js";
+import type { ColorResolvable, StringSelectMenuBuilder, UserSelectMenuBuilder } from "discord.js";
 
-export type PromptTypes = "textSelect" | "userSelect";
-
-interface BasePrompt {
+export interface Prompt {
   description: string;
+  embedColor?: ColorResolvable;
+  fields: (StringSelectMenuBuilder | UserSelectMenuBuilder)[];
+  imageUrl?: string;
   title: string;
 }
-
-interface UserSelectPrompt extends BasePrompt {
-  type: Exclude<PromptTypes, "textSelect">;
-}
-
-interface TextSelectPrompt extends BasePrompt {
-  fields: StringSelectMenuBuilder[];
-  type: "textSelect";
-}
-
-export type Prompt = TextSelectPrompt | UserSelectPrompt;

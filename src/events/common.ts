@@ -9,10 +9,7 @@ import CharacterFetcher from "../lib/pocketbase/CharacterFetcher";
 @Discord()
 export class Example {
   @On()
-  async messageCreate(
-    [message]: ArgsOf<"messageCreate">,
-    _client: Client
-  ): Promise<void> {
+  async messageCreate([message]: ArgsOf<"messageCreate">, _client: Client): Promise<void> {
     if (message.content.startsWith("gwynevere:")) {
       const characterFetcher = new CharacterFetcher();
       const characterData = await characterFetcher.getCharactersByUserId({
@@ -34,9 +31,7 @@ export class Example {
       message.author.id === "777624354560802876"
     ) {
       if (message.content.startsWith("```js")) {
-        const sanitizedContent = message.content
-          .replace("```js", "")
-          .replace("```", "");
+        const sanitizedContent = message.content.replace("```js", "").replace("```", "");
         try {
           eval(sanitizedContent);
         } catch (error) {

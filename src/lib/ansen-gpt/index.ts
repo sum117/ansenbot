@@ -38,19 +38,13 @@ export const loadVectorStore = async (): Promise<HNSWLib> => {
   };
   try {
     console.log("Loading vector store", false);
-    const vectorStore = await HNSWLib.load(
-      filePaths.vectorStore,
-      new OpenAIEmbeddings()
-    );
+    const vectorStore = await HNSWLib.load(filePaths.vectorStore, new OpenAIEmbeddings());
     return vectorStore;
   } catch {
     const loader = await new TextLoader(filePaths.docs).load();
     const splitter = new MarkdownTextSplitter();
     const docs = await splitter.splitDocuments(loader);
-    const newVectorStore = await HNSWLib.fromDocuments(
-      docs,
-      new OpenAIEmbeddings()
-    );
+    const newVectorStore = await HNSWLib.fromDocuments(docs, new OpenAIEmbeddings());
     await newVectorStore.save(filePaths.vectorStore);
     return newVectorStore;
   }

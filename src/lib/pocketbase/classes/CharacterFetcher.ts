@@ -20,9 +20,7 @@ export default class CharacterFetcher extends PocketBase {
   }
 
   public async getAllCharacters(): Promise<Character[]> {
-    const response = await this.pb
-      .collection(COLLECTIONS.characters)
-      .getFullList<Character>();
+    const response = await this.pb.collection(COLLECTIONS.characters).getFullList<Character>();
     return response;
   }
 
@@ -33,12 +31,10 @@ export default class CharacterFetcher extends PocketBase {
     page: number;
     userId: Snowflake;
   }): Promise<ListResult<Character>> {
-    const response = await this.pb
-      .collection(COLLECTIONS.characters)
-      .getList<Character>(page, 10, {
-        filter: `userId="${userId}"`,
-        ...PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)),
-      });
+    const response = await this.pb.collection(COLLECTIONS.characters).getList<Character>(page, 10, {
+      filter: `userId="${userId}"`,
+      ...PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)),
+    });
 
     return response;
   }
@@ -65,18 +61,13 @@ export default class CharacterFetcher extends PocketBase {
       .collection(COLLECTIONS[entityType])
       .getOne<T>(
         id,
-        expandFields
-          ? PocketBase.expand(...Object.values(RELATION_FIELD_NAMES))
-          : undefined
+        expandFields ? PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)) : undefined
       );
 
     return response;
   }
 
-  public async deleteCharacter(
-    userId: Snowflake,
-    id: Character["id"]
-  ): Promise<void> {
+  public async deleteCharacter(userId: Snowflake, id: Character["id"]): Promise<void> {
     const { userId: prevUserId } = await this.getEntityById<Character>({
       entityType: "characters",
       id,
@@ -115,16 +106,14 @@ export default class CharacterFetcher extends PocketBase {
           id: char.factionId,
         })
       : null;
-    const response = await this.pb
-      .collection(COLLECTIONS.characters)
-      .create<Character>(
-        {
-          ...char,
-          skills: baseSkills.id,
-          status: baseStatus.id,
-        },
-        PocketBase.expand(...Object.values(RELATION_FIELD_NAMES))
-      );
+    const response = await this.pb.collection(COLLECTIONS.characters).create<Character>(
+      {
+        ...char,
+        skills: baseSkills.id,
+        status: baseStatus.id,
+      },
+      PocketBase.expand(...Object.values(RELATION_FIELD_NAMES))
+    );
 
     await this.syncCharacterRelations({
       baseSkills,
@@ -143,9 +132,7 @@ export default class CharacterFetcher extends PocketBase {
     entityData: CreateData<T>;
     entityType: keyof typeof COLLECTIONS;
   }): Promise<T> {
-    const response = await this.pb
-      .collection(COLLECTIONS[entityType])
-      .create<T>(entityData);
+    const response = await this.pb.collection(COLLECTIONS[entityType]).create<T>(entityData);
     return response;
   }
 
@@ -162,8 +149,7 @@ export default class CharacterFetcher extends PocketBase {
       ...body
     } = entity as any;
 
-    const isCharacter = (e: unknown): e is Character =>
-      entityType === "characters";
+    const isCharacter = (e: unknown): e is Character => entityType === "characters";
 
     if (isCharacter(entity)) {
       const prevData = await PocketBase.validateRecord(

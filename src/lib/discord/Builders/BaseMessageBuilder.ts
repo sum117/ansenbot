@@ -1,8 +1,4 @@
-import type {
-  BaseMessageOptions,
-  EmbedBuilder,
-  MessageMentionOptions,
-} from "discord.js";
+import type { BaseMessageOptions, EmbedBuilder, MessageMentionOptions } from "discord.js";
 
 export class BaseMessageBuilder implements BaseMessageOptions {
   public files: BaseMessageOptions["files"] | undefined;
