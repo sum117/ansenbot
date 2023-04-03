@@ -1,4 +1,4 @@
-import type { StringSelectMenuInteraction } from "discord.js";
+import type { GuildMemberRoleManager, Role, StringSelectMenuInteraction } from "discord.js";
 import { userMention } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { Discord, On, SelectMenuComponent } from "discordx";
@@ -12,7 +12,22 @@ import deleteDiscordMessage from "../../utils/deleteDiscordMessage";
 
 @Discord()
 export class UserManagement {
-  private interaction: StringSelectMenuInteraction | null = null;
+  private _interaction: StringSelectMenuInteraction | null = null;
+
+  set interaction(interaction: StringSelectMenuInteraction) {
+    this._interaction = interaction;
+  }
+
+  get interaction(): StringSelectMenuInteraction {
+    if (!this._interaction) {
+      throw new Error("Cannot manage user with invalid interaction");
+    }
+    return this._interaction;
+  }
+
+  get memberRoleManager(): GuildMemberRoleManager {
+    return this.interaction?.member?.roles as GuildMemberRoleManager;
+  }
 
   @On({
     event: "messageCreate",
@@ -52,18 +67,7 @@ export class UserManagement {
   })
   async onChoose(interaction: StringSelectMenuInteraction): Promise<void> {
     this.interaction = interaction;
-    await interaction.deferReply({ ephemeral: true });
-    switch (interaction.customId) {
-      case "joinForm:mentor": {
-        void this.handleMentorSelection();
-      }
-    }
-  }
 
-  private async handleMentorSelection(): Promise<void> {
-    if (!this.interaction) {
-      return;
-    }
     if (this.interaction.replied) {
       void this.interaction.followUp({
         content: "Você já respondeu a essa pergunta!",
@@ -72,14 +76,51 @@ export class UserManagement {
       return;
     }
 
+    await interaction.deferReply({ ephemeral: true });
+    switch (interaction.customId) {
+      case "joinForm:mentor": {
+        void this.handleMentorSelection();
+        break;
+      }
+      case "joinForm:gender": {
+        void this.handleGenderSelection();
+        break;
+      }
+    }
+  }
+
+  private handleGenderSelection(): void {
+    const values = this.interaction.values as Properties<
+      Pick<typeof JOIN_FORM_VALUES, "male" | "female" | "other">
+    >[];
+
+    const genderRoles = {
+      female: this.getRoleByName("Mulher"),
+      male: this.getRoleByName("Homem"),
+      other: this.getRoleByName("Outro"),
+    } as Record<Properties<Pick<typeof JOIN_FORM_VALUES, "male" | "female" | "other">>, Role>;
+
+    const chosenRole = genderRoles[values[0]];
+
+    void this.memberRoleManager.add(chosenRole);
+    for (const role of Object.values(genderRoles)) {
+      if (role.name === chosenRole.name) {
+        return;
+      }
+      void this.memberRoleManager.remove(role);
+    }
+    void this.interaction.editReply({
+      content: mustache.render("Você foi setado com a sua preferência de genero: {{{role}}}", {
+        role: chosenRole.name,
+      }),
+    });
+  }
+
+  private async handleMentorSelection(): Promise<void> {
     const values = this.interaction.values as Properties<typeof JOIN_FORM_VALUES>[];
 
     if (values[0] === JOIN_FORM_VALUES.wantsMentor) {
-      if (!this.interaction.guild) {
-        return;
-      }
-
-      const mentorChannel = this.interaction.guild.channels.cache.find(
+      const mentorChannel = this.interaction.guild?.channels.cache.find(
         (channel) => channel.name === "mentoria"
       );
 
@@ -87,13 +128,13 @@ export class UserManagement {
         return;
       }
 
-      const possibleMentors = (await this.interaction.guild.members.fetch()).filter((member) => {
+      const possibleMentors = (await this.interaction.guild?.members.fetch())?.filter((member) => {
         return member.roles.cache.find(
           (role) => role.name === "Administrador" || role.name === "Moderador"
         );
       });
 
-      const mentor = possibleMentors.random(1).at(0);
+      const mentor = possibleMentors?.random(1).at(0);
       if (!mentor) {
         return;
       }
@@ -122,5 +163,9 @@ export class UserManagement {
       content:
         "Ok. Você pode mudar de ideia a qualquer momento. Basta usar o comando `/mentor` para ser pareado com um ajudante.",
     });
+  }
+
+  private getRoleByName(roleName: string): Role | undefined {
+    return this.interaction.guild?.roles.cache.find(({ name }) => name === roleName);
   }
 }
