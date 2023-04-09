@@ -4,8 +4,7 @@ import type { RELATION_FIELD_NAMES } from "../../data/constants";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(
-  process.env.POCKETBASE_ADMIN_EMAIL ??
-    (console.log("No admin email provided"), process.exit(1)),
+  process.env.POCKETBASE_ADMIN_EMAIL ?? (console.log("No admin email provided"), process.exit(1)),
   process.env.POCKETBASE_ADMIN_PASSWORD ??
     (console.log("No admin password provided"), process.exit(1))
 );
@@ -44,15 +43,13 @@ export default class PocketBase {
     return url;
   }
 
-  public static async validateRecord<
-    T extends Pick<DBRecord, "id" | "created" | "updated">
-  >(object: T, fetcher: (id: string) => Promise<T>): Promise<T> {
+  public static async validateRecord<T extends Pick<DBRecord, "id" | "created" | "updated">>(
+    object: T,
+    fetcher: (id: string) => Promise<T>
+  ): Promise<T> {
     const prevData = await fetcher(object.id);
 
-    if (
-      prevData.created !== object.created ||
-      prevData.updated !== object.updated
-    ) {
+    if (prevData.created !== object.created || prevData.updated !== object.updated) {
       throw new Error("Invalid update");
     }
 

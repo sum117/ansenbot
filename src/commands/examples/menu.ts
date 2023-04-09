@@ -27,9 +27,7 @@ export class Example {
     }
 
     await interaction.followUp(
-      `you have selected role: ${
-        roles.find((r) => r.value === roleValue)?.label ?? "unknown"
-      }`
+      `you have selected role: ${roles.find((r) => r.value === roleValue)?.label ?? "unknown"}`
     );
     return;
   }
@@ -39,15 +37,10 @@ export class Example {
     await interaction.deferReply();
 
     // create menu for roles
-    const menu = new SelectMenuBuilder()
-      .addOptions(roles)
-      .setCustomId("role-menu");
+    const menu = new SelectMenuBuilder().addOptions(roles).setCustomId("role-menu");
 
     // create a row for message actions
-    const buttonRow =
-      new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-        menu
-      );
+    const buttonRow = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(menu);
 
     // send it
     interaction.editReply({

@@ -3,9 +3,7 @@ import type { Message } from "discord.js";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import CharacterPostEmbed from "../classes/CharacterPostEmbed";
 
-export default async function sendCharProfile(
-  message: Message
-): Promise<Message> {
+export default async function sendCharProfile(message: Message): Promise<Message> {
   const characterFetcher = new CharacterFetcher();
   const charactersData = await characterFetcher.getCharactersByUserId({
     page: 1,

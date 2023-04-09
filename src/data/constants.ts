@@ -14,9 +14,4 @@ export const RELATION_FIELD_NAMES = {
 } as const;
 
 export const MAX_FILE_SIZE = 15_000_000;
-export const ACCEPTED_IMAGE_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
-  "image/webp",
-];
+export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];

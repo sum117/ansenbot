@@ -14,13 +14,7 @@ const characterSchema: z.Schema<
   backstory: defaultZodString
     .min(128, "backstory must be at least 128 characters")
     .max(2096, "backstory must be at most 2096 characters"),
-  faction: z.enum([
-    "red crowns",
-    "white tiaras",
-    "invaders",
-    "resistance",
-    "emissaires",
-  ]),
+  faction: z.enum(["red crowns", "white tiaras", "invaders", "resistance", "emissaires"]),
   gender: z.enum(["male", "female"]),
   image: defaultZodImage,
   level: z.number().int().max(0, "This field must be exactly 0"),
@@ -30,10 +24,7 @@ const characterSchema: z.Schema<
   personality: defaultZodString
     .min(128, "The personality must be at least 128 characters")
     .max(1024, "The personality must be at most 1024 characters"),
-  profession: defaultZodString.max(
-    128,
-    "The profession must be at most 128 characters"
-  ),
+  profession: defaultZodString.max(128, "The profession must be at most 128 characters"),
   race: z.enum([
     "twilightmoon",
     "deathbird",

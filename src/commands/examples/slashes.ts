@@ -22,11 +22,7 @@ export class SlashExample {
         .addFields({ name: "Name", value: cmd.name })
         .addFields({
           name: "Description",
-          value: `${
-            cmd.description.length > 0
-              ? cmd.description
-              : "Description unavailable"
-          }`,
+          value: `${cmd.description.length > 0 ? cmd.description : "Description unavailable"}`,
         });
 
       return { embeds: [embed] };

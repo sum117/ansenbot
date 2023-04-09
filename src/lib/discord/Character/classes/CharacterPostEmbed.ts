@@ -1,15 +1,10 @@
 import type { BaseMessageOptions } from "discord.js";
-import {
-  AttachmentBuilder,
-  Collection,
-  EmbedBuilder,
-  userMention,
-} from "discord.js";
+import { AttachmentBuilder, Collection, EmbedBuilder, userMention } from "discord.js";
 
 import { skillsDictionary } from "../../../../data/translations";
 import type { Character } from "../../../../types/Character";
 import getSafeEntries from "../../../../utils/getSafeEntries";
-import PocketBase from "../../../pocketbase/classes/PocketBase";
+import PocketBase from "../../../pocketbase/PocketBase";
 
 export default class CharacterPostEmbed {
   public embed: EmbedBuilder = new EmbedBuilder();
@@ -17,9 +12,7 @@ export default class CharacterPostEmbed {
     this.character = character;
     this.embed.setTitle(`${this.character.name} ${this.character.surname}`);
     this.embed.setDescription(this.formatCharacterDescription(this.character));
-    this.embed.setAuthor(
-      this.character.title ? { name: this.character.title } : null
-    );
+    this.embed.setAuthor(this.character.title ? { name: this.character.title } : null);
     this.embed.setColor(this.character.expand.race.color);
   }
 
@@ -104,10 +97,7 @@ export default class CharacterPostEmbed {
     return skillRows.join("\n");
   }
 
-  private formatCharacterDescription({
-    backstory,
-    personality,
-  }: Character): string | null {
+  private formatCharacterDescription({ backstory, personality }: Character): string | null {
     const parts = [];
     if (backstory) {
       parts.push(`**História:** ${backstory}`);
