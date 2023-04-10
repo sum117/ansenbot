@@ -6,6 +6,7 @@ import { Discord, On } from "discordx";
 import { novelRequestImageGen } from "../lib/anime-img-gen/novelAIApi";
 import { Queue } from "../utils/queue";
 
+
 @Discord()
 export class Example {
   private imageGenerationQueue = new Queue();
