@@ -145,7 +145,7 @@ export default class CharacterFetcher extends PocketBase {
       updated: _updated,
       created: _created,
       ...body
-    } = entity as any;
+    } = entity;
 
     if (this.isCharacter(entity)) {
       const prevData = await PocketBase.validateRecord(entity, this.getCharacterById);
