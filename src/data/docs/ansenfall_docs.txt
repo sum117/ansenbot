@@ -3,17 +3,19 @@
 Este é um documento em Markdown que contém os dados do Ansenfall. Ele é utilizado como guia para todo o conteúdo do universo.
 
 ## SUMÁRIO
-- [Dados do Ansenfall](#dados-do-ansenfall)
+- [Documentação do Ansenfall](#documentação-do-ansenfall)
   - [SUMÁRIO](#sumário)
   - [INTRODUÇÃO](#introdução)
   - [RAÇAS](#raças)
     - [Nascido do Inverno](#nascido-do-inverno)
-    - [Alma do Verão](#alma-do-verão)
+    - [Almas Estivais](#almas-estivais)
     - [Prole da Primavera](#prole-da-primavera)
     - [Povo dos Espinhos](#povo-dos-espinhos)
     - [Povo dos Espinhos](#povo-dos-espinhos-1)
     - [Luas Crepusculares](#luas-crepusculares)
     - [Herdeiros do Amanhecer](#herdeiros-do-amanhecer)
+    - [Mensageiros Alados da Morte](#mensageiros-alados-da-morte)
+    - [Os Âncoras](#os-âncoras)
   - [FACÇÕES](#facções)
     - [Coroas Vermelhas, Adoradores do Deus dos Espinhos](#coroas-vermelhas-adoradores-do-deus-dos-espinhos)
     - [Tiaras Brancas, Guerreiros da Vontade do Inverno](#tiaras-brancas-guerreiros-da-vontade-do-inverno)
@@ -22,6 +24,9 @@ Este é um documento em Markdown que contém os dados do Ansenfall. Ele é utili
     - [A Resistência, Libertadores de Fractária](#a-resistência-libertadores-de-fractária)
   - [DONZELAS DO DESTINO](#donzelas-do-destino)
     - [Princesa Frostmoon, a Radiante](#princesa-frostmoon-a-radiante)
+    - [Capita Gwynevere, A Primeira Lua](#capita-gwynevere-a-primeira-lua)
+    - [Gárgula Teressa, Vigilante da Cidade Vazia](#gárgula-teressa-vigilante-da-cidade-vazia)
+    - [Duquesa Solaris, a Soberana dos Céus Incandescentes](#duquesa-solaris-a-soberana-dos-céus-incandescentes)
   - [CLASSES](#classes)
     - [GUERREIROS](#guerreiros)
     - [CREDORES](#credores)
@@ -48,7 +53,7 @@ Ao criar seu personagem, você deverá escolher uma raça, uma facção (opciona
 Ansenfall foi concebido como um universo linear e coeso, similar a um livro, onde o contexto é revelado aos poucos. A ordem exata para desvendar os mistérios das raças é:
 
 1. Nascido do Inverno | Tecelões das Estações;
-2. Almas do Verão | Tecelões das Estações;
+2. Almas Estivais | Tecelões das Estações;
 3. Prole da Primavera | Tecelões das Estações;
 4. Povo dos Espinhos | Tecelões das Estações;
 5. Os Luas Crepusculares | Enviados das Estrelas;
@@ -110,11 +115,11 @@ Eles possuem uma afinidade altíssima com armas gélidas e a magia invernal e co
 - Possuem cabelos prateados e olhos azuis na maior parte do tempo.
 - Brilham em uma aura branca, capaz de iluminar cavernas inteiras.
 
-### Alma do Verão
+### Almas Estivais
 
 Categoria: Tecelões das Estações
 
-Invocados de uma terra distante chamada de Garadoria, a capital dos Deuses Luminosos, para proteger os Nascidos do Inverno que restaram, os Almas do Verão são um presente do Deus do Sol para a Lua Glacial e um gesto de perdão para a Princesa Frostmoon, herdeira da dinastia da entidade presenteada.
+Invocados de uma terra distante chamada de Garadoria, a capital dos Deuses Luminosos, para proteger os Nascidos do Inverno que restaram, os Almas Estivais são um presente do Deus do Sol para a Lua Glacial e um gesto de perdão para a Princesa Frostmoon, herdeira da dinastia da entidade presenteada.
 
 Depois que chegaram em Gloomhaven através de lendários raios solares não demoraram até se tornar a maior ameaça para o Povo dos Espinhos, queimando o território do outono que por natureza é facilmente inflamável. A batalha foi massiva e heróica, entregando o karma merecido para os assassinos sangue-frio dos invernais, mas estava longe de ser o suficiente para vencer a guerra, principalmente com o Deus da Ordem negando ajuda a todo momento.
 
@@ -122,16 +127,16 @@ Infelizmente, vieram tarde demais para fortalecer os exércitos invernais, já q
 
 Atualmente, compõem a principal linha de frente contra os Espinhos, auxiliando a Resistência de Fractaria liderada por Rainha Arietta, a Decepada, uma Primavéria. Mesmo assim, não seguem a senhor nenhum, apenas a vontade do Sol e lutam quando o Sol, e apenas ele acha justo. Eles representam o único exército organizado que restou em Gloomhaven, efetivamente se tornando o bastião principal contra a influência do outono.
 
-Mesmo com tanta glória construída ao redor do nome da raça, muitos Almas do Verão, assim como outros Tecelões das Estações se entregam para a escuridão ou simplesmente abandonam o propósito de seus nascimentos para cumprir ambições pessoais, aceitando o estado deplorável em que se encontra o reino atualmente, com, na maioria das vezes, o ideal de que a esperança para um lugar como esse há muito tempo se esvaiu.
+Mesmo com tanta glória construída ao redor do nome da raça, muitos Almas Estivais, assim como outros Tecelões das Estações se entregam para a escuridão ou simplesmente abandonam o propósito de seus nascimentos para cumprir ambições pessoais, aceitando o estado deplorável em que se encontra o reino atualmente, com, na maioria das vezes, o ideal de que a esperança para um lugar como esse há muito tempo se esvaiu.
 
 ***
 
-O Alma do Verão é um Ser Espiritual que veio até Gloomhaven através da invocação dos Deuses Luminosos em uma tentativa de parar o outono. Eles possuem uma aparência peculiar que mescla um fauno com um radiante, mas diferente do que a maioria pensa, eles comumente não são aliados dos seguidores do Deus da Ordem. A postura deles é respeitada por toda a resistência do reino e eles são servidos como nobres na maioria das instalações espirituais dos Enviados das Estrelas.
+O Almas Estivais é um Ser Espiritual que veio até Gloomhaven através da invocação dos Deuses Luminosos em uma tentativa de parar o outono. Eles possuem uma aparência peculiar que mescla um fauno com um radiante, mas diferente do que a maioria pensa, eles comumente não são aliados dos seguidores do Deus da Ordem. A postura deles é respeitada por toda a resistência do reino e eles são servidos como nobres na maioria das instalações espirituais dos Enviados das Estrelas.
 
 Eles possuem afinidade com poderes do Sol, inerindo a possibilidade de conjurar os raios solares com os seus chifres dourados e de se curar minimamente com o fogo. Também é comum vê-los raspando as lâminas contra os chifres durante uma batalha para encantá-las com chamas.
 
 - Tóxicos para os Espinhos durante o dia. De qualquer forma, isso nunca impediu romances proibidos...
-- As memórias amarelas vieram deles, por isso, um Alma do Verão é capaz de receber auxilio de mais de três delas ao mesmo tempo.
+- As memórias amarelas vieram deles, por isso, um Almas Estivais é capaz de receber auxilio de mais de três delas ao mesmo tempo.
 - Assim como os Nascidos do Inverno, podem controlar a temperatura corporal, mas apenas para graus positivos. Como esperado, é possível entrar em combustão completa, envolvendo o corpo inteiro em fogo sem se machucar. A chama mais brilhante define o mais forte em um bando.
 - A ponta das orelhas pontudas ficam vermelhas quando o Alma de Verão está feliz, em êxtase ou tendo um bom momento.
 - Se tornam muito preguiçosos depois do por do sol e dormem pesado a noite inteira. Não descansar diminui a força da chama que habita dentro deles.
@@ -205,7 +210,7 @@ Eles possuem afinidade absoluta com a Influência dos Espinhos, tornando a maior
 
 Categoria: Enviados das Estrelas
 
-A partir do momento que os Deuses Luminosos perceberam que os Almas do Verão não seriam capazes de parar a infestação dos espinhos sozinhos, entraram em desespero absoluto. A esperança estava padecendo lentamente e Gloomhaven estava sendo mencionado em discussões de aniquilação total. Destruir tudo o que vive no reino passou a ser uma opção para livrar o resto do mundo do outono. Até que...
+A partir do momento que os Deuses Luminosos perceberam que os Almas Estivais não seriam capazes de parar a infestação dos espinhos sozinhos, entraram em desespero absoluto. A esperança estava padecendo lentamente e Gloomhaven estava sendo mencionado em discussões de aniquilação total. Destruir tudo o que vive no reino passou a ser uma opção para livrar o resto do mundo do outono. Até que...
 
 Anshatar, a Terceira Deusa Luminosa, fez uma coisa que feriu o orgulho de Garador, o Deus da Ordem. Algo que o fez se separar da Aliança Luminosa e agir sozinho. Anshatar pediu ajuda para as Estrelas: Pediu ajuda para a Lua Crepuscular e para o Sol do Amanhecer, os dominadores externos do cosmos...
 
@@ -256,6 +261,66 @@ Eles possuem afinidade com a Ordem e são extremamente carismáticos, portando a
 - Isso já não é mais uma prática, mas alguns extremistas ainda os caçam para impedir a assimilação da paz nos seus subordinados, que é vista como praga em muitos lugares de Gloomhaven — a Praga da Paz.
 - Seus corpos não brilham. Toda a aura brilhante está concentrada dentro dos olhos.
 - São ótimos com feitiços pacíficos da Ordem.
+
+### Mensageiros Alados da Morte
+
+Categoria: Mantedores do Vazio
+
+Muito se fala sobre os Deuses Luminosos que reinam sobre a maior parte dos Seres Espirituais de Gloomhaven, mas após tantas menções a vazio e escuridão, seria um pecado não explorar aqueles que se escondem nas sombras. Abaixo de Garadoria, existe um lugar chamado Sombraclausa, um reino de escuridão infinita habitado por divindades de intenções incompreensíveis para aqueles repletos de sanidade. Eles são os Deuses Umbrais, criadores da solidão e do vazio.
+
+No início do conflito do desequilíbrio do outono, o interesse dos Deuses Umbrais em se envolver era nulo. Isso durou até Anshatar se aliar com as Estrelas. A iniciativa de trazer entidades que não pertenciam a esse plano por conta da derrota iminente mostrou aos Deuses Umbrais que os Luminosos não passavam de covardes incapazes de aceitar mudanças. Juntos, eles decidiram deixar os abismos de lado para testemunhar a ignorância Luminosa de perto, até se fartarem da discrepância e hipocrisia dos dois lados do conflito, que independentemente das razões, causavam sofrimento a todos o resto do mundo. O desequilíbrio impedia que os Seres Espirituais de todos os lugares encontrassem a paz após a morte; então, os Deuses Umbrais agiram...
+
+Se o conflito não fosse cessado de formas naturais, eles forçariam o acontecimento do ciclo...
+
+Nesse sentido, a primeira ferramenta dos Deuses Umbrais foi depositada em Gloomhaven. Finalmente, após centenas de anos sem se envolver no drama da superfície, eles ascenderam desestabilizando as facções com uma névoa negra que, ao atingir um local, jamais o deixava. Entretanto, essa não foi a pior parte. Junto dessa névoa, os primeiros Seres Espirituais Sombrios surgiram — os Mensageiros Alados da Morte. Capazes de forçar a morte não apenas do Espírito, mas também da Alma que ele porta, eles vieram para entregar a Paz Verdadeira para aqueles que se recusavam a morrer até agora. Não houve meio termo. Desde o começo, posaram uma ameaça para todos os governantes do conflito. Diferentemente da maioria dos Seres Espirituais, eles não vieram eliminar as massas, mas sim cortar o mal direto pela raiz.
+
+Apesar de serem capazes de ir contra seus âmagos, os Mensageiros Alados da Morte foram trazidos a Gloomhaven para eliminar as Donzelas do Destino e acabar com o congelamento das estações e, desde suas chegadas, mais da metade dos representantes dos Luminosos foi livrada da existência.
+
+***
+
+Os Mensageiros Alados da Morte são Seres Espirituais Sombrios enviados pelos Deuses Umbrais com o objetivo de levar para a Morte Eterna todos os responsáveis pelo desequilíbrio, desde os representantes dos Deuses Luminosos até o mais alto escalão da nobreza Thornblood. Eles contam com habilidades incompreensíveis para o Espírito Comum e irreproduzíveis até para os mais sábios magos do reino, como arrancar a alma de um corpo e até enxergar através dos olhos dos espíritos.
+
+As aparências deles variam desde aparentes Seres Espirituais comuns com algumas penas no rosto até completas bestas aviárias com algumas características humanas. Porém, uma coisa é certa: não importa como eles se apresentam... quando alguém os vê, não há dúvida de que está olhando para um Mensageiro Alado da Morte.
+
+Ao passo que os Mensageiros Alados da Morte descem sobre Gloomhaven, as outrora indomáveis forças da luz e da escuridão precisam confrontar a inescapável realidade de sua própria mortalidade. A eterna luta pelo poder deu origem a um novo participante neste jogo cósmico, e eles não estão para brincadeiras. Com cada vida extinta, com cada alma enviada à Morte Eterna, os Mensageiros aproximam o reino de um estado de equilíbrio.
+
+No meio do caos e do desespero, uma pergunta perdura nos corações daqueles que ainda resistem: o reinado dos Deuses Luminosos e seus adversários suportará o avanço implacável dos Mensageiros Alados da Morte, ou sua autoridade divina ruirá sob as garras impiedosas desses vingadores de outro mundo? Somente o tempo revelará o destino de Gloomhaven, enquanto os Mensageiros continuam sua busca incansável pelo equilíbrio, uma alma de cada vez.
+
+Eles possuem uma afinidade absurda com o Vazio, sendo os melhores canalizadores do desespero de todo o reino.
+
+- Os Mensageiros Alados da Morte comumente usam máscaras que dão pistas sobre suas personalidades. Isso também é uma forma de identificar outros do mesmo bando.
+- Um Mensageiro Alado da Morte é capaz de voar ao fincar as suas garras em um cadáver. Quando faz isso, asas negras espectrais se formam em suas costas, utilizando a essência do falecido temporariamente. É um momento de liberdade para alguém condenado a levar a redenção para os aprisionados...
+- Não precisam comer. Não precisam dormir. Mensageiros Alados da Morte podem passar dias em um lugar só esperando por um alvo, completamente imóveis.
+- Seus corpos brilham em uma fraca aura roxa. Há indícios reais de que são os criadores das memórias roxas.
+
+### Os Âncoras
+
+Categoria: Filhos do Éter Sólido
+
+O desequilíbrio gerado pelo outono desencadeou uma série de consequências em todas as terras, dando origem a inúmeras criaturas malignas e predatórias. O conflito em Gloomhaven intensificava a fome, a tristeza, o vazio e a dor no mundo espiritual, consumindo todos de forma sutil. No entanto, o desequilíbrio não deu vida apenas a predadores. A verdadeira origem deles, os Âncoras, permanece um enigma, mesmo para os exploradores mais sagazes.
+
+Tão raros quanto diamantes, os Âncoras são abundantes apenas em lendas heroicas e histórias que aquecem corações, proporcionando aos Seres Espirituais do reino uma sensação de segurança e acolhimento, lembrando a todos que, mesmo no mais profundo abismo, existe uma tocha, por mais tênue que seja.
+
+Após diversos relatos daqueles que foram amparados, o propósito dos Âncoras se revelou: proteger todos os Seres Espirituais, sem exceção. Do mais vil Coroa Vermelha ao mais nobre Alma Estival, os Âncoras jamais discriminaram, buscando apenas ajudar. As lendas contam que, quando a esperança se esvai e a morte injusta parece inevitável, o Âncora surge. Para muitos, essas histórias bastam para enfrentar cada dia com a reconfortante sensação de segurança em um mundo repleto de incertezas.
+
+Embora a existência dos Âncoras seja um mistério, há informações consistentes sobre seu aparecimento: eles surgiram após a corrupção do primeiro Inflamado pela Doença das Estações. Um grupo de Âncoras foi avistado salvando um vilarejo após a doença se espalhar e causar uma transformação terrível e irreversível. Parece que o mundo está tentando desesperadamente cicatrizar a ferida aberta deixada pelo desequilíbrio em Gloomhaven. Sabe-se também que os Âncoras são incapazes de respirar o ar espiritual do reino, por isso usam máscaras preenchidas com sangue dos contaminados pela praga ou com a essência dos Espectros. Essa peculiaridade os mantém vivos, reforçando a teoria de que foram criados para cuidar dos Seres Espirituais.
+
+Quando você menos esperar; quando perder a esperança diante de um inimigo sem misericórdia, *seu Âncora estará lá*.
+
+***
+
+Os Âncoras são os únicos Seres Corpóreos de todo o reino, o que os diferencia dos Seres Espirituais. Seus corpos são compostos por uma matéria de textura amadeirada, e possuem uma garra gigantesca que varia em cor, iniciando na junta do braço direito e estendendo-se até o fim do membro. Essa garra é utilizada para extrair a essência dos Espectérios e para purificar os Seres Espirituais contaminados pela Doença das Estações, libertando-os da dor da existência selvagem.
+
+Eles não interferem nos conflitos de Gloomhaven, surgindo apenas para proteger os Seres Espirituais de situações "injustas", conforme a moral dos próprios Âncoras. São venerados em muitos vilarejos pobres como Guardiões enviados pelos Deuses, apesar de não serem vinculados a nenhuma divindade. Fiéis admiradores dos Âncoras usam colares ou pingentes com o formato da garra característica de todos eles.
+
+Os Âncoras não possuem afinidade estacional, estelar ou abissal, já que não são Seres Espirituais. Isso também significa que não podem ter filhos com os habitantes de Gloomhaven. Eles geralmente emergem de poças de Sangue Pestilento ou ascendem dos chãos através de uma Miasma quando são necessários.
+
+- Quando não conseguem salvar um Ser Espiritual, cometem suicídio e se transformam em uma Âncora gigante que não pode ser removida da terra. Isso deu origem ao "Cemitério das Âncoras" nas Florestas de Fractaria.
+- Demonstram profunda tristeza ao serem forçados a testemunhar Seres Espirituais se matando.
+- Por razões desconhecidas, não mantêm uma boa relação com a maioria das Donzelas do Destino.
+- São os únicos seres capazes de matar Bestas Estacionais, que normalmente são imortais.
+- Toda vez que o Sangue Pestilento banha seus corpos, ele acaba sendo absorvido pela garra gigante que possuem.
+- Apesar da máscara, conseguem falar normalmente, mas são geralmente silenciosos.
 
 
 ## FACÇÕES
@@ -346,8 +411,6 @@ Nota: Não é necessário escolher uma facção para criar um personagem, mas en
 
 As Donzelas do Destino são representantes enviadas diretamente dos Deuses Cósmicos para guiar os Seres Espirituais em sua jornada. Elas são as guardiãs dos Reinos Espirituais, e são responsáveis pelo nivelamento, treinamento e evolução dos Seres Espirituais. Elas são as únicas que podem ensinar habilidades especiais e habilidades de classe, e são as únicas que podem evoluir os Seres Espirituais para níveis mais altos. Todas possuem lista de habilidades que administram e ensinam, sendo essas listas exclusivas para cada uma delas. Elas também contam com uma sub-classe exclusiva que pode ser escolhida pelo usuário depois de construir afinidade com a Donzela do Destino.
 
-No momento, apenas uma Donzela do Destino foi produzida, a Princessa Frostmoon, a Radiante.
-
 ### Princesa Frostmoon, a Radiante
 
 *Representante Espiritual dos Nascidos do Inverno*
@@ -371,6 +434,67 @@ Habilidades que administra:
 - Escuridão;
 - Magia Glacial;
 - Inteligência;
+
+
+### Capita Gwynevere, A Primeira Lua
+
+*Representante Espiritual dos Luas Crepusculares*
+
+Antes mesmo do tempo ser um conceito, na Era do Primórdio, os corpos celestes criavam uma melodia que fazia a Lua chorar, uma melodia de esperança e desespero; uma melodia de amor e ódio; uma melodia proibida que separou Divindades de Estrelas, caótica a ponto de mesclar a Luz com a Escuridão, e a Existência com o Nada.  Quando ela cessava, as estrelas se alinhavam, formando uma bacia cósmica para coletar todas as lágrimas da Lua, que não poderiam ser desperdiçadas ou esquecidas, pois um dia se tornariam uma, Gwynevere, a Primeira Lua Crepuscular:
+
+Uma Ser Espiritual de aspecto frágil, postura polida e personalidade melancólica, adornada com cabelos azulados de cor vibrante e de olhos cristalinos da mesma cor, que resgatam a glória dos rios do paraíso.
+
+Diferente da Princesa Frostmoon, Gwynevere revelou desde sua chegada à Gloomhaven um grande interesse em seguir os passos de sua criadora, a Lua Verdadeira...
+
+Em homenagem às lagrimas eternas de sua progenitora, ela decidiu jamais esquecer, guardar tudo pra si, cada minuto, cada segundo seria guardado como uma imagem pregada em sua mente, ou um sentimento cravado em seu coração. Fossem momentos bons ou rancor em sua forma mais pura, ela lembraria de tudo e registraria em livros e mais livros, que atualmente populam uma biblioteca, de estantes que se estendem em corredores sem fim, chamada de "Livraria Perene", situada no meio da Capital Estelar do Reino Espiritual compartilhado de Lunavéu.
+
+Porém, isso não se passa de um voto paralelo ao seu propósito. Assim como para todos nós, o dever de interromper o conflito de Gloomhaven chamou Gwynevere...
+
+Nomeada a Capitã de todos os Luas Crepusculares, seus irmãos mais novos, ela foi o maestro de um ataque simultâneo em diversas frentes de batalha, surpreendendo os exércitos dos Coroas Vermelhas e estabelecendo uma fama imediata para sua raça em todas as capitais do reino.
+
+Quando o sono profundo atingiu sua prima distante, a Princesa Frostmoon, Gwynevere foi forçada a tomar o lugar dela em Gloomhaven, pois a forma espiritual da Princesa não seria o suficiente para manter Snowkeep, a Capital dos Nascidos do Inverno, segura. Agora, só a resta os seus livros, aqueles que a escolheram como guia e uma memória longínqua, recheada com angústia, tristeza, alegria, amor e ódio, assim como a melodia que um dia assombrou sua Mãe.
+
+[CARACTERÌSTICAS A FAZER]
+
+### Gárgula Teressa, Vigilante da Cidade Vazia
+
+*Representante Espiritual dos Mensageiros Alados da Morte*
+
+Após a floresta de Fractaria, o horizonte se estende num completo vão devastado, onde penas de corvos caem dos céus como uma geada de desespero, que dá lugar para uma cidade esquecida pelos Deuses. Em Nahrram, onde o abismo habita, o silêncio é sufocante e faz o ar ter peso de elefantes. Esse lugar só tem visitantes com passes de ida, que entram condenados a jamais sair com vida. Exceto um Ser Espiritual — Alguém que deixou a tristeza e a escuridão afundar profundamente dentro do próprio sangue, a ponto de fazer a cidade abraçá-la ao invés de ceifá-la; Alguém que jamais adormece e que amor nenhum pode arrancá-la de sua solitude... A Vigilante de Nahrram, Gárgula Teressa. 
+
+Vista raramente longe da Cidade Esquecida, Ela, herdeira de uma dinastia farta, inere uma beleza abençoada pelas mãos escuras dos abismos, moldada pela própria escuridão para encantar até mesmo o mais impenetrável dos guerreiros, ou o mais racional dos Credores. Com seus cabelos negros reluzentes, sua pele cinzenta e macia e seu olhar penetrante e sedutor, Teressa é adorada por muitos daqueles que aceitaram a escuridão como seus verdadeiros propósitos.
+
+A personalidade inalcançável dela é paradoxalmente seu charme. Apesar de ser lembrada como alguém que fria, indiferente e vazia por todos aqueles que se desviam do caminho da escuridão, ela é considerada bondosa e atenciosa pelos que a escolheram como guia sombria para a perdição eterna.
+
+Segundo boatos que pairam entre as tavernas de Gloomhaven, Teressa era uma Donzela do Destino que perdeu seu título por se entregar à Nahrram, mas mesmo assim, jamais abandonou seu trabalho, entregando a solidão e o vazio para todos aqueles que os desejam.
+
+[CARACTERISTICAS A FAZER]
+
+
+### Duquesa Solaris, a Soberana dos Céus Incandescentes
+
+*Guardiã das Almas Estivais*
+
+A maioria das divindades de Gloomhaven ostenta chifres, símbolos de poder e domínio desde tempos imemoriais. Como foram concebidos por um propósito efêmero, a maioria dos seres espirituais originários dos Deuses Luminosos não foi moldada à imagem e semelhança de seus criadores. As divindades pretendiam criar algo descartável, gerado para cumprir uma tarefa específica e desaparecer em seguida.
+
+Entretanto, esse não foi o destino das Almas Estivais. Ao criar os primeiros seres, o Deus do Sol Verdadeiro os amou tanto que não apenas lhes concedeu chifres dourados, mas também os abençoou com ouro puro, fazendo-os não meros peões, mas a própria presença do Sol Verdadeiro sobre o reino.
+
+Ao chegarem às linhas de frente em raios solares, os Coroas Vermelhas recuaram desesperadamente pela primeira vez na história, temendo serem atacados pelos próprios deuses. Isso elevou a fama das Almas Estivais de maneira extraordinária e as consagrou como a esperança da resistência.
+
+O Deus do Sol Verdadeiro, satisfeito com o desempenho de suas criaturas, decidiu enviar sua própria filha para liderar aqueles que lutam pelo sol e pela luz: a Duquesa Solaris, a Soberana dos Céus Incandescentes...
+
+Sua voz é uma melodia constante, e seu falar sedutor parece não conhecer limites. Seu sorriso, raro e genuíno, embeleza os lábios mais belos de todo o Reino Espiritual dos Tecelões das Estações. Devido à sua inefável beleza e corpo sem par, a Duquesa é o ser espiritual mais desejado nos quatro cantos do reino sitiado. Dizem que seus cabelos loiros emanam o calor de uma fogueira e que conversar com ela é como sonhar acordado, afastando-se dos perigos que assolam o reino.
+
+- Intensamente leal aos que a seguem, oferecendo proteção mística contra as forças das trevas que tentam corrompê-los.
+- Empática e sintonizada com as emoções de seus protegidos, confortando-os nos momentos de angústia e fortalecendo sua resiliência.
+- Detentora de uma voz inebriante que cativa a atenção de todos, servindo como um bálsamo para as almas cansadas e feridas.
+- Possui a capacidade de infundir seus protegidos com a energia solar, revigorando-os e iluminando seu caminho em meio à escuridão.
+- Inerentemente misteriosa, a Duquesa Solaris desperta fascínio e curiosidade, levando os que a conhecem a explorar as profundezas de seu ser e do mundo ao seu redor.
+
+Habilidades que administra:
+- Aflição da Luz Solar
+- Ordem Menor
+- Vigor Absoluto
 
 ## CLASSES
 

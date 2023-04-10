@@ -1,6 +1,6 @@
 import PB, { type Record as DBRecord } from "pocketbase";
 
-import type { RELATION_FIELD_NAMES } from "../../../data/constants";
+import type { RELATION_FIELD_NAMES } from "../../data/constants";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(

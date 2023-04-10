@@ -1,6 +1,6 @@
 import type { Message } from "discord.js";
 
-import CharacterFetcher from "../../../pocketbase/classes/CharacterFetcher";
+import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import CharacterPostEmbed from "../classes/CharacterPostEmbed";
 
 export default async function sendCharProfile(message: Message): Promise<Message> {
