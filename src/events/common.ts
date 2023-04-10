@@ -103,7 +103,12 @@ export class Example {
       setTimeout(resolve, 15_000);
     });
 
-    const response = await novelRequestImageGen(sanitizedMessage);
+    const response = await novelRequestImageGen(sanitizedMessage).catch(() => {
+      this.pendingUserImageRequests.delete(currentMessage.author.id);
+      return {
+        botError: "❌ Houve um erro ao gerar sua imagem na API, por favor tente novamente.",
+      };
+    });
 
     if (typeof response === "object" && "botError" in response) {
       return void currentMessage.reply(response.botError);
