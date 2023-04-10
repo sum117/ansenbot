@@ -14,11 +14,7 @@ export class CharacterLeveling {
   constructor(
     increaseFactor: number,
     skills: Record<string, number> = {},
-    {
-      characterLevel = 1,
-      characterSpareSkillPoints = 0,
-      characterPoints = 0,
-    }: TCharacterLeveling
+    { characterLevel = 1, characterSpareSkillPoints = 0, characterPoints = 0 }: TCharacterLeveling
   ) {
     this.characterLevel = characterLevel;
     this.characterSpareSkillPoints = characterSpareSkillPoints;
@@ -30,9 +26,7 @@ export class CharacterLeveling {
   public calculateCostPerLevel(increaseFactor: number): number[] {
     const cost: number[] = [];
     for (let level = 1; level <= 99; level++) {
-      cost[level] = Math.floor(
-        level + 300 * Math.pow(2, level / increaseFactor)
-      );
+      cost[level] = Math.floor(level + 300 * Math.pow(2, level / increaseFactor));
     }
     return cost;
   }
@@ -43,8 +37,7 @@ export class CharacterLeveling {
 
   public canLevelUpCharacter(): boolean {
     return (
-      this.characterLevel < 99 &&
-      this.characterPoints >= this.costPerLevel[this.characterLevel + 1]
+      this.characterLevel < 99 && this.characterPoints >= this.costPerLevel[this.characterLevel + 1]
     );
   }
 
@@ -60,10 +53,7 @@ export class CharacterLeveling {
   }
 
   public canIncreaseSkill(skill: string): boolean {
-    return (
-      this.characterSkills[skill] < 99 &&
-      this.characterLevel > this.characterSkills[skill]
-    );
+    return this.characterSkills[skill] < 99 && this.characterLevel > this.characterSkills[skill];
   }
 
   public increaseSkill(skill: string): boolean {

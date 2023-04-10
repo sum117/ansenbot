@@ -34,10 +34,7 @@ export class Example {
       .setStyle(ButtonStyle.Primary)
       .setCustomId("hello-btn");
 
-    const row =
-      new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(
-        helloBtn
-      );
+    const row = new ActionRowBuilder<MessageActionRowComponentBuilder>().addComponents(helloBtn);
 
     interaction.editReply({
       components: [row],
