@@ -49,16 +49,16 @@ export const novelRequestImageGen = async (
     });
     const { data } = response;
     const zipFile = await zip.loadAsync(data);
-    console.log("zipFile", zipFile);
     const zipFileContent = await zipFile.file("image_0.png")?.async("nodebuffer");
 
     if (!zipFileContent) {
-      return { botError: "❌ Houve um erro ao tentar gerar a imagem, tente novamente." };
+      return {
+        botError: "❌ Houve um erro ao extrair a imagem da resposta da API, tente novamente.",
+      };
     }
-    console.log("zipFileContent", zipFileContent);
     return zipFileContent;
   } catch (error) {
     console.log(error);
-    return { botError: "❌ Houve um erro ao tentar gerar a imagem, tente novamente." };
+    return { botError: "❌ Houve um erro ao gerar sua imagem na API, por favor tente novamente." };
   }
 };
