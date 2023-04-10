@@ -1,5 +1,5 @@
-import type { Role, StringSelectMenuInteraction } from "discord.js";
-import { GuildMemberRoleManager, userMention } from "discord.js";
+import type { GuildMemberRoleManager, Role, StringSelectMenuInteraction } from "discord.js";
+import { userMention } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { Discord, On, SelectMenuComponent } from "discordx";
 import mustache from "mustache";
@@ -26,13 +26,11 @@ export class UserManagement {
   }
 
   get memberRoleManager(): GuildMemberRoleManager {
-    const roles = this.interaction.member?.roles;
-    const isRoleManager = roles instanceof GuildMemberRoleManager;
-
-    if (!isRoleManager) {
+    if (this.interaction.inCachedGuild()) {
+      return this.interaction.member.roles;
+    } else {
       throw new Error("Cannot manage user with invalid interaction");
     }
-    return roles;
   }
 
   @On({
