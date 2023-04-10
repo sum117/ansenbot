@@ -2,6 +2,7 @@ import type { Snowflake } from "discord.js";
 import type { ListResult } from "pocketbase";
 
 import { COLLECTIONS, RELATION_FIELD_NAMES } from "../../../data/constants";
+import characterSchema from "../../../schemas/characterSchema";
 import type {
   AllowedEntityTypes,
   Character,
@@ -136,10 +137,7 @@ export default class CharacterFetcher extends PocketBase {
     return response;
   }
 
-  public async updateEntity<T extends RelationFields>(
-    entityType: keyof typeof COLLECTIONS,
-    entity: T
-  ): Promise<T> {
+  public async updateEntity<T extends RelationFields>(entity: T): Promise<T> {
     const {
       id,
       collectionId: _collectionId,
@@ -149,23 +147,22 @@ export default class CharacterFetcher extends PocketBase {
       ...body
     } = entity as any;
 
-    const isCharacter = (e: unknown): e is Character => entityType === "characters";
-
-    if (isCharacter(entity)) {
-      const prevData = await PocketBase.validateRecord(
-        entity,
-        // TODO: Update this to be able to use this.getEntityById
-        this.getCharacterById
-      );
+    if (this.isCharacter(entity)) {
+      const prevData = await PocketBase.validateRecord(entity, this.getCharacterById);
 
       if (!this.isOwner(entity.userId, prevData.userId)) {
         throw new Error("You are not the owner of this Character");
       }
     }
 
-    return this.pb.collection(COLLECTIONS[entityType]).update<T>(id, body);
+    return this.pb
+      .collection(COLLECTIONS[entity.collectionName as keyof typeof COLLECTIONS])
+      .update<T>(id, body);
   }
 
+  private isCharacter(e: unknown): e is Character {
+    return !!characterSchema.safeParse(e);
+  }
   private isOwner(userId: Snowflake, prevUserId: Snowflake): boolean {
     return userId === prevUserId;
   }
@@ -184,20 +181,20 @@ export default class CharacterFetcher extends PocketBase {
     raceToAddCharacter: Race;
   }) {
     if (factionToAddCharacter) {
-      await this.updateEntity<Faction>("factions", {
+      await this.updateEntity<Faction>({
         ...factionToAddCharacter,
         characters: [...factionToAddCharacter.characters, character.id],
       });
     }
-    await this.updateEntity<Race>("races", {
+    await this.updateEntity<Race>({
       ...raceToAddCharacter,
       characters: [...raceToAddCharacter.characters, character.id],
     });
-    await this.updateEntity<Skills>("skills", {
+    await this.updateEntity<Skills>({
       ...baseSkills,
       character: character.id,
     });
-    await this.updateEntity<Status>("status", {
+    await this.updateEntity<Status>({
       ...baseStatus,
       character: character.id,
     });
