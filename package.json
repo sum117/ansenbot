@@ -16,6 +16,7 @@
     "ingest": "tsx -r dotenv/config src/lib/ansen-gpt/utils/ingestData.ts"
   },
   "dependencies": {
+
     "@discordx/importer": "^1.2.1",
     "@discordx/pagination": "^3.4.1",
     "@pinecone-database/pinecone": "^0.0.10",
