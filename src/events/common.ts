@@ -69,7 +69,6 @@ export class Example {
     userFeedback.push(
       `${spinnerEmoji} ${userMention(currentMessage.author.id)} Sua imagem começou a ser gerada.`
     );
-
     if (!this.pendingUserImageRequests.get(currentMessage.author.id)?.message) {
       const trackedMessage = await currentMessage.reply(userFeedback.join(""));
       this.pendingUserImageRequests.set(currentMessage.author.id, {
@@ -88,18 +87,22 @@ export class Example {
     const { stream } = await localRequestImageGen(currentMessage.content);
     const onProgress = async (step: number, totalSteps: number) => {
       const [bar, calculated] = progressBar.filledBar(totalSteps, step, 10, "▬", "🟩");
-
-      
       const message: string[] = [];
       message.push(`✅ ${userMention(currentMessage.author.id)} Sua imagem começou a ser gerada.`);
       message.push(`⏳ ${bar} ${calculated}%`);
 
     }; 
     */
+
     const sanitizedMessage = currentMessage.content
       .trim()
       .replaceAll("```", "")
       .replaceAll("\n", "");
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 15_000);
+    });
+
     const response = await novelRequestImageGen(sanitizedMessage);
 
     if (typeof response === "object" && "botError" in response) {
