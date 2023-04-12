@@ -1,3 +1,11 @@
+import type { Client } from "discord.js";
+import type { ArgsOf } from "discordx";
+import { Discord, On } from "discordx";
+import type { ChatVectorDBQAChain } from "langchain/chains";
+import { OpenAIEmbeddings } from "langchain/embeddings";
+import { PineconeStore } from "langchain/vectorstores";
+import split from "lodash.split";
+
 import { makeChain } from "../lib/ansen-gpt";
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from "../lib/ansen-gpt/config/pinecone";
 import { pineconeClient } from "../lib/ansen-gpt/utils/pineconeClient";
