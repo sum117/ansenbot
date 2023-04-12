@@ -14,7 +14,7 @@ const characterSchema: z.Schema<
   backstory: defaultZodString
     .min(128, "backstory must be at least 128 characters")
     .max(2096, "backstory must be at most 2096 characters"),
-  faction: z.enum(["red crowns", "white tiaras", "invaders", "resistance", "emissaires"]),
+  faction: defaultZodString,
   gender: z.enum(["male", "female"]),
   image: defaultZodImage,
   level: z.number().int().max(0, "This field must be exactly 0"),
@@ -25,23 +25,16 @@ const characterSchema: z.Schema<
     .min(128, "The personality must be at least 128 characters")
     .max(1024, "The personality must be at most 1024 characters"),
   profession: defaultZodString.max(128, "The profession must be at most 128 characters"),
-  race: z.enum([
-    "twilightmoon",
-    "deathbird",
-    "dawnheir",
-    "thornkin",
-    "springspawn",
-    "summersoul",
-    "winterborn",
-  ]),
-  spec: z.enum(["warrior", "wizard", "assassin", "creditor", "seer of sighs"]),
+  memory: defaultZodString,
+  race: defaultZodString,
+  spec: defaultZodString,
   surname: defaultZodString
     .min(3, "The surname must be at least 3 characters")
     .max(64, "The surname must be at most 64 characters"),
   title: defaultZodString
     .min(3, "title must be at least 3 characters")
     .max(128, "title must be at most 128 characters"),
-  userId: defaultZodString.min(17, "userId must be at least 17 characters"),
+  playerId: defaultZodString.min(17, "userId must be at least 17 characters"),
 });
 
 export default characterSchema;

@@ -70,7 +70,7 @@ export default class CharacterPostEmbed {
   }
   private getProfileEmbed(): EmbedBuilder {
     const fields = new Collection<string, string>();
-    fields.set("Dono", userMention(this.character.userId));
+    fields.set("Dono", userMention(this.character.playerId));
     fields.set("Gênero", this.formatCharacterGender(this.character));
     fields.set("Idade", this.character.age.toString());
     fields.set("Nível", this.character.level.toString());

@@ -5,9 +5,9 @@ import CharacterPostEmbed from "../classes/CharacterPostEmbed";
 
 export default async function sendCharProfile(message: Message): Promise<Message> {
   const characterFetcher = new CharacterFetcher();
-  const charactersData = await characterFetcher.getCharactersByUserId({
+  const charactersData = await characterFetcher.getCharactersByPlayerId({
     page: 1,
-    userId: message.author.id,
+    playerId: message.author.id,
   });
   const characterPost = new CharacterPostEmbed(charactersData.items[0]);
   const messageOptions = await characterPost.createMessageOptions({

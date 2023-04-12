@@ -16,12 +16,24 @@ export type Character = {
   personality: string;
   profession: string;
   skills: string;
+  memory: string;
   spec: string;
   status: string;
   surname: string;
   title: string;
   updated: string;
-  userId: Snowflake;
+  playerId: Snowflake;
+};
+
+export type Player = {
+  characters: string[];
+  discordId: Snowflake;
+  currentCharacterId: string;
+  collectionId: string;
+  collectionName: string;
+  created: string;
+  id: string;
+  updated: string;
 };
 
 export type Expand = {
@@ -29,8 +41,22 @@ export type Expand = {
   race: Race;
   skills: Skills;
   status: Status;
+  player: Player;
+  memory: Memory;
 };
 
+export type Memory = {
+  characters: string[];
+  icon: string;
+  title: string;
+  phrase: string;
+  isActive: boolean;
+  collectionId: string;
+  collectionName: string;
+  created: string;
+  id: string;
+  updated: string;
+};
 export type Race = {
   characters: string[];
   collectionId: string;
@@ -84,5 +110,5 @@ export type Skills = {
   vigor: number;
 };
 
-export type RelationFields = Skills | Race | Faction | Status;
+export type RelationFields = Skills | Race | Faction | Status | Player | Memory;
 export type AllowedEntityTypes = RelationFields | Character;
