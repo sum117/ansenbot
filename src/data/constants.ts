@@ -5,17 +5,14 @@ export const COLLECTIONS = {
   skills: "skills",
   status: "status",
 } as const;
-
 export const RELATION_FIELD_NAMES = {
   factions: "faction",
   races: "race",
   skills: "skills",
   status: "status",
 } as const;
-
 export const MAX_FILE_SIZE = 15_000_000;
 export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
-
 export const JOIN_FORM_VALUES = {
   adult: "adult",
   female: "female",
@@ -29,3 +26,4 @@ export const JOIN_FORM_VALUES = {
   teen: "teen",
   wantsMentor: "true",
 } as const;
+
