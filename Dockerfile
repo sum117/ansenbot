@@ -15,6 +15,7 @@ RUN npm install
 
 # Move source files
 COPY src ./src
+COPY config.json   .
 COPY tsconfig.json   .
 
 # Build project
