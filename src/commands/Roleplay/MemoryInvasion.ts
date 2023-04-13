@@ -41,7 +41,7 @@ const channelChoice: SlashOptionOptions<"canal", "O canal onde a invasão irá o
 };
 
 @Discord()
-export class onCharacterMemory {
+export class MemoryInvasion {
   @Slash({
     description: "Faz uma solicitação de roleplay como uma memória.",
     name: "memoria",

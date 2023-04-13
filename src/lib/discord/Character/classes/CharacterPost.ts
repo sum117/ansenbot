@@ -6,7 +6,7 @@ import type { Character } from "../../../../types/Character";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import PocketBase from "../../../pocketbase/PocketBase";
 
-export default class CharacterPostEmbed {
+export default class CharacterPost {
   public embed: EmbedBuilder = new EmbedBuilder();
   constructor(private character: Character) {
     this.character = character;
@@ -45,7 +45,7 @@ export default class CharacterPostEmbed {
       record: this.character,
       thumb: true,
     });
-
+    console.log(image);
     if (typeof image === "string") {
       embed.setThumbnail(image);
     } else {
