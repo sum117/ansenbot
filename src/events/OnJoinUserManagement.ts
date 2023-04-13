@@ -4,14 +4,14 @@ import type { ArgsOf } from "discordx";
 import { Discord, On, SelectMenuComponent } from "discordx";
 import mustache from "mustache";
 
-import { JOIN_FORM_VALUES } from "../../data/constants";
-import { onJoinForm } from "../../data/forms";
-import MultiForm from "../../lib/discord/Prompt/MultiForm";
-import type { Properties } from "../../types/Utils";
-import deleteDiscordMessage from "../../utils/deleteDiscordMessage";
+import { JOIN_FORM_VALUES } from "../data/constants";
+import { onJoinForm } from "../data/forms";
+import MultiForm from "../lib/discord/Prompt/MultiForm";
+import type { Properties } from "../types/Utils";
+import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 
 @Discord()
-export class UserManagement {
+export class OnJoinUserManagement {
   private _interaction: StringSelectMenuInteraction | null = null;
 
   set interaction(interaction: StringSelectMenuInteraction) {

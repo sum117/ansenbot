@@ -28,7 +28,7 @@ export type Character = {
 export type Player = {
   characters: string[];
   discordId: Snowflake;
-  currentCharacterId: string;
+  currentCharacterId?: string;
   collectionId: string;
   collectionName: string;
   created: string;

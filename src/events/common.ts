@@ -3,7 +3,9 @@ import { AttachmentBuilder, ChannelType, Collection, userMention } from "discord
 import type { ArgsOf, Client } from "discordx";
 import { Discord, On } from "discordx";
 
+import config from "../../config.json" assert { type: "json" };
 import { novelRequestImageGen } from "../lib/anime-img-gen/novelAIApi";
+import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import { Queue } from "../utils/queue";
 
 @Discord()
@@ -30,7 +32,7 @@ export class Example {
   messageCreate([message]: ArgsOf<"messageCreate">, _client: Client): void {
     const canExecute =
       message.channel.type === ChannelType.GuildText &&
-      message.channel.name === "gerador-de-imagens" &&
+      message.channelId === config.channels.imageGen &&
       message.content.startsWith("```") &&
       !message.author.bot;
 
@@ -115,10 +117,7 @@ export class Example {
 
     const trackedMessage = this.pendingUserImageRequests.get(currentMessage.author.id)?.message;
     if (trackedMessage) {
-      // TODO: update to use discordDelete util after pull request
-      await trackedMessage
-        .delete()
-        .catch(() => console.log("Bot tried to delete message that was already deleted"));
+      deleteDiscordMessage(trackedMessage, 0);
     }
 
     this.pendingUserImageRequests.delete(currentMessage.author.id);
