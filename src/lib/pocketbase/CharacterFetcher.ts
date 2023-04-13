@@ -22,11 +22,56 @@ export default class CharacterFetcher extends PocketBase {
     super();
   }
 
+  public async getPlayerById(playerId: Player["discordId"]): Promise<Player> {
+    try {
+      const response = await this.pb
+        .collection(COLLECTIONS.players)
+        .getFirstListItem<Player>(`discordId="${playerId}"`, PocketBase.expand("characters"))
+        .catch(() => {
+          throw new Error("Player not found");
+        });
+      return response;
+    } catch (error) {
+      if (error instanceof Error && error.message === "Player not found") {
+        const player = await this.createEntity<Player>({
+          entityData: {
+            discordId: playerId,
+            characters: [],
+            currentCharacterId: "",
+          },
+          entityType: "players",
+        });
+        if (!player) {
+          throw new Error("Could not create player");
+        }
+        return player;
+      }
+      throw error;
+    }
+  }
+
+  public async getFirstCharacterCreateDate(): Promise<Date> {
+    const response = await this.pb
+      .collection(COLLECTIONS.characters)
+      .getFirstListItem<Character>("", {
+        sort: "created",
+      });
+    if (!response) {
+      throw new Error("No characters found");
+    }
+    return new Date(response.created);
+  }
+
   public async getAllCharacters(): Promise<Character[]> {
     const response = await this.pb.collection(COLLECTIONS.characters).getFullList<Character>();
     return response;
   }
-
+  public async getAllCharactersFromPlayer(playerId: Snowflake): Promise<Character[]> {
+    const response = await this.pb.collection(COLLECTIONS.characters).getFullList<Character>({
+      filter: `playerId="${playerId}"`,
+    });
+    return response;
+  }
   public async getAllMemories(): Promise<Memory[]> {
     const response = await this.pb.collection(COLLECTIONS.memories).getFullList<Memory>();
     return response;
@@ -50,69 +95,25 @@ export default class CharacterFetcher extends PocketBase {
     const response = await this.getEntityById<Character>({
       entityType: "characters",
       id,
+      expandFields: true,
     });
-
-    return response;
-  }
-
-  public async getPlayerById(playerId: Player["discordId"]): Promise<Player> {
-    try {
-      const response = await this.pb
-        .collection(COLLECTIONS.players)
-        .getFirstListItem<Player>(`playerId="${playerId}"`, PocketBase.expand("characters"));
-      if (!response) {
-        throw new Error("Player not found");
-      }
-      return response;
-    } catch (error) {
-      if (!(error instanceof Error)) {
-        throw error;
-      }
-      console.error(error.message);
-      if (error.message !== "Player not found") {
-        throw error;
-      }
-      const player = await this.createEntity<Player>({
-        entityData: {
-          discordId: playerId,
-          characters: [],
-          currentCharacterId: "",
-        },
-        entityType: "players",
-      });
-      if (!player) {
-        throw new Error("Could not create player");
-      }
-      return player;
+    if (!response) {
+      throw new Error("Character not found");
     }
-  }
-
-  public async getEntityById<T extends AllowedEntityTypes>({
-    entityType,
-    id,
-    expandFields = false,
-  }: {
-    entityType: keyof typeof COLLECTIONS;
-    expandFields?: boolean;
-    id: string;
-  }): Promise<T> {
-    const response = await this.pb
-      .collection(COLLECTIONS[entityType])
-      .getOne<T>(
-        id,
-        expandFields ? PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)) : undefined
-      );
-
     return response;
   }
 
   public async deleteCharacter(userId: Snowflake, id: Character["id"]): Promise<void> {
-    const { playerId: prevUserId } = await this.getEntityById<Character>({
+    const character = await this.getEntityById<Character>({
       entityType: "characters",
       id,
     });
 
-    if (!this.isOwner(userId, prevUserId)) {
+    if (!character) {
+      throw new Error("Character not found");
+    }
+
+    if (!this.isOwner(userId, character.playerId)) {
       throw new Error("You cannot delete another user's character");
     }
 
@@ -136,17 +137,24 @@ export default class CharacterFetcher extends PocketBase {
       },
       entityType: "status",
     });
+
     const playerToAddCharacter = await this.getPlayerById(playerId);
     const raceToAddCharacter = await this.getEntityById<Race>({
       entityType: "races",
       id: char.raceId,
     });
+
     const factionToAddCharacter = char.factionId
       ? await this.getEntityById<Faction>({
           entityType: "factions",
           id: char.factionId,
         })
-      : null;
+      : undefined;
+
+    if (!raceToAddCharacter || !playerToAddCharacter) {
+      throw new Error("Could not create character");
+    }
+
     const response = await this.pb.collection(COLLECTIONS.characters).create<Character>(
       {
         ...char,
@@ -189,7 +197,7 @@ export default class CharacterFetcher extends PocketBase {
     } = entity;
 
     if (this.isCharacter(entity)) {
-      const prevData = await PocketBase.validateRecord(entity, this.getCharacterById);
+      const prevData = await PocketBase.validateRecord(entity, this.getCharacterById.bind(this));
 
       if (!this.isOwner(entity.playerId, prevData.playerId)) {
         throw new Error("You are not the owner of this Character");
@@ -201,8 +209,30 @@ export default class CharacterFetcher extends PocketBase {
       .update<T>(id, body);
   }
 
+  public async getEntityById<T extends AllowedEntityTypes>({
+    entityType,
+    id,
+    expandFields = false,
+  }: {
+    entityType: keyof typeof COLLECTIONS;
+    expandFields?: boolean;
+    id: string;
+  }): Promise<T> {
+    if (!id) {
+      throw new Error("No id provided ");
+    }
+    const response = await this.pb
+      .collection(COLLECTIONS[entityType])
+      .getOne<T>(
+        id,
+        expandFields ? PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)) : undefined
+      );
+
+    return response;
+  }
   private isCharacter(e: unknown): e is Character {
-    return !!characterSchema.safeParse(e);
+    const safeParse = characterSchema.safeParse(e);
+    return safeParse.success;
   }
   private isOwner(userId: Snowflake, prevUserId: Snowflake): boolean {
     return userId === prevUserId;
@@ -219,7 +249,7 @@ export default class CharacterFetcher extends PocketBase {
     baseSkills: Skills;
     baseStatus: Status;
     character: Character;
-    factionToAddCharacter: Faction | null;
+    factionToAddCharacter: Faction | undefined;
     playerToAddCharacter: Player;
     raceToAddCharacter: Race;
   }) {
