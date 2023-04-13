@@ -19,6 +19,6 @@
   "ts-node": {
     "experimentalSpecifierResolution": "node"
   },
-  "include": ["src"],
+  "include": ["src", "*.json"],
   "exclude": ["build", "node_modules"]
 }
