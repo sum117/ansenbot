@@ -4,9 +4,9 @@ import type { RELATION_FIELD_NAMES } from "../../data/constants";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(
-  process.env.POCKETBASE_ADMIN_EMAIL ?? (console.log("No admin email provided"), process.exit(1)),
+  process.env.POCKETBASE_ADMIN_EMAIL ?? (console.error("No admin email provided"), process.exit(1)),
   process.env.POCKETBASE_ADMIN_PASSWORD ??
-    (console.log("No admin password provided"), process.exit(1))
+    (console.error("No admin password provided"), process.exit(1))
 );
 
 export default class PocketBase {

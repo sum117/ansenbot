@@ -5,7 +5,7 @@ export default function deleteDiscordMessage(message: Message, timeout: number):
     message.deletable
       ? void message
           .delete()
-          .catch(() => console.log("Bot tried to delete a message that doesn't exist"))
+          .catch(() => console.error("Bot tried to delete a message that doesn't exist"))
       : null;
   }, timeout);
 }
