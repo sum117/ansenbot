@@ -1,5 +1,5 @@
 import type { Snowflake } from "discord.js";
-import type { ListResult } from "pocketbase";
+import type { ListResult, RecordFullListQueryParams } from "pocketbase";
 
 import { COLLECTIONS, RELATION_FIELD_NAMES } from "../../data/constants";
 import characterSchema from "../../schemas/characterSchema";
@@ -22,29 +22,37 @@ export default class CharacterFetcher extends PocketBase {
     super();
   }
 
-  public async getPlayerById(playerId: Player["discordId"]): Promise<Player> {
+  private async findPlayerOrThrow(playerId: Player["discordId"]): Promise<Player> {
+    const response = await this.pb
+      .collection(COLLECTIONS.players)
+      .getFirstListItem<Player>(`discordId="${playerId}"`, PocketBase.expand("characters"))
+      .catch(() => {
+        throw new Error("Player not found");
+      });
+    return response;
+  }
+
+  private async createPlayer(playerId: Player["discordId"]): Promise<Player> {
+    const player = await this.createEntity<Player>({
+      entityData: {
+        discordId: playerId,
+        characters: [],
+        currentCharacterId: "",
+      },
+      entityType: "players",
+    });
+    if (!player) {
+      throw new Error("Could not create player");
+    }
+    return player;
+  }
+
+  public getPlayerById(playerId: Player["discordId"]): Promise<Player> {
     try {
-      const response = await this.pb
-        .collection(COLLECTIONS.players)
-        .getFirstListItem<Player>(`discordId="${playerId}"`, PocketBase.expand("characters"))
-        .catch(() => {
-          throw new Error("Player not found");
-        });
-      return response;
+      return this.findPlayerOrThrow(playerId);
     } catch (error) {
       if (error instanceof Error && error.message === "Player not found") {
-        const player = await this.createEntity<Player>({
-          entityData: {
-            discordId: playerId,
-            characters: [],
-            currentCharacterId: "",
-          },
-          entityType: "players",
-        });
-        if (!player) {
-          throw new Error("Could not create player");
-        }
-        return player;
+        return this.createPlayer(playerId);
       }
       throw error;
     }
@@ -62,8 +70,10 @@ export default class CharacterFetcher extends PocketBase {
     return new Date(response.created);
   }
 
-  public async getAllCharacters(): Promise<Character[]> {
-    const response = await this.pb.collection(COLLECTIONS.characters).getFullList<Character>();
+  public async getAllCharacters(queryParams?: RecordFullListQueryParams): Promise<Character[]> {
+    const response = await this.pb
+      .collection(COLLECTIONS.characters)
+      .getFullList<Character>(queryParams);
     return response;
   }
   public async getAllCharactersFromPlayer(playerId: Snowflake): Promise<Character[]> {
