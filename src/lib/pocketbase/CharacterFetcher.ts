@@ -22,29 +22,37 @@ export default class CharacterFetcher extends PocketBase {
     super();
   }
 
-  public async getPlayerById(playerId: Player["discordId"]): Promise<Player> {
+  private async findPlayerOrThrow(playerId: Player["discordId"]): Promise<Player> {
+    const response = await this.pb
+      .collection(COLLECTIONS.players)
+      .getFirstListItem<Player>(`discordId="${playerId}"`, PocketBase.expand("characters"))
+      .catch(() => {
+        throw new Error("Player not found");
+      });
+    return response;
+  }
+
+  private async createPlayer(playerId: Player["discordId"]): Promise<Player> {
+    const player = await this.createEntity<Player>({
+      entityData: {
+        discordId: playerId,
+        characters: [],
+        currentCharacterId: "",
+      },
+      entityType: "players",
+    });
+    if (!player) {
+      throw new Error("Could not create player");
+    }
+    return player;
+  }
+
+  public getPlayerById(playerId: Player["discordId"]): Promise<Player> {
     try {
-      const response = await this.pb
-        .collection(COLLECTIONS.players)
-        .getFirstListItem<Player>(`discordId="${playerId}"`, PocketBase.expand("characters"))
-        .catch(() => {
-          throw new Error("Player not found");
-        });
-      return response;
+      return this.findPlayerOrThrow(playerId);
     } catch (error) {
       if (error instanceof Error && error.message === "Player not found") {
-        const player = await this.createEntity<Player>({
-          entityData: {
-            discordId: playerId,
-            characters: [],
-            currentCharacterId: "",
-          },
-          entityType: "players",
-        });
-        if (!player) {
-          throw new Error("Could not create player");
-        }
-        return player;
+        return this.createPlayer(playerId);
       }
       throw error;
     }
