@@ -17,16 +17,16 @@ const createCharacterSchema = z.object({
   level: z.number(),
   spec: z.string(),
   reputation: z.number(),
-  profession: z.string(),
-  title: z.string(),
-  personality: z.string(),
-  appearance: z.string(),
-  backstory: z.string(),
+  profession: z.string().optional(),
+  title: z.string().optional(),
+  personality: z.string().optional(),
+  appearance: z.string().optional(),
+  backstory: z.string().optional(),
   skills: z.string(),
   status: z.string(),
   race: z.string(),
-  faction: z.string(),
-  memory: z.string(),
+  faction: z.string().optional(),
+  memory: z.string().optional(),
   playerId: z.string(),
   player: z.string(),
   posts: z.array(z.string()),
@@ -46,7 +46,7 @@ const factionSchema = baseSchema.extend({
   expand: characterExpanded.optional(),
 });
 
-const memoriesSchema = baseSchema.extend({
+const memorySchema = baseSchema.extend({
   icon: z.string(),
   title: z.string(),
   phrase: z.string(),
@@ -54,26 +54,26 @@ const memoriesSchema = baseSchema.extend({
   characters: z.array(z.string()),
   expand: characterExpanded.optional(),
 });
-const postsSchema = baseSchema.extend({
+const postSchema = baseSchema.extend({
   content: z.string(),
   messageId: z.string(),
   player: z.string(),
   character: z.string(),
 });
 
-const playersSchema = baseSchema.extend({
+const playerSchema = baseSchema.extend({
   discordId: z.string(),
   characters: z.array(z.string()),
   currentCharacterId: z.string(),
   posts: z.array(z.string()),
   expand: z
     .object({
-      posts: z.array(postsSchema),
+      posts: z.array(postSchema),
     })
     .optional(),
 });
 
-const racesSchema = baseSchema.extend({
+const raceSchema = baseSchema.extend({
   name: z.string(),
   color: z.string(),
   characters: z.array(z.string()),
@@ -91,7 +91,7 @@ const skillsSchema = baseSchema.extend({
   discovery: z.number(),
   stealth: z.number(),
   charisma: z.number(),
-  character: z.string(),
+  character: z.string().optional(),
   expand: z.object({
     character: baseCharacterSchema,
   }),
@@ -101,7 +101,7 @@ const statusSchema = baseSchema.extend({
   health: z.number(),
   stamina: z.number(),
   money: z.number(),
-  character: z.string(),
+  character: z.string().optional(),
   expand: z.object({
     character: baseCharacterSchema,
   }),
@@ -111,12 +111,12 @@ const fullCharacterSchema = baseCharacterSchema.extend({
   expand: z
     .object({
       faction: factionSchema.optional(),
-      memories: memoriesSchema.optional(),
-      posts: postsSchema,
-      player: playersSchema,
+      memories: memorySchema.optional(),
+      posts: postSchema,
+      player: playerSchema,
       skills: skillsSchema,
       status: statusSchema,
-      race: racesSchema,
+      race: raceSchema,
     })
     .optional(),
 });
@@ -128,10 +128,10 @@ export {
   createCharacterSchema,
   factionSchema,
   fullCharacterSchema,
-  memoriesSchema,
-  playersSchema,
-  postsSchema,
-  racesSchema,
+  memorySchema,
+  playerSchema,
+  postSchema,
+  raceSchema,
   skillsSchema,
   statusSchema,
 };

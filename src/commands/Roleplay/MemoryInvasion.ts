@@ -12,9 +12,9 @@ import mustache from "mustache";
 
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
+import MemoryFetcher from "../../lib/pocketbase/MemoryFetcher";
 
-const characterFetcher = new CharacterFetcher();
-const memories = characterFetcher.getAllMemories();
+const memories = MemoryFetcher.getAllMemories();
 
 const memoryChoice: SlashOptionOptions<"memoria", "A memória que irá utilizar."> = {
   required: true,

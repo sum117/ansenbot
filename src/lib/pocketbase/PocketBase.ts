@@ -9,6 +9,7 @@ import type {
   GetEntitiesByFilterParams,
   GetEntityParams,
   UpdateEntityParams,
+  GetFirstEntityByFilterParams,
 } from "../../types/PocketBaseCRUD";
 
 const pb = new PB(process.env.POCKETBASE_URL);
@@ -19,11 +20,6 @@ await pb.admins.authWithPassword(
 );
 
 export default class PocketBase {
-  protected readonly pb: PB;
-  public constructor() {
-    this.pb = pb;
-  }
-
   public static expand(
     ...relations: (typeof RELATION_FIELD_NAMES)[keyof typeof RELATION_FIELD_NAMES][]
   ): Record<string, string> {
@@ -96,15 +92,24 @@ export default class PocketBase {
 
   public static async getAllEntities<T extends RelationFields>({
     entityType,
-  }: GetAllEntitiesParams): Promise<T[]> {
-    const response = await pb.collection(COLLECTIONS[entityType]).getFullList<T>();
+    page = 1,
+  }: GetAllEntitiesParams): Promise<ListResult<T>> {
+    const response = await pb.collection(COLLECTIONS[entityType]).getList<T>(page, 24);
 
+    return response;
+  }
+
+  public static async getFirstListEntity<T extends RelationFields>({
+    entityType,
+    filter,
+  }: GetFirstEntityByFilterParams): Promise<T> {
+    const response = await pb.collection(COLLECTIONS[entityType]).getFirstListItem<T>(...filter);
     return response;
   }
 
   public static async getEntitiesByFilter<T extends RelationFields>({
     entityType,
-    filter,
+    filter
   }: GetEntitiesByFilterParams): Promise<ListResult<T>> {
     const response = await pb.collection(COLLECTIONS[entityType]).getList<T>(...filter);
 

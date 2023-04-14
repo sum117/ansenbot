@@ -11,8 +11,9 @@ import {
 import getCharProfile from "../../lib/discord/Character/helpers/getCharProfile";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import type { Player } from "../../types/Character";
+import PlayerFetcher from "../../lib/pocketbase/PlayerFetcher";
+import PocketBase from "../../lib/pocketbase/PocketBase";
 
-const characterFetcher = new CharacterFetcher();
 const characterSetChoice: SlashOptionOptions<"personagem", "O personagem que você deseja setar."> =
   {
     required: true,
@@ -77,11 +78,14 @@ export class PlayerManager {
     characterId: string,
     interaction: CommandInteraction
   ): Promise<void> {
-    const character = await characterFetcher.getCharacterById(characterId);
-    const player = await characterFetcher.getPlayerById(interaction.user.id);
+    const character = await CharacterFetcher.getCharacterById(characterId);
+    const player = await PlayerFetcher.getPlayerById(interaction.user.id);
     player.currentCharacterId = character.id;
 
-    const updatedPlayer = await characterFetcher.updateEntity<Player>(player).catch((error) => {
+    const updatedPlayer = await PocketBase.updateEntity<Player>({
+      entityType: "players",
+      entityData: player,
+    }).catch((error) => {
       void interaction.reply({
         content: "Ocorreu um erro ao tentar setar o seu personagem principal.",
         ephemeral: true,
@@ -130,7 +134,7 @@ export class PlayerManager {
     }
 
     if (hasOnlyCharacter || hasBoth) {
-      const character = await characterFetcher.getCharacterById(characterId);
+      const character = await CharacterFetcher.getCharacterById(characterId);
       const characterPost = new CharacterPost(character);
       const messageOptions = await characterPost.createMessageOptions({
         to: "profile",

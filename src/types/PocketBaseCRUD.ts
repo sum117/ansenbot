@@ -1,13 +1,18 @@
 import type { RecordListQueryParams } from "pocketbase";
 
 import type { COLLECTIONS } from "../data/constants";
-import type { CreateData, RelationFields } from "./Character";
+import type { RelationFields } from "./Character";
+import { baseSchema } from "../schemas/characterSchema";
+import z from "zod";
+
+export type PocketBaseConstants = z.infer<typeof baseSchema>;
 
 export type GetEntityParams = {
   entityType: keyof typeof COLLECTIONS;
   expandFields?: boolean;
   id: string;
 };
+export type CreateData<T> = Omit<T, keyof PocketBaseConstants | "expand">;
 
 export type CreateEntityParams<T extends RelationFields> = {
   entityData: CreateData<T>;
@@ -18,6 +23,11 @@ export type CreateEntityParams<T extends RelationFields> = {
 export type GetEntitiesByFilterParams = {
   entityType: keyof typeof COLLECTIONS;
   filter: [number, number, RecordListQueryParams];
+};
+
+export type GetFirstEntityByFilterParams = {
+  entityType: keyof typeof COLLECTIONS;
+  filter: [string, RecordListQueryParams];
 };
 
 export type UpdateEntityParams<T extends RelationFields> = {
@@ -32,5 +42,5 @@ export type DeleteEntityParams = {
 
 export type GetAllEntitiesParams = {
   entityType: keyof typeof COLLECTIONS;
+  page?: number;
 };
-export type PocketBaseConstants = "collectionId" | "collectionName" | "created" | "id" | "updated";

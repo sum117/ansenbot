@@ -1,34 +1,32 @@
 import type { z } from "zod";
 
 import type {
-  baseSchema,
   factionSchema,
   fullCharacterSchema,
-  memoriesSchema,
-  playersSchema,
-  postsSchema,
-  racesSchema,
+  postSchema,
+  raceSchema,
+  memorySchema,
+  playerSchema,
   skillsSchema,
   statusSchema,
 } from "../schemas/characterSchema";
 
-export type CreateData<T> = z.infer<typeof baseSchema> & T;
 
 export type Character = z.infer<typeof fullCharacterSchema>;
 export type Faction = z.infer<typeof factionSchema>;
-export type Memories = z.infer<typeof memoriesSchema>;
-export type Posts = z.infer<typeof postsSchema>;
-export type Player = z.infer<typeof playersSchema>;
+export type Memory = z.infer<typeof memorySchema>;
+export type Post = z.infer<typeof postSchema>;
+export type Player = z.infer<typeof playerSchema>;
 export type Skills = z.infer<typeof skillsSchema>;
 export type Status = z.infer<typeof statusSchema>;
-export type Races = z.infer<typeof racesSchema>;
+export type Race = z.infer<typeof raceSchema>;
 
 export type RelationFields =
   | Character
   | Faction
-  | Memories
-  | Posts
+  | Memory
+  | Post
   | Player
   | Skills
   | Status
-  | Races;
+  | Race;
