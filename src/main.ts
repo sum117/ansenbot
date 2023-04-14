@@ -5,6 +5,7 @@ import type { Interaction } from "discord.js";
 import { IntentsBitField, Options } from "discord.js";
 import { Client } from "discordx";
 
+import PostFetcher from "./lib/pocketbase/PostFetcher";
 import server from "./server";
 
 export const bot = new Client({
@@ -36,7 +37,13 @@ bot.on("interactionCreate", (interaction: Interaction) => {
 bot.on("messageCreate", (message) => {
   bot.executeCommand(message);
 });
-
+bot.on("messageDelete", (message) => {
+  if (message.embeds.length && !message.partial) {
+    void PostFetcher.deletePost(message).catch((error) => {
+      console.error("Error deleting post", error);
+    });
+  }
+});
 async function run() {
   await importx(`${dirname(import.meta.url)}/{events,commands}/**/*.{ts,js}`);
   if (!process.env.DISCORD_BOT_TOKEN) {

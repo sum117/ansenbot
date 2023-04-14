@@ -14,6 +14,7 @@ import config from "../../config.json" assert { type: "json" };
 import CharacterPost from "../lib/discord/Character/classes/CharacterPost";
 import CharacterFetcher from "../lib/pocketbase/CharacterFetcher";
 import PlayerFetcher from "../lib/pocketbase/PlayerFetcher";
+import PostFetcher from "../lib/pocketbase/PostFetcher";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import equalityPercentage from "../utils/equalityPercentage";
 import safePromise from "../utils/safePromise";
@@ -31,7 +32,7 @@ export class OnRoleplayMessage {
     );
 
     if (playerFetchError) {
-      console.error(playerFetchError);
+      console.error("Error fetching player", playerFetchError);
       this.sendMissingCharacterMessage(message);
       return;
     }
@@ -41,7 +42,7 @@ export class OnRoleplayMessage {
     );
 
     if (currentCharacterError) {
-      console.error(currentCharacterError);
+      console.error("Error fetching current character", currentCharacterError);
       this.sendMissingCharacterMessage(message);
       return;
     }
@@ -56,7 +57,7 @@ export class OnRoleplayMessage {
     );
 
     if (messageOptionsError) {
-      console.error(messageOptionsError);
+      console.error("Error creating message options", messageOptionsError);
       void message.reply("Ocorreu um erro ao tentar enviar a mensagem.");
       return;
     }
@@ -85,7 +86,15 @@ export class OnRoleplayMessage {
       return;
     }
 
-    void message.channel.send(messageOptions);
+    const postMessage = await message.channel.send(messageOptions);
+    postMessage.author.id = message.author.id;
+    postMessage.content = message.content;
+    const [_createdPost, createPostError] = await safePromise(PostFetcher.createPost(postMessage));
+
+    if (createPostError) {
+      console.error("Error creating post", createPostError);
+      return;
+    }
   }
 
   private async checkSimilarityFromPreviousMessages(message: Message) {

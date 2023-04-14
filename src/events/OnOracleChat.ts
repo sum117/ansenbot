@@ -62,7 +62,7 @@ export class OnOracleChat {
       }
       this.history.push([sanitizedMessage, ""]);
     } catch (error) {
-      console.error(error);
+      console.error("Error on oracle chat", error);
       await message.reply(
         "Me desculpe... estou com problemas internos no momento, tente novamente mais tarde."
       );
