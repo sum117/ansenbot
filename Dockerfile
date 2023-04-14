@@ -15,6 +15,7 @@ RUN npm install
 
 # Move source files
 COPY src ./src
+COPY config.json   .
 COPY tsconfig.json   .
 
 # Build project
@@ -37,6 +38,6 @@ RUN npm install --omit=dev
 
 # Move build files
 COPY --from=build-runner /tmp/app/build /app/build
-COPY data ./data
+COPY src/data/docs/* /app/build/src/data/docs/
 # Start bot
 CMD [ "npm",  "start" ]

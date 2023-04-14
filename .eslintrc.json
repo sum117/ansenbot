@@ -1,12 +1,7 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint",
-    "typescript-sort-keys",
-    "simple-import-sort",
-    "import"
-  ],
+  "plugins": ["@typescript-eslint", "simple-import-sort", "import"],
   "extends": [
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
@@ -20,10 +15,6 @@
     "import/newline-after-import": "error",
     "import/no-duplicates": "error",
 
-    // typescript-sort-keys
-    "typescript-sort-keys/interface": "error",
-    "typescript-sort-keys/string-enum": "error",
-
     // common
     "no-return-await": "error",
     "no-unreachable-loop": "error",
@@ -32,13 +23,12 @@
     "no-useless-backreference": "error",
     "require-atomic-updates": "error",
     "require-await": "error",
-    "no-await-in-loop": "error",
     "spaced-comment": "error",
     "sort-imports": "off",
-    "sort-keys": "error",
     "no-unused-vars": "off", // typescript-eslint suggestion: off
     "curly": "error",
-    "camelcase": "error",
+    "camelcase": "off",
+    "no-await-in-loop": "off",
 
     // TypeScript
     "@typescript-eslint/consistent-type-imports": "error",

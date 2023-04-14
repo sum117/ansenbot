@@ -1,58 +1,64 @@
 import type { BaseMessageOptions } from "discord.js";
-import {
-  AttachmentBuilder,
-  Collection,
-  EmbedBuilder,
-  userMention,
-} from "discord.js";
+import { AttachmentBuilder, Collection, EmbedBuilder, userMention } from "discord.js";
 
 import { skillsDictionary } from "../../../../data/translations";
 import type { Character } from "../../../../types/Character";
 import getSafeEntries from "../../../../utils/getSafeEntries";
-import PocketBase from "../../../pocketbase/classes/PocketBase";
+import PocketBase from "../../../pocketbase/PocketBase";
 
-export default class CharacterPostEmbed {
+export default class CharacterPost {
   public embed: EmbedBuilder = new EmbedBuilder();
   constructor(private character: Character) {
     this.character = character;
     this.embed.setTitle(`${this.character.name} ${this.character.surname}`);
     this.embed.setDescription(this.formatCharacterDescription(this.character));
-    this.embed.setAuthor(
-      this.character.title ? { name: this.character.title } : null
-    );
+    this.embed.setAuthor(this.character.title ? { name: this.character.title } : null);
     this.embed.setColor(this.character.expand.race.color);
   }
 
   public async createMessageOptions({
     to,
+    content,
+    attachmentUrl,
   }: {
-    to: "profile" | "message";
+    attachmentUrl?: string;
+    content?: string;
+    to: "message" | "profile";
   }): Promise<BaseMessageOptions> {
     const options: BaseMessageOptions = {};
     let embed: EmbedBuilder = new EmbedBuilder();
+
     if (to === "profile") {
+      if (content) {
+        throw new Error("You can't provide content to a profile!");
+      }
       embed = this.getProfileEmbed();
+    } else {
+      if (!content) {
+        throw new Error("You must provide content to post!");
+      }
+      embed = this.getPostEmbed({ attachmentUrl, content });
     }
+
     const image = await PocketBase.getImageUrl({
       fileName: this.character.image,
       record: this.character,
       thumb: true,
     });
-
     if (typeof image === "string") {
       embed.setThumbnail(image);
     } else {
       const attachment = new AttachmentBuilder(image);
       attachment.setName(this.character.image);
       options.files = [attachment];
-      embed.setImage("attachment://" + this.character.image);
+      embed.setThumbnail("attachment://" + this.character.image);
     }
 
     options.embeds = [embed];
     return options;
   }
 
-  private getPostEmbed<T extends { attachmentUrl: string; content: string }>({
+  private getPostEmbed<T extends { attachmentUrl: string | undefined; content: string }>({
     content,
     attachmentUrl,
   }: T): EmbedBuilder {
@@ -63,15 +69,16 @@ export default class CharacterPostEmbed {
   }
   private getProfileEmbed(): EmbedBuilder {
     const fields = new Collection<string, string>();
-    fields.set("Dono", userMention(this.character.userId));
+    fields.set("Dono", userMention(this.character.playerId));
     fields.set("Gênero", this.formatCharacterGender(this.character));
     fields.set("Idade", this.character.age.toString());
     fields.set("Nível", this.character.level.toString());
     fields.set("Raça", this.character.expand.race.name);
     fields.set("Classe", this.character.spec);
-    fields.set("Facção", this.character.expand.faction.name);
+    if (this.character.expand.faction) {
+      fields.set("Facção", this.character.expand.faction.name);
+    }
     fields.set("Skills", this.formatCharacterSkills(this.character));
-
     this.embed.addFields(
       fields
         .filter((value) => Boolean(value))
@@ -104,10 +111,7 @@ export default class CharacterPostEmbed {
     return skillRows.join("\n");
   }
 
-  private formatCharacterDescription({
-    backstory,
-    personality,
-  }: Character): string | null {
+  private formatCharacterDescription({ backstory, personality }: Character): string | null {
     const parts = [];
     if (backstory) {
       parts.push(`**História:** ${backstory}`);

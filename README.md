@@ -2,7 +2,6 @@
   <image src="https://user-images.githubusercontent.com/78707622/230064964-6fdbb86d-6be9-4df9-8319-dd8794ffb71e.png">
 </p>
 
-
 # AnsenBot - TypeScript Roleplaying System with DiscordX, PocketBase, and OpenAI API
 
 This project is a roleplaying system for Discord that integrates DiscordX, PocketBase, and the OpenAI API to provide an immersive and interactive experience for users. With features such as leveling, AI-generated quests, and a range of roleplaying utilities, this system offers a unique and engaging way for users to participate in roleplaying games within a Discord server.

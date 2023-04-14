@@ -1,8 +1,8 @@
 import "dotenv/config";
 
 import { dirname, importx } from "@discordx/importer";
-import type { Interaction, Message } from "discord.js";
-import { IntentsBitField } from "discord.js";
+import type { Interaction } from "discord.js";
+import { IntentsBitField, Options } from "discord.js";
 import { Client } from "discordx";
 
 import server from "./server";
@@ -21,6 +21,7 @@ export const bot = new Client({
   simpleCommand: {
     prefix: "!",
   },
+  makeCache: Options.cacheEverything(),
 });
 
 bot.once("ready", async () => {
@@ -32,7 +33,7 @@ bot.on("interactionCreate", (interaction: Interaction) => {
   bot.executeInteraction(interaction);
 });
 
-bot.on("messageCreate", (message: Message) => {
+bot.on("messageCreate", (message) => {
   bot.executeCommand(message);
 });
 

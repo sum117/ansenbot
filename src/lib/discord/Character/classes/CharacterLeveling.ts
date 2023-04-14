@@ -4,6 +4,8 @@ export type TCharacterLeveling = {
   characterPoints?: number;
   characterSkillsWithTraits?: string[];
   characterSpareSkillPoints?: number;
+  characterAscendedSkills?: string[];
+  characterSkillsWithTraits?: string[];
 };
 
 export class CharacterLeveling {
@@ -41,9 +43,7 @@ export class CharacterLeveling {
   public calculateCostPerLevel(increaseFactor: number): number[] {
     const cost: number[] = [];
     for (let level = 1; level <= this.maxLevel; level++) {
-      cost[level] = Math.floor(
-        level + 300 * Math.pow(2, level / increaseFactor)
-      );
+      cost[level] = Math.floor(level + 300 * Math.pow(2, level / increaseFactor));
     }
     return cost;
   }
