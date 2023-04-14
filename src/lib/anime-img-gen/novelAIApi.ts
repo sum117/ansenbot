@@ -58,7 +58,7 @@ export const novelRequestImageGen = async (
     }
     return zipFileContent;
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return { botError: "❌ Houve um erro ao gerar sua imagem na API, por favor tente novamente." };
   }
 };

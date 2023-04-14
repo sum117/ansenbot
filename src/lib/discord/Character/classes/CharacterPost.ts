@@ -45,7 +45,6 @@ export default class CharacterPost {
       record: this.character,
       thumb: true,
     });
-    console.log(image);
     if (typeof image === "string") {
       embed.setThumbnail(image);
     } else {
@@ -76,9 +75,10 @@ export default class CharacterPost {
     fields.set("Nível", this.character.level.toString());
     fields.set("Raça", this.character.expand.race.name);
     fields.set("Classe", this.character.spec);
-    fields.set("Facção", this.character.expand.faction.name);
+    if (this.character.expand.faction) {
+      fields.set("Facção", this.character.expand.faction.name);
+    }
     fields.set("Skills", this.formatCharacterSkills(this.character));
-
     this.embed.addFields(
       fields
         .filter((value) => Boolean(value))

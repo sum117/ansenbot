@@ -37,12 +37,12 @@ export type Player = {
 };
 
 export type Expand = {
-  faction: Faction;
+  faction?: Faction;
+  memory?: Memory;
   race: Race;
   skills: Skills;
   status: Status;
   player: Player;
-  memory: Memory;
 };
 
 export type Memory = {

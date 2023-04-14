@@ -45,7 +45,7 @@ export const run = async (): Promise<void> => {
       textKey: "text",
     });
   } catch (error) {
-    console.log("error", error);
+    console.error("error", error);
     throw new Error("Failed to ingest your data");
   }
 };
