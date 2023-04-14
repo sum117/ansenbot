@@ -1,7 +1,7 @@
 import type { AutocompleteInteraction, User } from "discord.js";
+import type { RecordFullListQueryParams } from "pocketbase";
 
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
-import { RecordFullListQueryParams } from "pocketbase";
 
 export function characterAutoCompleteFromPlayer(
   interaction: AutocompleteInteraction,
@@ -41,7 +41,7 @@ export function characterAutoCompleteFromAll(interaction: AutocompleteInteractio
   }
   void respond({
     query: {
-       filter: `name~"${userInput}"`
+      filter: `name~"${userInput}"`,
     },
   });
 }

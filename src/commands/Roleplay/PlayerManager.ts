@@ -1,71 +1,14 @@
 import type { AutocompleteInteraction, CommandInteraction, User } from "discord.js";
-import { ApplicationCommandOptionType } from "discord.js";
-import type { SlashOptionOptions } from "discordx";
 import { Discord, Slash, SlashOption } from "discordx";
 
+import { characterSetChoice, characterShowChoice, userChoice } from "../../data/choices";
 import CharacterPost from "../../lib/discord/Character/classes/CharacterPost";
-import {
-  characterAutoCompleteFromAll,
-  characterAutoCompleteFromPlayer,
-} from "../../lib/discord/Character/helpers/characterAutoComplete";
 import getCharProfile from "../../lib/discord/Character/helpers/getCharProfile";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
-import type { Player } from "../../types/Character";
 import PlayerFetcher from "../../lib/pocketbase/PlayerFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
-
-const characterSetChoice: SlashOptionOptions<"personagem", "O personagem que você deseja setar."> =
-  {
-    required: true,
-    description: "O personagem que você deseja setar.",
-    name: "personagem",
-    type: ApplicationCommandOptionType.String,
-    autocomplete: (interaction) => characterAutoCompleteFromPlayer(interaction),
-  };
-
-const userChoice: SlashOptionOptions<
-  "usuário",
-  "Mostra o personagem atual do usuário selecionado."
-> = {
-  required: false,
-  description: "Mostra o personagem atual do usuário selecionado.",
-  name: "usuário",
-  type: ApplicationCommandOptionType.User,
-};
-
-const characterShowChoice: SlashOptionOptions<"personagem", "Mostra qualquer personagem."> = {
-  required: false,
-  description: "Mostra qualquer personagem.",
-  name: "personagem",
-  autocomplete: characterAutoCompleteFromAll,
-  type: ApplicationCommandOptionType.String,
-};
-
-function handleError(interaction: CommandInteraction | AutocompleteInteraction, error: any) {
-  if (interaction.isAutocomplete()) {
-    return;
-  }
-  void interaction.reply({
-    content: "Ocorreu um erro ao tentar mostrar o seu perfil: " + error.message,
-    ephemeral: true,
-  });
-  return null;
-}
-
-async function replyWithProfile(
-  interaction: CommandInteraction | AutocompleteInteraction,
-  user: User
-) {
-  const profile = await getCharProfile(user).catch((error) => handleError(interaction, error));
-
-  if (!profile) {
-    return;
-  }
-  if (interaction.isAutocomplete()) {
-    return;
-  }
-  void interaction.reply(profile);
-}
+import type { Player } from "../../types/Character";
+import safePromise from "../../utils/safePromise";
 
 @Discord()
 export class PlayerManager {
@@ -78,23 +21,35 @@ export class PlayerManager {
     characterId: string,
     interaction: CommandInteraction
   ): Promise<void> {
-    const character = await CharacterFetcher.getCharacterById(characterId);
-    const player = await PlayerFetcher.getPlayerById(interaction.user.id);
-    player.currentCharacterId = character.id;
-
-    const updatedPlayer = await PocketBase.updateEntity<Player>({
-      entityType: "players",
-      entityData: player,
-    }).catch((error) => {
+    const [character, characterFetchError] = await safePromise(
+      CharacterFetcher.getCharacterById(characterId)
+    );
+    const [player, playerFetchError] = await safePromise(
+      PlayerFetcher.getPlayerById(interaction.user.id)
+    );
+    if (characterFetchError || playerFetchError) {
+      console.error(characterFetchError, playerFetchError);
       void interaction.reply({
         content: "Ocorreu um erro ao tentar setar o seu personagem principal.",
         ephemeral: true,
       });
-      console.error(error);
-      return null;
-    });
+      return;
+    }
+    player.currentCharacterId = character.id;
 
-    if (!updatedPlayer) {
+    const [_updatedPlayer, updatePlayerError] = await safePromise(
+      PocketBase.updateEntity<Player>({
+        entityType: "players",
+        entityData: player,
+      })
+    );
+
+    if (updatePlayerError) {
+      console.error(updatePlayerError);
+      void interaction.reply({
+        content: "Ocorreu um erro ao tentar setar o seu personagem principal.",
+        ephemeral: true,
+      });
       return;
     }
 
@@ -130,15 +85,43 @@ export class PlayerManager {
     }
     if (hasOnlyUser || hasNone) {
       const targetUser = hasOnlyUser ? user : interaction.user;
-      await replyWithProfile(interaction, targetUser);
+      const [charProfile, charProfileError] = await safePromise(getCharProfile(targetUser));
+      if (charProfileError) {
+        console.error(charProfileError);
+        void interaction.reply({
+          content: "Ocorreu um erro ao tentar mostrar o seu perfil",
+          ephemeral: true,
+        });
+        return;
+      }
+      void interaction.reply(charProfile);
     }
 
     if (hasOnlyCharacter || hasBoth) {
-      const character = await CharacterFetcher.getCharacterById(characterId);
+      const [character, error] = await safePromise(CharacterFetcher.getCharacterById(characterId));
+      if (error) {
+        console.error(error);
+        void interaction.reply({
+          content: "Ocorreu um erro ao tentar mostrar o seu perfil" + error?.message,
+          ephemeral: true,
+        });
+        return;
+      }
+
       const characterPost = new CharacterPost(character);
-      const messageOptions = await characterPost.createMessageOptions({
-        to: "profile",
-      });
+      const [messageOptions, messageOptionsError] = await safePromise(
+        characterPost.createMessageOptions({
+          to: "profile",
+        })
+      );
+      if (messageOptionsError) {
+        console.error(messageOptionsError);
+        void interaction.reply({
+          content: "Ocorreu um erro ao tentar mostrar o seu perfil",
+          ephemeral: true,
+        });
+        return;
+      }
       void interaction.reply(messageOptions);
     }
   }

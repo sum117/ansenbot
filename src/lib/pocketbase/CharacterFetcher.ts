@@ -2,11 +2,10 @@ import type { Snowflake } from "discord.js";
 import type { ListResult, RecordFullListQueryParams } from "pocketbase";
 
 import { RELATION_FIELD_NAMES } from "../../data/constants";
-import type { Character, Faction, Player, Post, Race, Skills, Status } from "../../types/Character";
+import type { Character, Faction, Player, Race, Skills, Status } from "../../types/Character";
 import type { CreateData } from "../../types/PocketBaseCRUD";
-import safePromise from "../../utils/safePromise";
-import PocketBase from "./PocketBase";
 import PlayerFetcher from "./PlayerFetcher";
+import PocketBase from "./PocketBase";
 
 export default class CharacterFetcher {
   public static async getFirstCharacterCreateDate(): Promise<Date> {
@@ -173,36 +172,6 @@ export default class CharacterFetcher {
     return userId === prevUserId;
   }
 
-  private async syncPostRelations({
-    characterToAddPost,
-    playerToAddPost,
-    post,
-  }: {
-    characterToAddPost: Character;
-    playerToAddPost: Player;
-    post: Post;
-  }): Promise<boolean> {
-    try {
-      await PocketBase.updateEntity<Character>({
-        entityType: "characters",
-        entityData: {
-          ...characterToAddPost,
-          posts: [...characterToAddPost.posts, post.id],
-        },
-      });
-      await PocketBase.updateEntity<Player>({
-        entityType: "players",
-        entityData: {
-          ...playerToAddPost,
-          posts: [...playerToAddPost.posts, post.id],
-        },
-      });
-      return true;
-    } catch (e) {
-      console.error(e);
-      return false;
-    }
-  }
   private static async syncCharacterRelations({
     factionToAddCharacter,
     raceToAddCharacter,

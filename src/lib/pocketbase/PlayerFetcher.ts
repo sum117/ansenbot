@@ -1,19 +1,12 @@
-import { Player } from "../../types/Character";
+import type { Player } from "../../types/Character";
 import PocketBase from "./PocketBase";
-import safePromise from "../../utils/safePromise";
 
 export default class PlayerFetcher {
-  private static async findPlayerOrThrow(playerId: Player["discordId"]): Promise<Player> {
-    const [player, error] = await safePromise(
-      PocketBase.getFirstListEntity<Player>({
-        entityType: "players",
-        filter: [`discordId="${playerId}"`, PocketBase.expand("characters")],
-      })
-    );
-
-    if (error || !player) {
-      throw new Error("Player not found");
-    }
+  private static async findPlayer(playerId: Player["discordId"]): Promise<Player> {
+    const player = await PocketBase.getFirstListEntity<Player>({
+      entityType: "players",
+      filter: [`discordId="${playerId}"`, PocketBase.expand("characters")],
+    });
 
     return player;
   }
@@ -34,9 +27,10 @@ export default class PlayerFetcher {
     return player;
   }
 
-  public static getPlayerById(playerId: Player["discordId"]): Promise<Player> {
+  public static async getPlayerById(playerId: Player["discordId"]): Promise<Player> {
     try {
-      return this.findPlayerOrThrow(playerId);
+      const player = await this.findPlayer(playerId);
+      return player;
     } catch (error) {
       if (error instanceof Error && error.message === "Player not found") {
         return this.createPlayer(playerId);

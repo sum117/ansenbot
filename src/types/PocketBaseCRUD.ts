@@ -1,9 +1,9 @@
 import type { RecordListQueryParams } from "pocketbase";
+import type z from "zod";
 
 import type { COLLECTIONS } from "../data/constants";
+import type { baseSchema } from "../schemas/characterSchema";
 import type { RelationFields } from "./Character";
-import { baseSchema } from "../schemas/characterSchema";
-import z from "zod";
 
 export type PocketBaseConstants = z.infer<typeof baseSchema>;
 

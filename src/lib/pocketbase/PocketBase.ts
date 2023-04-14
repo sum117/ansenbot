@@ -8,8 +8,8 @@ import type {
   GetAllEntitiesParams,
   GetEntitiesByFilterParams,
   GetEntityParams,
-  UpdateEntityParams,
   GetFirstEntityByFilterParams,
+  UpdateEntityParams,
 } from "../../types/PocketBaseCRUD";
 
 const pb = new PB(process.env.POCKETBASE_URL);
@@ -109,7 +109,7 @@ export default class PocketBase {
 
   public static async getEntitiesByFilter<T extends RelationFields>({
     entityType,
-    filter
+    filter,
   }: GetEntitiesByFilterParams): Promise<ListResult<T>> {
     const response = await pb.collection(COLLECTIONS[entityType]).getList<T>(...filter);
 

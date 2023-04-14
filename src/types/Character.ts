@@ -3,14 +3,13 @@ import type { z } from "zod";
 import type {
   factionSchema,
   fullCharacterSchema,
-  postSchema,
-  raceSchema,
   memorySchema,
   playerSchema,
+  postSchema,
+  raceSchema,
   skillsSchema,
   statusSchema,
 } from "../schemas/characterSchema";
-
 
 export type Character = z.infer<typeof fullCharacterSchema>;
 export type Faction = z.infer<typeof factionSchema>;
@@ -21,12 +20,4 @@ export type Skills = z.infer<typeof skillsSchema>;
 export type Status = z.infer<typeof statusSchema>;
 export type Race = z.infer<typeof raceSchema>;
 
-export type RelationFields =
-  | Character
-  | Faction
-  | Memory
-  | Post
-  | Player
-  | Skills
-  | Status
-  | Race;
+export type RelationFields = Character | Faction | Memory | Post | Player | Skills | Status | Race;
