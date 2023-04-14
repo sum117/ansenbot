@@ -1,4 +1,4 @@
-import type { BaseMessageOptions } from "discord.js";
+import type { BaseMessageOptions, ColorResolvable } from "discord.js";
 import { AttachmentBuilder, Collection, EmbedBuilder, userMention } from "discord.js";
 
 import { skillsDictionary } from "../../../../data/translations";
@@ -9,11 +9,10 @@ import PocketBase from "../../../pocketbase/PocketBase";
 export default class CharacterPost {
   public embed: EmbedBuilder = new EmbedBuilder();
   constructor(private character: Character) {
-    this.character = character;
     this.embed.setTitle(`${this.character.name} ${this.character.surname}`);
     this.embed.setDescription(this.formatCharacterDescription(this.character));
     this.embed.setAuthor(this.character.title ? { name: this.character.title } : null);
-    this.embed.setColor(this.character.expand.race.color);
+    this.embed.setColor((this.character.expand.race.color as ColorResolvable) ?? null);
   }
 
   public async createMessageOptions({
@@ -68,6 +67,9 @@ export default class CharacterPost {
     return this.embed;
   }
   private getProfileEmbed(): EmbedBuilder {
+    if (!this.character.expand) {
+      throw new Error("Character must have expand data to create a profile!");
+    }
     const fields = new Collection<string, string>();
     fields.set("Dono", userMention(this.character.playerId));
     fields.set("Gênero", this.formatCharacterGender(this.character));
@@ -91,7 +93,11 @@ export default class CharacterPost {
     return this.embed;
   }
 
-  private formatCharacterSkills({ expand: { skills } }: Character) {
+  private formatCharacterSkills({ expand }: Character) {
+    if (!expand) {
+      throw new Error("Character must have expand data to create a profile!");
+    }
+    const { skills } = expand;
     const {
       collectionId: _collectionId,
       collectionName: _collectionName,

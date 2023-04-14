@@ -6,7 +6,7 @@ import { Discord, On } from "discordx";
 import config from "../../config.json" assert { type: "json" };
 import { novelRequestImageGen } from "../lib/anime-img-gen/novelAIApi";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
-import { Queue } from "../utils/queue";
+import Queue from "../utils/queue";
 
 @Discord()
 export class Example {

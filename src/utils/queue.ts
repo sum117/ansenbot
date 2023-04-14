@@ -1,4 +1,4 @@
-export class Queue {
+export default class Queue {
   private tasks: (() => Promise<void>)[] = [];
   private isRunning = false;
 

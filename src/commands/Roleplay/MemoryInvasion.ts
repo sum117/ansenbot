@@ -1,44 +1,12 @@
 import type { CommandInteraction, GuildTextBasedChannel } from "discord.js";
-import {
-  ApplicationCommandOptionType,
-  AttachmentBuilder,
-  channelMention,
-  ChannelType,
-  userMention,
-} from "discord.js";
-import type { SlashOptionOptions } from "discordx";
+import { AttachmentBuilder, channelMention, userMention } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
 import mustache from "mustache";
 
-import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
+import { channelChoice, memoryChoice } from "../../data/choices";
+import MemoryFetcher from "../../lib/pocketbase/MemoryFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
-
-const characterFetcher = new CharacterFetcher();
-const memories = characterFetcher.getAllMemories();
-
-const memoryChoice: SlashOptionOptions<"memoria", "A memória que irá utilizar."> = {
-  required: true,
-  description: "A memória que irá utilizar.",
-  name: "memoria",
-  type: ApplicationCommandOptionType.String,
-  autocomplete(interaction) {
-    memories.then((memoryList) => {
-      const choices = memoryList.map((memory) => ({
-        name: memory.title,
-        value: memory.title,
-      }));
-      interaction.respond(choices);
-    });
-  },
-};
-
-const channelChoice: SlashOptionOptions<"canal", "O canal onde a invasão irá ocorrer."> = {
-  description: "O canal onde a invasão irá ocorrer.",
-  name: "canal",
-  type: ApplicationCommandOptionType.Channel,
-  channelTypes: [ChannelType.GuildText],
-  required: true,
-};
+import safePromise from "../../utils/safePromise";
 
 @Discord()
 export class MemoryInvasion {
@@ -60,25 +28,40 @@ export class MemoryInvasion {
       return;
     }
 
-    const memoryData = await memories.then((memoryList) => {
-      const chosenMemory = memoryList.find((memory) => memory.title === memoryTitle);
-      if (!chosenMemory) {
-        throw new Error("Memória não encontrada.");
-      }
-      return chosenMemory;
-    });
+    const [memoryData, memoryDataError] = await safePromise(MemoryFetcher.getAllMemories());
+    if (memoryDataError) {
+      console.error(memoryDataError);
+      void interaction.reply("Não foi possível carregar as memórias.");
+      return;
+    }
+
+    const chosenMemory = memoryData.items.find((memory) => memory.title === memoryTitle);
+    if (!chosenMemory) {
+      throw new Error("Memória não encontrada.");
+    }
 
     const view = {
       memory: userMention(interaction.user.id),
       channel: channelMention(channel.id),
     };
-    const imageUrl = await PocketBase.getImageUrl({
-      fileName: memoryData.icon,
-      record: memoryData,
-    });
+    const [imageUrl, imageError] = await safePromise(
+      PocketBase.getImageUrl({
+        fileName: chosenMemory.icon,
+        record: chosenMemory,
+      })
+    );
+    if (imageError) {
+      console.error(imageError);
+      void interaction.reply({
+        content: "Não foi possível carregar a imagem da memória.",
+        files: [],
+      });
+      return;
+    }
+
     const attachment = new AttachmentBuilder(imageUrl).setName("image.png");
     void interaction.reply({
-      content: mustache.render(memoryData.phrase, view),
+      content: mustache.render(chosenMemory.phrase, view),
       files: [attachment],
     });
   }

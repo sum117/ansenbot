@@ -43,7 +43,7 @@ export class OnReadyGameTimeManager {
   }
 
   async syncStartTime(): Promise<void> {
-    const startTime = await new CharacterFetcher().getFirstCharacterCreateDate();
+    const startTime = await CharacterFetcher.getFirstCharacterCreateDate();
     this.clock = new GameClock(8, startTime);
   }
 }

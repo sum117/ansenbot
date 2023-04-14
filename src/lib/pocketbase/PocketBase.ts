@@ -1,6 +1,16 @@
-import PB, { type Record as DBRecord } from "pocketbase";
+import PB, { type ListResult, type Record as DBRecord } from "pocketbase";
 
-import type { RELATION_FIELD_NAMES } from "../../data/constants";
+import { COLLECTIONS, RELATION_FIELD_NAMES } from "../../data/constants";
+import type { RelationFields } from "../../types/Character";
+import type {
+  CreateEntityParams,
+  DeleteEntityParams,
+  GetAllEntitiesParams,
+  GetEntitiesByFilterParams,
+  GetEntityParams,
+  GetFirstEntityByFilterParams,
+  UpdateEntityParams,
+} from "../../types/PocketBaseCRUD";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(
@@ -10,11 +20,6 @@ await pb.admins.authWithPassword(
 );
 
 export default class PocketBase {
-  protected readonly pb: PB;
-  public constructor() {
-    this.pb = pb;
-  }
-
   public static expand(
     ...relations: (typeof RELATION_FIELD_NAMES)[keyof typeof RELATION_FIELD_NAMES][]
   ): Record<string, string> {
@@ -54,5 +59,80 @@ export default class PocketBase {
     }
 
     return prevData;
+  }
+
+  public static async getEntityById<T extends RelationFields>({
+    entityType,
+    id,
+    expandFields = true,
+  }: GetEntityParams): Promise<T> {
+    const response = await pb
+      .collection(COLLECTIONS[entityType])
+      .getOne<T>(
+        id,
+        expandFields ? PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)) : undefined
+      );
+
+    return response;
+  }
+
+  public static async createEntity<T extends RelationFields>({
+    entityType,
+    entityData,
+    expandFields = true,
+  }: CreateEntityParams<T>): Promise<T> {
+    const response = await pb
+      .collection(COLLECTIONS[entityType])
+      .create<T>(
+        entityData,
+        expandFields ? PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)) : undefined
+      );
+    return response;
+  }
+
+  public static async getAllEntities<T extends RelationFields>({
+    entityType,
+    page = 1,
+  }: GetAllEntitiesParams): Promise<ListResult<T>> {
+    const response = await pb.collection(COLLECTIONS[entityType]).getList<T>(page, 24);
+
+    return response;
+  }
+
+  public static async getFirstListEntity<T extends RelationFields>({
+    entityType,
+    filter,
+  }: GetFirstEntityByFilterParams): Promise<T> {
+    const response = await pb.collection(COLLECTIONS[entityType]).getFirstListItem<T>(...filter);
+    return response;
+  }
+
+  public static async getEntitiesByFilter<T extends RelationFields>({
+    entityType,
+    filter,
+  }: GetEntitiesByFilterParams): Promise<ListResult<T>> {
+    const response = await pb.collection(COLLECTIONS[entityType]).getList<T>(...filter);
+
+    return response;
+  }
+
+  public static updateEntity<T extends RelationFields>({
+    entityType,
+    entityData,
+  }: UpdateEntityParams<T>): Promise<T> {
+    const {
+      id,
+      collectionId: _collectionId,
+      collectionName: _collectionName,
+      updated: _updated,
+      created: _created,
+      ...body
+    } = entityData;
+
+    return pb.collection(COLLECTIONS[entityType]).update<T>(id, body);
+  }
+
+  public static deleteEntity({ entityType, id }: DeleteEntityParams): Promise<boolean> {
+    return pb.collection(COLLECTIONS[entityType]).delete(id);
   }
 }
