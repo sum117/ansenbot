@@ -108,17 +108,15 @@ const statusSchema = baseSchema.extend({
 });
 
 const fullCharacterSchema = baseCharacterSchema.extend({
-  expand: z
-    .object({
-      faction: factionSchema.optional(),
-      memories: memorySchema.optional(),
-      posts: postSchema,
-      player: playerSchema,
-      skills: skillsSchema,
-      status: statusSchema,
-      race: raceSchema,
-    })
-    .optional(),
+  expand: z.object({
+    faction: factionSchema.optional(),
+    memories: memorySchema.optional(),
+    posts: postSchema,
+    player: playerSchema,
+    skills: skillsSchema,
+    status: statusSchema,
+    race: raceSchema,
+  }),
 });
 
 export {

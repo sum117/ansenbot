@@ -1,4 +1,4 @@
-export default function diffPercentage(str1: string, str2: string): number {
+export default function equalityPercentage(str1: string, str2: string): number {
   const matchDestructively = (toMatch1 = "", toMatch2 = "") => {
     toMatch1 = toMatch1.toLowerCase();
     toMatch2 = toMatch2.toLowerCase();

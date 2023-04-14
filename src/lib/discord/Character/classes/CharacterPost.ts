@@ -9,11 +9,10 @@ import PocketBase from "../../../pocketbase/PocketBase";
 export default class CharacterPost {
   public embed: EmbedBuilder = new EmbedBuilder();
   constructor(private character: Character) {
-    this.character = character;
     this.embed.setTitle(`${this.character.name} ${this.character.surname}`);
     this.embed.setDescription(this.formatCharacterDescription(this.character));
     this.embed.setAuthor(this.character.title ? { name: this.character.title } : null);
-    this.embed.setColor((this.character.expand?.race.color as ColorResolvable) ?? null);
+    this.embed.setColor((this.character.expand.race.color as ColorResolvable) ?? null);
   }
 
   public async createMessageOptions({

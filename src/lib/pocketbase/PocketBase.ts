@@ -64,7 +64,7 @@ export default class PocketBase {
   public static async getEntityById<T extends RelationFields>({
     entityType,
     id,
-    expandFields = false,
+    expandFields = true,
   }: GetEntityParams): Promise<T> {
     const response = await pb
       .collection(COLLECTIONS[entityType])
@@ -79,7 +79,7 @@ export default class PocketBase {
   public static async createEntity<T extends RelationFields>({
     entityType,
     entityData,
-    expandFields,
+    expandFields = true,
   }: CreateEntityParams<T>): Promise<T> {
     const response = await pb
       .collection(COLLECTIONS[entityType])
