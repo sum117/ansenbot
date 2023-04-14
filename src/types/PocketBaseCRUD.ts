@@ -1,7 +1,7 @@
 import type { RecordListQueryParams } from "pocketbase";
 
 import type { COLLECTIONS } from "../data/constants";
-import type { AllowedEntityTypes, Character } from "./Character";
+import type { CreateData, RelationFields } from "./Character";
 
 export type GetEntityParams = {
   entityType: keyof typeof COLLECTIONS;
@@ -9,7 +9,7 @@ export type GetEntityParams = {
   id: string;
 };
 
-export type CreateEntityParams<T extends AllowedEntityTypes> = {
+export type CreateEntityParams<T extends RelationFields> = {
   entityData: CreateData<T>;
   entityType: keyof typeof COLLECTIONS;
   expandFields?: boolean;
@@ -20,7 +20,7 @@ export type GetEntitiesByFilterParams = {
   filter: [number, number, RecordListQueryParams];
 };
 
-export type UpdateEntityParams<T extends AllowedEntityTypes> = {
+export type UpdateEntityParams<T extends RelationFields> = {
   entityData: T;
   entityType: keyof typeof COLLECTIONS;
 };
@@ -34,6 +34,3 @@ export type GetAllEntitiesParams = {
   entityType: keyof typeof COLLECTIONS;
 };
 export type PocketBaseConstants = "collectionId" | "collectionName" | "created" | "id" | "updated";
-export type CreateData<T> = T extends Character
-  ? Omit<T, PocketBaseConstants> & { factionId: string; raceId: string }
-  : Omit<T, PocketBaseConstants>;
