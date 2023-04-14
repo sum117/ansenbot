@@ -1,5 +1,5 @@
 import type { Snowflake } from "discord.js";
-import type { ListResult } from "pocketbase";
+import type { ListResult, RecordFullListQueryParams } from "pocketbase";
 
 import { COLLECTIONS, RELATION_FIELD_NAMES } from "../../data/constants";
 import characterSchema from "../../schemas/characterSchema";
@@ -62,8 +62,10 @@ export default class CharacterFetcher extends PocketBase {
     return new Date(response.created);
   }
 
-  public async getAllCharacters(): Promise<Character[]> {
-    const response = await this.pb.collection(COLLECTIONS.characters).getFullList<Character>();
+  public async getAllCharacters(queryParams?: RecordFullListQueryParams): Promise<Character[]> {
+    const response = await this.pb
+      .collection(COLLECTIONS.characters)
+      .getFullList<Character>(queryParams);
     return response;
   }
   public async getAllCharactersFromPlayer(playerId: Snowflake): Promise<Character[]> {
