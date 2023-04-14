@@ -1,15 +1,15 @@
 import type { Message } from "discord.js";
 
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
-import CharacterPostEmbed from "../classes/CharacterPostEmbed";
+import CharacterPost from "../classes/CharacterPost";
 
 export default async function sendCharProfile(message: Message): Promise<Message> {
   const characterFetcher = new CharacterFetcher();
-  const charactersData = await characterFetcher.getCharactersByUserId({
+  const charactersData = await characterFetcher.getCharactersByPlayerId({
     page: 1,
-    userId: message.author.id,
+    playerId: message.author.id,
   });
-  const characterPost = new CharacterPostEmbed(charactersData.items[0]);
+  const characterPost = new CharacterPost(charactersData.items[0]);
   const messageOptions = await characterPost.createMessageOptions({
     to: "profile",
   });

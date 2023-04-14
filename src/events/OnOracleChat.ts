@@ -1,5 +1,5 @@
-/* eslint-disable camelcase */
-import type { ArgsOf, Client } from "discordx";
+import type { Client } from "discord.js";
+import type { ArgsOf } from "discordx";
 import { Discord, On } from "discordx";
 import type { ChatVectorDBQAChain } from "langchain/chains";
 import { OpenAIEmbeddings } from "langchain/embeddings";

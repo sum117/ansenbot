@@ -6,7 +6,7 @@ import type { Character } from "../../../../types/Character";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import PocketBase from "../../../pocketbase/PocketBase";
 
-export default class CharacterPostEmbed {
+export default class CharacterPost {
   public embed: EmbedBuilder = new EmbedBuilder();
   constructor(private character: Character) {
     this.character = character;
@@ -18,34 +18,48 @@ export default class CharacterPostEmbed {
 
   public async createMessageOptions({
     to,
+    content,
+    attachmentUrl,
   }: {
-    to: "profile" | "message";
+    attachmentUrl?: string;
+    content?: string;
+    to: "message" | "profile";
   }): Promise<BaseMessageOptions> {
     const options: BaseMessageOptions = {};
     let embed: EmbedBuilder = new EmbedBuilder();
+
     if (to === "profile") {
+      if (content) {
+        throw new Error("You can't provide content to a profile!");
+      }
       embed = this.getProfileEmbed();
+    } else {
+      if (!content) {
+        throw new Error("You must provide content to post!");
+      }
+      embed = this.getPostEmbed({ attachmentUrl, content });
     }
+
     const image = await PocketBase.getImageUrl({
       fileName: this.character.image,
       record: this.character,
       thumb: true,
     });
-
+    console.log(image);
     if (typeof image === "string") {
       embed.setThumbnail(image);
     } else {
       const attachment = new AttachmentBuilder(image);
       attachment.setName(this.character.image);
       options.files = [attachment];
-      embed.setImage("attachment://" + this.character.image);
+      embed.setThumbnail("attachment://" + this.character.image);
     }
 
     options.embeds = [embed];
     return options;
   }
 
-  private getPostEmbed<T extends { attachmentUrl: string; content: string }>({
+  private getPostEmbed<T extends { attachmentUrl: string | undefined; content: string }>({
     content,
     attachmentUrl,
   }: T): EmbedBuilder {
@@ -56,7 +70,7 @@ export default class CharacterPostEmbed {
   }
   private getProfileEmbed(): EmbedBuilder {
     const fields = new Collection<string, string>();
-    fields.set("Dono", userMention(this.character.userId));
+    fields.set("Dono", userMention(this.character.playerId));
     fields.set("Gênero", this.formatCharacterGender(this.character));
     fields.set("Idade", this.character.age.toString());
     fields.set("Nível", this.character.level.toString());

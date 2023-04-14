@@ -9,7 +9,7 @@
 
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
-
+    "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
 
@@ -19,6 +19,6 @@
   "ts-node": {
     "experimentalSpecifierResolution": "node"
   },
-  "include": ["src"],
+  "include": ["src", "*.json"],
   "exclude": ["build", "node_modules"]
 }
