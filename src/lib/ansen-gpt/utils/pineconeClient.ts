@@ -15,7 +15,7 @@ async function initPinecone() {
 
     return pinecone;
   } catch (error) {
-    console.error("error", error);
+    console.error("Error initializing pinecone client", error);
     throw new Error("Failed to initialize Pinecone Client");
   }
 }

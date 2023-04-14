@@ -28,7 +28,7 @@ export class PlayerManager {
       PlayerFetcher.getPlayerById(interaction.user.id)
     );
     if (characterFetchError || playerFetchError) {
-      console.error(characterFetchError, playerFetchError);
+      console.error("Error fetching character or player", characterFetchError, playerFetchError);
       void interaction.reply({
         content: "Ocorreu um erro ao tentar setar o seu personagem principal.",
         ephemeral: true,
@@ -45,7 +45,7 @@ export class PlayerManager {
     );
 
     if (updatePlayerError) {
-      console.error(updatePlayerError);
+      console.error("Error updating player", updatePlayerError);
       void interaction.reply({
         content: "Ocorreu um erro ao tentar setar o seu personagem principal.",
         ephemeral: true,
@@ -87,7 +87,7 @@ export class PlayerManager {
       const targetUser = hasOnlyUser ? user : interaction.user;
       const [charProfile, charProfileError] = await safePromise(getCharProfile(targetUser));
       if (charProfileError) {
-        console.error(charProfileError);
+        console.error("Error fetching character profile", charProfileError);
         void interaction.reply({
           content: "Ocorreu um erro ao tentar mostrar o seu perfil",
           ephemeral: true,
@@ -100,7 +100,7 @@ export class PlayerManager {
     if (hasOnlyCharacter || hasBoth) {
       const [character, error] = await safePromise(CharacterFetcher.getCharacterById(characterId));
       if (error) {
-        console.error(error);
+        console.error("Error fetching character", error);
         void interaction.reply({
           content: "Ocorreu um erro ao tentar mostrar o seu perfil" + error?.message,
           ephemeral: true,
@@ -115,7 +115,7 @@ export class PlayerManager {
         })
       );
       if (messageOptionsError) {
-        console.error(messageOptionsError);
+        console.error("Error creating message options", messageOptionsError);
         void interaction.reply({
           content: "Ocorreu um erro ao tentar mostrar o seu perfil",
           ephemeral: true,

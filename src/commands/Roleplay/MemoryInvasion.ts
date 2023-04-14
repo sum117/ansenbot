@@ -30,8 +30,8 @@ export class MemoryInvasion {
 
     const [memoryData, memoryDataError] = await safePromise(MemoryFetcher.getAllMemories());
     if (memoryDataError) {
-      console.error(memoryDataError);
-      void interaction.reply("Não foi possível carregar as memórias.");
+      console.error("Error while fetching memories: ", memoryDataError);
+      void interaction.reply("Não foi possível carregar as memórias. Tente novamente.");
       return;
     }
 
@@ -51,7 +51,7 @@ export class MemoryInvasion {
       })
     );
     if (imageError) {
-      console.error(imageError);
+      console.error("Error while fetching memory image: ", imageError);
       void interaction.reply({
         content: "Não foi possível carregar a imagem da memória.",
         files: [],

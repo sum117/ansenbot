@@ -7,12 +7,12 @@ import PlayerFetcher from "./PlayerFetcher";
 import PocketBase from "./PocketBase";
 
 export default class PostFetcher {
-  public static async createPost<T extends Message, R>(message: T): Promise<R | void> {
+  public static async createPost<T extends Message>(message: T): Promise<Post | void> {
     const [postPlayer, postPlayerError] = await safePromise(
       PlayerFetcher.getPlayerById(message.author.id)
     );
     if (postPlayerError) {
-      console.error(postPlayerError);
+      console.error("Could not find player for post creation: ", postPlayerError);
       void message.reply(
         "Não foi possível encontrar o jogador para a criação do post: Erro Interno"
       );
@@ -23,7 +23,7 @@ export default class PostFetcher {
     );
 
     if (postCharacterError) {
-      console.error(postCharacterError);
+      console.error("Could not find character for post creation: ", postCharacterError);
       void message.reply(
         "Não foi possível encontrar o personagem para a criação do post: Erro Interno"
       );
@@ -43,7 +43,7 @@ export default class PostFetcher {
     );
 
     if (createPostError) {
-      console.error(createPostError);
+      console.error("Could not create post: ", createPostError);
       void message.reply("Não foi possível criar o post: Erro Interno");
       return;
     }
@@ -56,11 +56,36 @@ export default class PostFetcher {
       })
     );
     if (syncPostRelationsError) {
-      console.error(syncPostRelationsError);
+      console.error("Could not sync post relations: ", syncPostRelationsError);
       void message.reply("Não foi possível sincronizar as relações do post: Erro Interno");
       return;
     }
-    return;
+    return createdPost;
+  }
+
+  public static async deletePost<T extends Message>(message: T): Promise<void> {
+    const [post, postError] = await safePromise(
+      PocketBase.getFirstListEntity<Post>({
+        entityType: "posts",
+        filter: [`messageId="${message.id}"`, {}],
+      })
+    );
+    if (postError) {
+      console.error("Could not find post to delete: ", postError);
+      return;
+    }
+
+    const [_deletedPost, deletedPostError] = await safePromise(
+      PocketBase.deleteEntity({
+        entityType: "posts",
+        id: post.id,
+      })
+    );
+
+    if (deletedPostError) {
+      console.error("Could not delete post: ", deletedPostError);
+      return;
+    }
   }
 
   private static async syncPostRelations({
@@ -89,7 +114,7 @@ export default class PostFetcher {
       });
       return true;
     } catch (e) {
-      console.error(e);
+      console.error("Error while syncing post relations", e);
       return false;
     }
   }

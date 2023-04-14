@@ -224,7 +224,7 @@ export default class CharacterFetcher {
       });
       return true;
     } catch (e) {
-      console.error(e);
+      console.error("Error while syncing character relations", e);
       return false;
     }
   }
