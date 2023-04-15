@@ -5,6 +5,7 @@ import { PineconeStore } from "langchain/vectorstores";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import { BotError } from "../../../utils/Errors";
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from "../config/pinecone";
 import { pineconeClient } from "./pineconeClient";
 
@@ -46,7 +47,7 @@ export const run = async (): Promise<void> => {
     });
   } catch (error) {
     console.error("Error ingesting data", error);
-    throw new Error("Failed to ingest your data");
+    throw new BotError("Failed to ingest your data");
   }
 };
 

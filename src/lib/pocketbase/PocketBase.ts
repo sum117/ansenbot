@@ -11,6 +11,7 @@ import type {
   GetFirstEntityByFilterParams,
   UpdateEntityParams,
 } from "../../types/PocketBaseCRUD";
+import { BotError } from "../../utils/Errors";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(
@@ -55,7 +56,7 @@ export default class PocketBase {
     const prevData = await fetcher(object.id);
 
     if (prevData.created !== object.created || prevData.updated !== object.updated) {
-      throw new Error("Invalid update");
+      throw new BotError("Invalid update");
     }
 
     return prevData;

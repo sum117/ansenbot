@@ -6,6 +6,7 @@ import { Discord, On } from "discordx";
 import config from "../../config.json" assert { type: "json" };
 import { novelRequestImageGen } from "../lib/anime-img-gen/novelAIApi";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
+import { BotError } from "../utils/Errors";
 import Queue from "../utils/queue";
 
 @Discord()
@@ -19,7 +20,7 @@ export class Example {
 
   get message(): Message {
     if (!this._message) {
-      throw new Error("Message not set for image generation");
+      throw new BotError("Message not set for image generation");
     }
     return this._message;
   }
@@ -30,36 +31,40 @@ export class Example {
 
   @On()
   messageCreate([message]: ArgsOf<"messageCreate">, _client: Client): void {
-    const canExecute =
-      message.channel.type === ChannelType.GuildText &&
-      message.channelId === config.channels.imageGen &&
-      message.content.startsWith("```") &&
-      !message.author.bot;
+    try {
+      const canExecute =
+        message.channel.type === ChannelType.GuildText &&
+        message.channelId === config.channels.imageGen &&
+        message.content.startsWith("```") &&
+        !message.author.bot;
 
-    if (!canExecute) {
-      return;
-    }
+      if (!canExecute) {
+        return;
+      }
 
-    if (this.pendingUserImageRequests.get(message.author.id)?.isPending) {
-      void message.reply("❌ Você já tem uma imagem sendo gerada.");
-      return;
-    }
+      if (this.pendingUserImageRequests.get(message.author.id)?.isPending) {
+        void message.reply("❌ Você já tem uma imagem sendo gerada.");
+        return;
+      }
 
-    if (this.pendingUserImageRequests.size > 0) {
-      void message.reply(
-        `⚠️ Sua imagem está na fila de espera, ${userMention(
-          message.author.id
-        )}. Não tente gerar outra imagem.`
-      );
+      if (this.pendingUserImageRequests.size > 0) {
+        void message.reply(
+          `⚠️ Sua imagem está na fila de espera, ${userMention(
+            message.author.id
+          )}. Não tente gerar outra imagem.`
+        );
+      }
+      this.message = message;
+      this.pendingUserImageRequests.set(message.author.id, {
+        isPending: true,
+        message: null,
+      });
+      this.imageGenerationQueue.enqueue(async () => {
+        await this.generateAnimeImage();
+      });
+    } catch (error) {
+      console.error("Error while generating image", error);
     }
-    this.message = message;
-    this.pendingUserImageRequests.set(message.author.id, {
-      isPending: true,
-      message: null,
-    });
-    this.imageGenerationQueue.enqueue(async () => {
-      await this.generateAnimeImage();
-    });
   }
 
   private async generateAnimeImage(): Promise<void> {
@@ -106,12 +111,6 @@ export class Example {
     });
 
     const response = await novelRequestImageGen(sanitizedMessage);
-
-    if (typeof response === "object" && "botError" in response) {
-      this.pendingUserImageRequests.delete(currentMessage.author.id);
-      void currentMessage.reply(response.botError);
-      return;
-    }
 
     const attachment = new AttachmentBuilder(response).setName("image.png");
 

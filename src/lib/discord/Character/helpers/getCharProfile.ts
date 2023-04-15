@@ -7,10 +7,10 @@ import CharacterPost from "../classes/CharacterPost";
 export default async function getCharProfile(user: User): Promise<BaseMessageOptions> {
   const player = await PlayerFetcher.getPlayerById(user.id);
   if (!player) {
-    throw new Error("Usuário não encontrado.");
+    throw new BotError("Usuário não encontrado.");
   }
   if (!player.currentCharacterId) {
-    throw new Error("Usuário não possui personagem selecionado.");
+    throw new BotError("Usuário não possui personagem selecionado.");
   }
 
   const characterData = await CharacterFetcher.getCharacterById(player.currentCharacterId);

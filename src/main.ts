@@ -37,11 +37,14 @@ bot.on("interactionCreate", (interaction: Interaction) => {
 bot.on("messageCreate", (message) => {
   bot.executeCommand(message);
 });
+
 bot.on("messageDelete", (message) => {
   if (message.embeds.length && !message.partial) {
-    void PostFetcher.deletePost(message).catch((error) => {
+    try {
+      void PostFetcher.deletePost(message);
+    } catch (error) {
       console.error("Error deleting post", error);
-    });
+    }
   }
 });
 async function run() {

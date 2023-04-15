@@ -9,6 +9,7 @@ import { onJoinForm } from "../data/forms";
 import MultiForm from "../lib/discord/Prompt/MultiForm";
 import type { Properties } from "../types/Utils";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
+import { BotError } from "../utils/Errors";
 
 @Discord()
 export class OnJoinUserManagement {
@@ -20,7 +21,7 @@ export class OnJoinUserManagement {
 
   get interaction(): StringSelectMenuInteraction {
     if (!this._interaction) {
-      throw new Error("Cannot manage user with invalid interaction");
+      throw new BotError("Cannot manage user with invalid interaction");
     }
     return this._interaction;
   }
@@ -29,7 +30,7 @@ export class OnJoinUserManagement {
     if (this.interaction.inCachedGuild()) {
       return this.interaction.member.roles;
     } else {
-      throw new Error("Cannot manage user with invalid interaction");
+      throw new BotError("Cannot manage user with invalid interaction");
     }
   }
 
@@ -38,32 +39,36 @@ export class OnJoinUserManagement {
   })
   // TODO: Change to guildMemberAdd after testing
   async messageCreate([message]: ArgsOf<"messageCreate">): Promise<void> {
-    if (
-      message.author.bot ||
-      !message.guild ||
-      !message.content.startsWith("test") ||
-      message.channelId !== "1092243613938892931"
-    ) {
-      return;
+    try {
+      if (
+        message.author.bot ||
+        !message.guild ||
+        !message.content.startsWith("test") ||
+        message.channelId !== "1092243613938892931"
+      ) {
+        return;
+      }
+      const onJoinChannel = message.guild.channels.cache.find((channel) => {
+        return channel.name === "bem-vindo";
+      });
+
+      if (!onJoinChannel?.isTextBased()) {
+        return;
+      }
+
+      onJoinForm.description = mustache.render(onJoinForm.description, {
+        server: message.guild.name,
+        user: userMention(message.author.id),
+      });
+
+      const formMessage = await new MultiForm(onJoinForm)
+        .setMessageContent(userMention(message.author.id))
+        .sendPrompt(onJoinChannel);
+
+      deleteDiscordMessage(formMessage, 60_000);
+    } catch (error) {
+      console.error(error);
     }
-    const onJoinChannel = message.guild.channels.cache.find((channel) => {
-      return channel.name === "bem-vindo";
-    });
-
-    if (!onJoinChannel?.isTextBased()) {
-      return;
-    }
-
-    onJoinForm.description = mustache.render(onJoinForm.description, {
-      server: message.guild.name,
-      user: userMention(message.author.id),
-    });
-
-    const formMessage = await new MultiForm(onJoinForm)
-      .setMessageContent(userMention(message.author.id))
-      .sendPrompt(onJoinChannel);
-
-    deleteDiscordMessage(formMessage, 60_000);
   }
 
   @SelectMenuComponent({
@@ -129,7 +134,7 @@ export class OnJoinUserManagement {
       );
 
       if (!mentorChannel?.isTextBased()) {
-        return;
+        throw new BotError("Cannot find mentor channel");
       }
 
       const possibleMentors = (await this.interaction.guild?.members.fetch())?.filter((member) => {
@@ -140,7 +145,7 @@ export class OnJoinUserManagement {
 
       const mentor = possibleMentors?.random(1).at(0);
       if (!mentor) {
-        return;
+        throw new BotError("Cannot find mentor");
       }
 
       const view = {
