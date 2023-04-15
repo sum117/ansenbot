@@ -38,15 +38,19 @@ bot.on("messageCreate", (message) => {
   bot.executeCommand(message);
 });
 
-bot.on("messageDelete", (message) => {
+bot.on("messageDelete", async (message) => {
   if (message.embeds.length && !message.partial) {
     try {
-      void PostFetcher.deletePost(message);
+      const foundPost = await PostFetcher.getPostByMessageId(message.id);
+      if (foundPost) {
+        void PostFetcher.deletePost(message);
+      }
     } catch (error) {
       console.error("Error deleting post", error);
     }
   }
 });
+
 async function run() {
   await importx(`${dirname(import.meta.url)}/{events,commands}/**/*.{ts,js}`);
   if (!process.env.DISCORD_BOT_TOKEN) {
@@ -54,6 +58,7 @@ async function run() {
   }
   await bot.login(process.env.DISCORD_BOT_TOKEN);
 }
+
 server.listen(8000, () => {
   console.log("Server started");
 });

@@ -5,8 +5,7 @@ import { Discord, On, SelectMenuComponent } from "discordx";
 import mustache from "mustache";
 
 import { JOIN_FORM_VALUES } from "../data/constants";
-import { onJoinForm } from "../data/forms";
-import MultiForm from "../lib/discord/Prompt/MultiForm";
+import onJoinForm from "../data/forms/onJoinForm";
 import type { Properties } from "../types/Utils";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import { BotError } from "../utils/Errors";
@@ -15,15 +14,15 @@ import { BotError } from "../utils/Errors";
 export class OnJoinUserManagement {
   private _interaction: StringSelectMenuInteraction | null = null;
 
-  set interaction(interaction: StringSelectMenuInteraction) {
-    this._interaction = interaction;
-  }
-
   get interaction(): StringSelectMenuInteraction {
     if (!this._interaction) {
       throw new BotError("Cannot manage user with invalid interaction");
     }
     return this._interaction;
+  }
+
+  set interaction(interaction: StringSelectMenuInteraction) {
+    this._interaction = interaction;
   }
 
   get memberRoleManager(): GuildMemberRoleManager {
@@ -53,18 +52,10 @@ export class OnJoinUserManagement {
       });
 
       if (!onJoinChannel?.isTextBased()) {
-        return;
+        throw new BotError("Cannot find onJoinChannel");
       }
 
-      onJoinForm.description = mustache.render(onJoinForm.description, {
-        server: message.guild.name,
-        user: userMention(message.author.id),
-      });
-
-      const formMessage = await new MultiForm(onJoinForm)
-        .setMessageContent(userMention(message.author.id))
-        .sendPrompt(onJoinChannel);
-
+      const formMessage = await message.channel.send(onJoinForm(message));
       deleteDiscordMessage(formMessage, 60_000);
     } catch (error) {
       console.error(error);

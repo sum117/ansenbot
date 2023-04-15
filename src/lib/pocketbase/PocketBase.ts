@@ -29,7 +29,7 @@ export default class PocketBase {
     };
   }
 
-  public static async getImageUrl({
+  public static getImageUrl({
     record,
     fileName,
     thumb,
@@ -37,15 +37,11 @@ export default class PocketBase {
     fileName: string;
     record: Pick<DBRecord, "id" | "collectionId" | "collectionName">;
     thumb?: boolean;
-  }): Promise<string | Buffer> {
+  }): string {
     const url = pb.getFileUrl(record, fileName, {
       thumb: thumb ? "512x512" : undefined,
     });
-    if (url.startsWith("http://localhost")) {
-      const response = await fetch(url);
-      const buffer = Buffer.from(await response.arrayBuffer());
-      return buffer;
-    }
+
     return url;
   }
 
@@ -115,6 +111,14 @@ export default class PocketBase {
     const response = await pb.collection(COLLECTIONS[entityType]).getList<T>(...filter);
 
     return response;
+  }
+
+  public static updateEntityWithFormData(
+    entityId: string,
+    entityType: keyof typeof COLLECTIONS,
+    formData: FormData
+  ): Promise<DBRecord> {
+    return pb.collection(COLLECTIONS[entityType]).update(entityId, formData);
   }
 
   public static updateEntity<T extends RelationFields>({
