@@ -8,7 +8,7 @@ import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import PlayerFetcher from "../../lib/pocketbase/PlayerFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
 import type { Player } from "../../types/Character";
-import safePromise from "../../utils/safePromise";
+import { PocketBaseError } from "../../utils/Errors";
 
 @Discord()
 export class PlayerManager {
@@ -21,42 +21,27 @@ export class PlayerManager {
     characterId: string,
     interaction: CommandInteraction
   ): Promise<void> {
-    const [character, characterFetchError] = await safePromise(
-      CharacterFetcher.getCharacterById(characterId)
-    );
-    const [player, playerFetchError] = await safePromise(
-      PlayerFetcher.getPlayerById(interaction.user.id)
-    );
-    if (characterFetchError || playerFetchError) {
-      console.error("Error fetching character or player", characterFetchError, playerFetchError);
-      void interaction.reply({
-        content: "Ocorreu um erro ao tentar setar o seu personagem principal.",
-        ephemeral: true,
-      });
-      return;
-    }
-    player.currentCharacterId = character.id;
-
-    const [_updatedPlayer, updatePlayerError] = await safePromise(
-      PocketBase.updateEntity<Player>({
+    try {
+      await interaction.deferReply({ ephemeral: true });
+      const character = await CharacterFetcher.getCharacterById(characterId);
+      const player = await PlayerFetcher.getPlayerById(interaction.user.id);
+      player.currentCharacterId = character.id;
+      await PocketBase.updateEntity<Player>({
         entityType: "players",
         entityData: player,
-      })
-    );
-
-    if (updatePlayerError) {
-      console.error("Error updating player", updatePlayerError);
-      void interaction.reply({
-        content: "Ocorreu um erro ao tentar setar o seu personagem principal.",
-        ephemeral: true,
       });
-      return;
+      void interaction.editReply({
+        content: `Seu personagem principal foi setado para ${character.name}.`,
+      });
+    } catch (error) {
+      console.error(error);
+      if (error instanceof PocketBaseError) {
+        void interaction.editReply({
+          content: error.message,
+        });
+        return;
+      }
     }
-
-    void interaction.reply({
-      content: `Seu personagem principal foi setado para ${character.name}.`,
-      ephemeral: true,
-    });
   }
 
   @Slash({
@@ -70,59 +55,45 @@ export class PlayerManager {
     characterId: string | null,
     interaction: CommandInteraction | AutocompleteInteraction
   ): Promise<void> {
-    // Conditions
-    const hasOnlyUser = user && !characterId && !interaction.isAutocomplete();
-    const hasOnlyCharacter = !user && characterId && !interaction.isAutocomplete();
-    const hasNone = !user && !characterId && !interaction.isAutocomplete();
-    const hasBoth = user && characterId && !interaction.isAutocomplete();
-    if (hasBoth) {
-      void interaction.reply({
-        content:
-          "Você não pode usar os dois argumentos ao mesmo tempo. Escolha usuário ou personagem.",
-        ephemeral: true,
-      });
-      return;
-    }
-    if (hasOnlyUser || hasNone) {
-      const targetUser = hasOnlyUser ? user : interaction.user;
-      const [charProfile, charProfileError] = await safePromise(getCharProfile(targetUser));
-      if (charProfileError) {
-        console.error("Error fetching character profile", charProfileError);
+    try {
+      if (!interaction.isAutocomplete()) {
+        await interaction.deferReply();
+      }
+      // Conditions
+      const hasOnlyUser = user && !characterId && !interaction.isAutocomplete();
+      const hasOnlyCharacter = !user && characterId && !interaction.isAutocomplete();
+      const hasNone = !user && !characterId && !interaction.isAutocomplete();
+      const hasBoth = user && characterId && !interaction.isAutocomplete();
+      if (hasBoth) {
         void interaction.reply({
-          content: "Ocorreu um erro ao tentar mostrar o seu perfil",
+          content:
+            "Você não pode usar os dois argumentos ao mesmo tempo. Escolha usuário ou personagem.",
           ephemeral: true,
         });
         return;
       }
-      void interaction.reply(charProfile);
-    }
-
-    if (hasOnlyCharacter || hasBoth) {
-      const [character, error] = await safePromise(CharacterFetcher.getCharacterById(characterId));
-      if (error) {
-        console.error("Error fetching character", error);
-        void interaction.reply({
-          content: "Ocorreu um erro ao tentar mostrar o seu perfil" + error?.message,
-          ephemeral: true,
-        });
-        return;
+      if (hasOnlyUser || hasNone) {
+        const targetUser = hasOnlyUser ? user : interaction.user;
+        const charProfile = await getCharProfile(targetUser);
+        void interaction.editReply(charProfile);
       }
-
-      const characterPost = new CharacterPost(character);
-      const [messageOptions, messageOptionsError] = await safePromise(
-        characterPost.createMessageOptions({
+      if (hasOnlyCharacter || hasBoth) {
+        const character = await CharacterFetcher.getCharacterById(characterId);
+        const characterPost = new CharacterPost(character);
+        const messageOptions = await characterPost.createMessageOptions({
           to: "profile",
-        })
-      );
-      if (messageOptionsError) {
-        console.error("Error creating message options", messageOptionsError);
-        void interaction.reply({
-          content: "Ocorreu um erro ao tentar mostrar o seu perfil",
-          ephemeral: true,
         });
-        return;
+        void interaction.editReply(messageOptions);
       }
-      void interaction.reply(messageOptions);
+    } catch (error) {
+      console.error(error);
+      if (error instanceof PocketBaseError) {
+        if (!interaction.isAutocomplete()) {
+          void interaction.editReply({
+            content: error.message,
+          });
+        }
+      }
     }
   }
 }

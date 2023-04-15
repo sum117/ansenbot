@@ -21,7 +21,7 @@ export default class MultiForm {
     ]);
 
     if (this.prompt.fields.length > 5) {
-      throw new Error(
+      throw new BotError(
         "You can only have 5 Select Menus in a Message (Discord limits for Action Rows)"
       );
     }

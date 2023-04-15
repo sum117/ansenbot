@@ -2,6 +2,7 @@ import axios from "axios";
 import JSZip from "jszip";
 
 import type { NovelAIRequest } from "../../types/AnimeImageGenerator";
+import { BotError } from "../../utils/Errors";
 
 const novelAIApi = axios.create({
   baseURL: process.env.NOVEL_AI_API_URL,
@@ -12,9 +13,7 @@ const novelAIApi = axios.create({
   },
 });
 
-export const novelRequestImageGen = async (
-  input: string
-): Promise<Buffer | { botError: string }> => {
+export const novelRequestImageGen = async (input: string): Promise<Buffer> => {
   // 9 digit seed
   const seed = Math.floor(Math.random() * 1000000000);
   const body: NovelAIRequest = {
@@ -41,24 +40,16 @@ export const novelRequestImageGen = async (
     },
   };
 
-  try {
-    // content-disposition: attachment; filename=images.zip
-    const zip = new JSZip();
-    const response = await novelAIApi.post("/generate-image", body, {
-      responseType: "arraybuffer",
-    });
-    const { data } = response;
-    const zipFile = await zip.loadAsync(data);
-    const zipFileContent = await zipFile.file("image_0.png")?.async("nodebuffer");
+  const zip = new JSZip();
+  const response = await novelAIApi.post("/generate-image", body, {
+    responseType: "arraybuffer",
+  });
+  const { data } = response;
+  const zipFile = await zip.loadAsync(data);
+  const zipFileContent = await zipFile.file("image_0.png")?.async("nodebuffer");
 
-    if (!zipFileContent) {
-      return {
-        botError: "❌ Houve um erro ao extrair a imagem da resposta da API, tente novamente.",
-      };
-    }
-    return zipFileContent;
-  } catch (error) {
-    console.error("Error while requesting image from NovelAI API: ", error);
-    return { botError: "❌ Houve um erro ao gerar sua imagem na API, por favor tente novamente." };
+  if (!zipFileContent) {
+    throw new BotError("Error while extracting zip file.");
   }
+  return zipFileContent;
 };

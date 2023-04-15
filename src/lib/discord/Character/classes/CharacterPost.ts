@@ -3,6 +3,7 @@ import { AttachmentBuilder, Collection, EmbedBuilder, userMention } from "discor
 
 import { skillsDictionary } from "../../../../data/translations";
 import type { Character } from "../../../../types/Character";
+import { BotError } from "../../../../utils/Errors";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import PocketBase from "../../../pocketbase/PocketBase";
 
@@ -29,12 +30,12 @@ export default class CharacterPost {
 
     if (to === "profile") {
       if (content) {
-        throw new Error("You can't provide content to a profile!");
+        throw new BotError("You can't provide content to a profile!");
       }
       embed = this.getProfileEmbed();
     } else {
       if (!content) {
-        throw new Error("You must provide content to post!");
+        throw new BotError("You must provide content to post!");
       }
       embed = this.getPostEmbed({ attachmentUrl, content });
     }
@@ -68,7 +69,7 @@ export default class CharacterPost {
   }
   private getProfileEmbed(): EmbedBuilder {
     if (!this.character.expand) {
-      throw new Error("Character must have expand data to create a profile!");
+      throw new BotError("Character must have expand data to create a profile!");
     }
     const fields = new Collection<string, string>();
     fields.set("Dono", userMention(this.character.playerId));
@@ -95,7 +96,7 @@ export default class CharacterPost {
 
   private formatCharacterSkills({ expand }: Character) {
     if (!expand) {
-      throw new Error("Character must have expand data to create a profile!");
+      throw new BotError("Character must have expand data to create a profile!");
     }
     const { skills } = expand;
     const {

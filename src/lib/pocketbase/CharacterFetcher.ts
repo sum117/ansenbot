@@ -4,24 +4,27 @@ import type { ListResult, RecordFullListQueryParams } from "pocketbase";
 import { RELATION_FIELD_NAMES } from "../../data/constants";
 import type { Character, Faction, Player, Race, Skills, Status } from "../../types/Character";
 import type { CreateData } from "../../types/PocketBaseCRUD";
+import { BotError, PocketBaseError } from "../../utils/Errors";
 import PlayerFetcher from "./PlayerFetcher";
 import PocketBase from "./PocketBase";
 
 export default class CharacterFetcher {
   public static async getFirstCharacterCreateDate(): Promise<Date> {
-    const response = await PocketBase.getFirstListEntity({
-      entityType: "characters",
-      filter: [
-        "",
-        {
-          sort: "created",
-        },
-      ],
-    });
-    if (!response) {
-      throw new Error("No characters found");
+    try {
+      const response = await PocketBase.getFirstListEntity({
+        entityType: "characters",
+        filter: [
+          "",
+          {
+            sort: "created",
+          },
+        ],
+      });
+
+      return new Date(response.created);
+    } catch (error) {
+      throw new PocketBaseError("Could not get first character created date.");
     }
-    return new Date(response.created);
   }
 
   public static async getAllCharacters({
@@ -29,18 +32,22 @@ export default class CharacterFetcher {
   }: {
     filter?: RecordFullListQueryParams;
   }): Promise<ListResult<Character>> {
-    if (!filter) {
-      const response = await PocketBase.getAllEntities<Character>({
-        entityType: "characters",
-      });
+    try {
+      if (!filter) {
+        const response = await PocketBase.getAllEntities<Character>({
+          entityType: "characters",
+        });
 
+        return response;
+      }
+      const response = await PocketBase.getEntitiesByFilter<Character>({
+        entityType: "characters",
+        filter: [1, 24, filter],
+      });
       return response;
+    } catch (error) {
+      throw new PocketBaseError("Could not get all characters.");
     }
-    const response = await PocketBase.getEntitiesByFilter<Character>({
-      entityType: "characters",
-      filter: [1, 24, filter],
-    });
-    return response;
   }
 
   public static async getCharactersByUserId({
@@ -50,19 +57,22 @@ export default class CharacterFetcher {
     page: number;
     userId: Snowflake;
   }): Promise<ListResult<Character>> {
-    const response = await PocketBase.getEntitiesByFilter<Character>({
-      entityType: "characters",
-      filter: [
-        page,
-        10,
-        {
-          filter: `userId="${userId}"`,
-          ...PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)),
-        },
-      ],
-    });
-
-    return response;
+    try {
+      const response = await PocketBase.getEntitiesByFilter<Character>({
+        entityType: "characters",
+        filter: [
+          page,
+          10,
+          {
+            filter: `userId="${userId}"`,
+            ...PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)),
+          },
+        ],
+      });
+      return response;
+    } catch (error) {
+      throw new PocketBaseError("Could not get characters by user id.");
+    }
   }
 
   public static async getCharactersByPlayerId({
@@ -72,44 +82,56 @@ export default class CharacterFetcher {
     page: number;
     playerId: Snowflake;
   }): Promise<ListResult<Character>> {
-    const response = await PocketBase.getEntitiesByFilter<Character>({
-      entityType: "characters",
-      filter: [
-        page,
-        10,
-        {
-          filter: `playerId="${playerId}"`,
-          ...PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)),
-        },
-      ],
-    });
+    try {
+      const response = await PocketBase.getEntitiesByFilter<Character>({
+        entityType: "characters",
+        filter: [
+          page,
+          10,
+          {
+            filter: `playerId="${playerId}"`,
+            ...PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)),
+          },
+        ],
+      });
 
-    return response;
+      return response;
+    } catch (error) {
+      throw new PocketBaseError("Could not get characters by player id.");
+    }
   }
 
   public static async getCharacterById(id: Character["id"]): Promise<Character> {
-    const response = await PocketBase.getEntityById<Character>({
-      entityType: "characters",
-      id,
-    });
+    try {
+      const response = await PocketBase.getEntityById<Character>({
+        entityType: "characters",
+        id,
+      });
 
-    return response;
+      return response;
+    } catch (error) {
+      throw new PocketBaseError("Could not get character by id.");
+    }
   }
 
   public static async deleteCharacter(userId: Snowflake, id: Character["id"]): Promise<void> {
-    const character = await PocketBase.getEntityById<Character>({
-      entityType: "characters",
-      id,
-    });
+    try {
+      const character = await PocketBase.getEntityById<Character>({
+        entityType: "characters",
+        id,
+      });
 
-    if (!character) {
-      throw new Error("Character not found");
-    }
-    if (!this.isOwner(userId, character.playerId)) {
-      throw new Error("You cannot delete another user's character");
-    }
+      if (!character) {
+        throw new BotError("Character not found");
+      }
+      if (!this.isOwner(userId, character.playerId)) {
+        throw new BotError("You cannot delete another user's character");
+      }
 
-    await PocketBase.deleteEntity({ entityType: "characters", id });
+      await PocketBase.deleteEntity({ entityType: "characters", id });
+    } catch (error) {
+      throw new PocketBaseError("Could not delete character.");
+    }
   }
 
   public static async createCharacter(
@@ -117,55 +139,59 @@ export default class CharacterFetcher {
     char: CreateData<Character>,
     playerId: Snowflake
   ): Promise<Character> {
-    const baseSkills = await PocketBase.createEntity<Skills>({
-      entityData: skills,
-      entityType: "skills",
-    });
-    const baseStatus = await PocketBase.createEntity<Status>({
-      entityData: {
-        health: 100,
-        money: 0,
-        stamina: 100,
-      },
-      entityType: "status",
-    });
+    try {
+      const baseSkills = await PocketBase.createEntity<Skills>({
+        entityData: skills,
+        entityType: "skills",
+      });
+      const baseStatus = await PocketBase.createEntity<Status>({
+        entityData: {
+          health: 100,
+          money: 0,
+          stamina: 100,
+        },
+        entityType: "status",
+      });
 
-    const playerToAddCharacter = await PlayerFetcher.getPlayerById(playerId);
-    const raceToAddCharacter = await PocketBase.getEntityById<Race>({
-      entityType: "races",
-      id: char.race,
-    });
+      const playerToAddCharacter = await PlayerFetcher.getPlayerById(playerId);
+      const raceToAddCharacter = await PocketBase.getEntityById<Race>({
+        entityType: "races",
+        id: char.race,
+      });
 
-    const factionToAddCharacter = char.faction
-      ? await PocketBase.getEntityById<Faction>({
-          entityType: "factions",
-          id: char.faction,
-        })
-      : undefined;
+      const factionToAddCharacter = char.faction
+        ? await PocketBase.getEntityById<Faction>({
+            entityType: "factions",
+            id: char.faction,
+          })
+        : undefined;
 
-    if (!raceToAddCharacter || !playerToAddCharacter) {
-      throw new Error("Could not create character");
+      if (!raceToAddCharacter || !playerToAddCharacter) {
+        throw new BotError("Could not create character");
+      }
+
+      const response = await PocketBase.createEntity<Character>({
+        entityType: "characters",
+        entityData: {
+          ...char,
+          skills: baseSkills.id,
+          status: baseStatus.id,
+        },
+        expandFields: true,
+      });
+
+      await CharacterFetcher.syncCharacterRelations({
+        baseSkills,
+        baseStatus,
+        character: response,
+        factionToAddCharacter,
+        raceToAddCharacter,
+        playerToAddCharacter,
+      });
+      return response;
+    } catch (error) {
+      throw new PocketBaseError("Could not create character.");
     }
-
-    const response = await PocketBase.createEntity<Character>({
-      entityType: "characters",
-      entityData: {
-        ...char,
-        skills: baseSkills.id,
-        status: baseStatus.id,
-      },
-      expandFields: true,
-    });
-
-    await CharacterFetcher.syncCharacterRelations({
-      baseSkills,
-      baseStatus,
-      character: response,
-      factionToAddCharacter,
-      raceToAddCharacter,
-      playerToAddCharacter,
-    });
-    return response;
   }
 
   private static isOwner(userId: Snowflake, prevUserId: Snowflake): boolean {
@@ -187,45 +213,40 @@ export default class CharacterFetcher {
     playerToAddCharacter: Player;
     raceToAddCharacter: Race;
   }): Promise<boolean> {
-    try {
-      if (factionToAddCharacter) {
-        await PocketBase.updateEntity<Faction>({
-          entityType: "factions",
-          entityData: {
-            ...factionToAddCharacter,
-            characters: [...factionToAddCharacter.characters, character.id],
-          },
-        });
-      }
-      await PocketBase.updateEntity<Race>({
-        entityType: "races",
+    if (factionToAddCharacter) {
+      await PocketBase.updateEntity<Faction>({
+        entityType: "factions",
         entityData: {
-          ...raceToAddCharacter,
-          characters: [...raceToAddCharacter.characters, character.id],
+          ...factionToAddCharacter,
+          characters: [...factionToAddCharacter.characters, character.id],
         },
       });
-      await PocketBase.updateEntity<Skills>({
-        entityType: "skills",
-        entityData: { ...baseSkills, character: character.id },
-      });
-      await PocketBase.updateEntity<Status>({
-        entityType: "status",
-        entityData: {
-          ...baseStatus,
-          character: character.id,
-        },
-      });
-      await PocketBase.updateEntity<Player>({
-        entityType: "players",
-        entityData: {
-          ...playerToAddCharacter,
-          characters: [...playerToAddCharacter.characters, character.id],
-        },
-      });
-      return true;
-    } catch (e) {
-      console.error("Error while syncing character relations", e);
-      return false;
     }
+    await PocketBase.updateEntity<Race>({
+      entityType: "races",
+      entityData: {
+        ...raceToAddCharacter,
+        characters: [...raceToAddCharacter.characters, character.id],
+      },
+    });
+    await PocketBase.updateEntity<Skills>({
+      entityType: "skills",
+      entityData: { ...baseSkills, character: character.id },
+    });
+    await PocketBase.updateEntity<Status>({
+      entityType: "status",
+      entityData: {
+        ...baseStatus,
+        character: character.id,
+      },
+    });
+    await PocketBase.updateEntity<Player>({
+      entityType: "players",
+      entityData: {
+        ...playerToAddCharacter,
+        characters: [...playerToAddCharacter.characters, character.id],
+      },
+    });
+    return true;
   }
 }

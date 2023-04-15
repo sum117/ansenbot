@@ -5,6 +5,7 @@ import { Discord, Once } from "discordx";
 import config from "../../config.json" assert { type: "json" };
 import { GameClock } from "../lib/discord/Character/classes/GameTime";
 import CharacterFetcher from "../lib/pocketbase/CharacterFetcher";
+import { BotError } from "../utils/Errors";
 
 @Discord()
 export class OnReadyGameTimeManager {
@@ -13,7 +14,7 @@ export class OnReadyGameTimeManager {
 
   get clock(): GameClock {
     if (!this._clock) {
-      throw new Error("Clock not set");
+      throw new BotError("Clock not set");
     }
     return this._clock;
   }
@@ -23,7 +24,7 @@ export class OnReadyGameTimeManager {
 
   get channel(): TextChannel {
     if (!this._channel) {
-      throw new Error("Channel not set");
+      throw new BotError("Channel not set");
     }
     return this._channel;
   }
