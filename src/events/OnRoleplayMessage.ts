@@ -73,8 +73,6 @@ export class OnRoleplayMessage {
         return false;
       }
       const equality = equalityPercentage(prevContent, message.content);
-      console.log(prevContent, message.content);
-      console.log(equality);
       if (equality > 80) {
         return true;
       }

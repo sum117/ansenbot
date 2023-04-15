@@ -1,4 +1,4 @@
-import type { CommandInteraction, GuildTextBasedChannel } from "discord.js";
+import type { ChatInputCommandInteraction, GuildTextBasedChannel } from "discord.js";
 import { AttachmentBuilder, channelMention, userMention } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
 import mustache from "mustache";
@@ -6,7 +6,8 @@ import mustache from "mustache";
 import { channelChoice, memoryChoice } from "../../data/choices";
 import MemoryFetcher from "../../lib/pocketbase/MemoryFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
-import { BotError, PocketBaseError } from "../../utils/Errors";
+import { BotError } from "../../utils/Errors";
+import handleError from "../../utils/handleError";
 
 @Discord()
 export class MemoryInvasion {
@@ -17,11 +18,9 @@ export class MemoryInvasion {
   async main(
     @SlashOption(memoryChoice)
     memoryTitle: string,
-
     @SlashOption(channelChoice)
     channel: GuildTextBasedChannel,
-
-    interaction: CommandInteraction
+    interaction: ChatInputCommandInteraction
   ): Promise<void> {
     try {
       if (!interaction.inCachedGuild()) {
@@ -38,7 +37,7 @@ export class MemoryInvasion {
         memory: userMention(interaction.user.id),
         channel: channelMention(channel.id),
       };
-      const imageUrl = await PocketBase.getImageUrl({
+      const imageUrl = PocketBase.getImageUrl({
         fileName: chosenMemory.icon,
         record: chosenMemory,
       });
@@ -48,11 +47,7 @@ export class MemoryInvasion {
         files: [attachment],
       });
     } catch (error) {
-      console.error(error);
-      if (error instanceof PocketBaseError) {
-        void interaction.reply(error.message);
-        return;
-      }
+      handleError(interaction, error);
     }
   }
 }

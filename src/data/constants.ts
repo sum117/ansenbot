@@ -19,7 +19,7 @@ export const RELATION_FIELD_NAMES = {
   memory: "memory",
 } as const;
 export const MAX_FILE_SIZE = 15_000_000;
-export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+export const ACCEPTED_IMAGE_TYPES = ["jpeg", "jpg", "png", "webp"];
 export const JOIN_FORM_VALUES = {
   adult: "adult",
   female: "female",

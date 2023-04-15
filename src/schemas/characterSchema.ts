@@ -1,3 +1,4 @@
+import type { HexColorString } from "discord.js";
 import { z } from "zod";
 
 const baseSchema = z.object({
@@ -8,20 +9,20 @@ const baseSchema = z.object({
   updated: z.string(),
 });
 
-const createCharacterSchema = z.object({
-  name: z.string(),
+const createUpdateCharacterSchema = z.object({
+  name: z.string().min(3).max(128),
+  surname: z.string().min(3).max(64),
   image: z.string(),
-  surname: z.string(),
   gender: z.string(),
   age: z.number(),
   level: z.number(),
-  spec: z.string(),
+  spec: z.string().max(64),
   reputation: z.number(),
-  profession: z.string().optional(),
-  title: z.string().optional(),
-  personality: z.string().optional(),
-  appearance: z.string().optional(),
-  backstory: z.string().optional(),
+  profession: z.string().max(128).optional(),
+  title: z.string().max(128).optional(),
+  personality: z.string().max(1024).optional(),
+  appearance: z.string().max(512).optional(),
+  backstory: z.string().max(2048).optional(),
   skills: z.string(),
   status: z.string(),
   race: z.string(),
@@ -33,7 +34,7 @@ const createCharacterSchema = z.object({
 });
 
 const baseCharacterSchema = baseSchema.extend({
-  ...createCharacterSchema.shape,
+  ...createUpdateCharacterSchema.shape,
 });
 
 const characterExpanded = z.object({
@@ -75,7 +76,7 @@ const playerSchema = baseSchema.extend({
 
 const raceSchema = baseSchema.extend({
   name: z.string(),
-  color: z.string(),
+  color: z.string().regex(/^#[0-9A-F]{6}$/i) as z.ZodType<HexColorString>,
   characters: z.array(z.string()),
   expand: characterExpanded.optional(),
 });
@@ -123,7 +124,7 @@ export {
   baseCharacterSchema,
   baseSchema,
   characterExpanded,
-  createCharacterSchema,
+  createUpdateCharacterSchema,
   factionSchema,
   fullCharacterSchema,
   memorySchema,

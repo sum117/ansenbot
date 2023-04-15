@@ -1,14 +1,14 @@
 import express from "express";
 import { z } from "zod";
 
-import { createCharacterSchema } from "./schemas/characterSchema";
+import { createUpdateCharacterSchema } from "./schemas/characterSchema";
 
 const server = express();
 server.use(express.json());
 server.post("/character", async (req: express.Request, res: express.Response) => {
   console.log(req.body);
   try {
-    const characterData = await createCharacterSchema.parseAsync(req.body);
+    const characterData = await createUpdateCharacterSchema.parseAsync(req.body);
     console.log(characterData);
   } catch (error) {
     if (error instanceof z.ZodError) {

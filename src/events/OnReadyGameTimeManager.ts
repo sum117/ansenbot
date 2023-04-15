@@ -10,7 +10,6 @@ import { BotError } from "../utils/Errors";
 @Discord()
 export class OnReadyGameTimeManager {
   private _clock: GameClock | undefined;
-  private _channel: TextChannel | undefined;
 
   get clock(): GameClock {
     if (!this._clock) {
@@ -18,9 +17,12 @@ export class OnReadyGameTimeManager {
     }
     return this._clock;
   }
+
   set clock(clock: GameClock) {
     this._clock = clock;
   }
+
+  private _channel: TextChannel | undefined;
 
   get channel(): TextChannel {
     if (!this._channel) {
@@ -28,6 +30,7 @@ export class OnReadyGameTimeManager {
     }
     return this._channel;
   }
+
   set channel(channel: TextChannel) {
     this._channel = channel;
   }
@@ -38,7 +41,6 @@ export class OnReadyGameTimeManager {
     this.channel = (await client.channels.fetch(config.channels.gameTime)) as TextChannel;
     setInterval(() => {
       const time = this.clock.updateClock();
-      console.log(`[GameTimeManager] ${time}`);
       this.channel.setName(`⏳ ${time}`);
     }, 6 * 60 * 1000);
   }

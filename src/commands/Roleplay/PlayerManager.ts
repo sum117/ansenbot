@@ -1,7 +1,17 @@
-import type { AutocompleteInteraction, CommandInteraction, User } from "discord.js";
-import { Discord, Slash, SlashOption } from "discordx";
+import type {
+  AutocompleteInteraction,
+  ButtonInteraction,
+  ChatInputCommandInteraction,
+  CommandInteraction,
+  ModalSubmitInteraction,
+  User,
+} from "discord.js";
+import { TextInputStyle } from "discord.js";
+import { ButtonComponent, Discord, ModalComponent, Slash, SlashOption } from "discordx";
 
-import { characterSetChoice, characterShowChoice, userChoice } from "../../data/choices";
+import { characterChoiceFromAll, characterChoiceFromUser, userChoice } from "../../data/choices";
+import editCharacterForm from "../../data/forms/editCharacterForm";
+import { CharacterEditor } from "../../lib/discord/Character/classes/CharacterEditor";
 import CharacterPost from "../../lib/discord/Character/classes/CharacterPost";
 import getCharProfile from "../../lib/discord/Character/helpers/getCharProfile";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
@@ -9,6 +19,8 @@ import PlayerFetcher from "../../lib/pocketbase/PlayerFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
 import type { Player } from "../../types/Character";
 import { PocketBaseError } from "../../utils/Errors";
+import handleError from "../../utils/handleError";
+import replyOrFollowUp from "../../utils/replyOrFollowUp";
 
 @Discord()
 export class PlayerManager {
@@ -17,7 +29,7 @@ export class PlayerManager {
     name: "setar-personagem",
   })
   async setMainCharacter(
-    @SlashOption(characterSetChoice)
+    @SlashOption(characterChoiceFromUser)
     characterId: string,
     interaction: CommandInteraction
   ): Promise<void> {
@@ -51,9 +63,9 @@ export class PlayerManager {
   async showProfile(
     @SlashOption(userChoice)
     user: User | null,
-    @SlashOption(characterShowChoice)
+    @SlashOption(characterChoiceFromAll)
     characterId: string | null,
-    interaction: CommandInteraction | AutocompleteInteraction
+    interaction: ChatInputCommandInteraction | AutocompleteInteraction
   ): Promise<void> {
     try {
       if (!interaction.isAutocomplete()) {
@@ -86,14 +98,39 @@ export class PlayerManager {
         void interaction.editReply(messageOptions);
       }
     } catch (error) {
-      console.error(error);
-      if (error instanceof PocketBaseError) {
-        if (!interaction.isAutocomplete()) {
-          void interaction.editReply({
-            content: error.message,
-          });
-        }
+      if (!interaction.isAutocomplete()) {
+        handleError(interaction, error);
       }
     }
+  }
+
+  @Slash({
+    description: "Edita um personagem.",
+    name: "editar-personagem",
+  })
+  async editCharacterPrompt(
+    @SlashOption(characterChoiceFromUser)
+    _characterId: string,
+    interaction: ChatInputCommandInteraction
+  ): Promise<void> {
+    try {
+      await interaction.deferReply({
+        ephemeral: false,
+      });
+      const form = await editCharacterForm(interaction);
+      void replyOrFollowUp(interaction, form);
+    } catch (error) {
+      handleError(interaction, error);
+    }
+  }
+
+  @ButtonComponent({ id: /editChar:\w+:\w+/ })
+  async handleEditCharacterButton(interaction: ButtonInteraction): Promise<void> {
+    await new CharacterEditor(interaction).handleEditCharacterButton();
+  }
+
+  @ModalComponent({ id: /editChar:\w+:\w+/ })
+  async handleEditSubmit(interaction: ModalSubmitInteraction): Promise<void> {
+    await new CharacterEditor(interaction).handleEditSubmit();
   }
 }

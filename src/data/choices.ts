@@ -7,14 +7,16 @@ import {
 } from "../lib/discord/Character/helpers/characterAutoComplete";
 import MemoryFetcher from "../lib/pocketbase/MemoryFetcher";
 
-const characterSetChoice: SlashOptionOptions<"personagem", "O personagem que você deseja setar."> =
-  {
-    required: true,
-    description: "O personagem que você deseja setar.",
-    name: "personagem",
-    type: ApplicationCommandOptionType.String,
-    autocomplete: (interaction) => characterAutoCompleteFromPlayer(interaction),
-  };
+const characterChoiceFromUser: SlashOptionOptions<
+  "personagem",
+  "O personagem que você deseja setar."
+> = {
+  required: true,
+  description: "O personagem que você deseja setar.",
+  name: "personagem",
+  type: ApplicationCommandOptionType.String,
+  autocomplete: (interaction) => characterAutoCompleteFromPlayer(interaction),
+};
 
 const userChoice: SlashOptionOptions<
   "usuário",
@@ -26,13 +28,14 @@ const userChoice: SlashOptionOptions<
   type: ApplicationCommandOptionType.User,
 };
 
-const characterShowChoice: SlashOptionOptions<"personagem", "Mostra qualquer personagem."> = {
-  required: false,
-  description: "Mostra qualquer personagem.",
-  name: "personagem",
-  autocomplete: characterAutoCompleteFromAll,
-  type: ApplicationCommandOptionType.String,
-};
+const characterChoiceFromAll: SlashOptionOptions<"personagem", "O personagem a ser administrado."> =
+  {
+    required: false,
+    description: "O personagem a ser administrado.",
+    name: "personagem",
+    autocomplete: characterAutoCompleteFromAll,
+    type: ApplicationCommandOptionType.String,
+  };
 
 const memoryChoice: SlashOptionOptions<"memoria", "A memória que irá utilizar."> = {
   required: true,
@@ -58,4 +61,4 @@ const channelChoice: SlashOptionOptions<"canal", "O canal onde a invasão irá o
   required: true,
 };
 
-export { channelChoice, characterSetChoice, characterShowChoice, memoryChoice, userChoice };
+export { channelChoice, characterChoiceFromAll, characterChoiceFromUser, memoryChoice, userChoice };

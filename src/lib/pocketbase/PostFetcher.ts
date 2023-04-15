@@ -7,6 +7,17 @@ import PlayerFetcher from "./PlayerFetcher";
 import PocketBase from "./PocketBase";
 
 export default class PostFetcher {
+  public static getPostByMessageId(messageId: string): Promise<Post> {
+    try {
+      return PocketBase.getFirstListEntity({
+        entityType: "posts",
+        filter: [`messageId="${messageId}"`, {}],
+      });
+    } catch (error) {
+      throw new PocketBaseError("Could not get post by message id.");
+    }
+  }
+
   public static async createPost<T extends Message>(message: T): Promise<Post | void> {
     try {
       const postPlayer = await PlayerFetcher.getPlayerById(message.author.id);
@@ -29,6 +40,7 @@ export default class PostFetcher {
       throw new PocketBaseError("Could not create post.");
     }
   }
+
   public static async deletePost<T extends Message>(message: T): Promise<void> {
     try {
       const post = await PocketBase.getFirstListEntity<Post>({
