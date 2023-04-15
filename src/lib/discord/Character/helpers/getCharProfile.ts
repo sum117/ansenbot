@@ -1,5 +1,6 @@
 import type { BaseMessageOptions, User } from "discord.js";
 
+import { BotError } from "../../../../utils/Errors";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import PlayerFetcher from "../../../pocketbase/PlayerFetcher";
 import CharacterPost from "../classes/CharacterPost";

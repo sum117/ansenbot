@@ -7,6 +7,7 @@ import type {
 import { ActionRowBuilder, EmbedBuilder } from "discord.js";
 
 import type { Prompt } from "../../../types/MultiForm";
+import { BotError } from "../../../utils/Errors";
 import { BaseMessageBuilder } from "../Builders/BaseMessageBuilder";
 
 export default class MultiForm {
