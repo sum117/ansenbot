@@ -12,10 +12,11 @@ import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
 import type { Faction } from "../../types/Character";
 import { BotError } from "../../utils/Errors";
+import replyOrFollowUp from "../../utils/replyOrFollowUp";
 
 const editCharacterForm = async (
   interaction: ChatInputCommandInteraction | ModalSubmitInteraction
-): Promise<MultiForm> => {
+): Promise<MultiForm | void> => {
   let charId: string | null = "";
   if (interaction.isCommand()) {
     charId = interaction.options.getString("personagem");
@@ -28,6 +29,14 @@ const editCharacterForm = async (
   }
 
   const character = await CharacterFetcher.getCharacterById(charId);
+
+  if (!CharacterFetcher.isOwner(interaction.user.id, character.playerId)) {
+    void replyOrFollowUp(interaction, {
+      content: "Você não é o dono desse personagem.",
+    });
+    return;
+  }
+
   const allFactions = await PocketBase.getAllEntities<Faction>({
     page: 1,
     entityType: "factions",

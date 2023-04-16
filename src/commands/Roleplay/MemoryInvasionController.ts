@@ -10,7 +10,7 @@ import { BotError } from "../../utils/Errors";
 import handleError from "../../utils/handleError";
 
 @Discord()
-export class MemoryInvasion {
+export class MemoryInvasionController {
   @Slash({
     description: "Faz uma solicitação de roleplay como uma memória.",
     name: "memoria",
@@ -24,7 +24,7 @@ export class MemoryInvasion {
   ): Promise<void> {
     try {
       if (!interaction.inCachedGuild()) {
-        throw new BotError("MemoryInvasion attempted to be executed outside of a guild.");
+        throw new BotError("MemoryInvasionController attempted to be executed outside of a guild.");
       }
 
       const memoryData = await MemoryFetcher.getAllMemories();

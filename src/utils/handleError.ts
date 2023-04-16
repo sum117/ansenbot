@@ -2,6 +2,7 @@ import type {
   ButtonInteraction,
   ChatInputCommandInteraction,
   ModalSubmitInteraction,
+  StringSelectMenuInteraction,
 } from "discord.js";
 import { ClientResponseError } from "pocketbase";
 import { inspect } from "util";
@@ -12,7 +13,11 @@ import getSafeEntries from "./getSafeEntries";
 import replyOrFollowUp from "./replyOrFollowUp";
 
 export default function handleError(
-  interaction: ChatInputCommandInteraction | ModalSubmitInteraction | ButtonInteraction,
+  interaction:
+    | ChatInputCommandInteraction
+    | ModalSubmitInteraction
+    | ButtonInteraction
+    | StringSelectMenuInteraction,
   error: unknown
 ): void {
   console.error(inspect(error, false, null, true));

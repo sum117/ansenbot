@@ -6,8 +6,14 @@ import type {
   ModalSubmitInteraction,
   User,
 } from "discord.js";
-import { TextInputStyle } from "discord.js";
-import { ButtonComponent, Discord, ModalComponent, Slash, SlashOption } from "discordx";
+import {
+  ButtonComponent,
+  Discord,
+  ModalComponent,
+  SelectMenuComponent,
+  Slash,
+  SlashOption,
+} from "discordx";
 
 import { characterChoiceFromAll, characterChoiceFromUser, userChoice } from "../../data/choices";
 import editCharacterForm from "../../data/forms/editCharacterForm";
@@ -23,7 +29,7 @@ import handleError from "../../utils/handleError";
 import replyOrFollowUp from "../../utils/replyOrFollowUp";
 
 @Discord()
-export class PlayerManager {
+export class CharacterEditorController {
   @Slash({
     description: "Seta o seu personagem principal.",
     name: "setar-personagem",
@@ -57,6 +63,25 @@ export class PlayerManager {
   }
 
   @Slash({
+    description: "Deleta um dos seus personagens.",
+    name: "deletar-personagem",
+  })
+  async deleteCharacter(
+    @SlashOption(characterChoiceFromUser)
+    characterId: string,
+    interaction: ChatInputCommandInteraction
+  ): Promise<void> {
+    try {
+      await CharacterFetcher.deleteCharacter(interaction.user.id, characterId);
+      void replyOrFollowUp(interaction, {
+        content: "Personagem deletado com sucesso.",
+      });
+    } catch (error) {
+      handleError(interaction, error);
+    }
+  }
+
+  @Slash({
     description: "Mostra o personagem principal ou o personagem que você desejar.",
     name: "perfil",
   })
@@ -67,40 +92,27 @@ export class PlayerManager {
     characterId: string | null,
     interaction: ChatInputCommandInteraction | AutocompleteInteraction
   ): Promise<void> {
+    if (interaction.isAutocomplete()) {
+      return;
+    }
+
     try {
-      if (!interaction.isAutocomplete()) {
-        await interaction.deferReply();
-      }
-      // Conditions
-      const hasOnlyUser = user && !characterId && !interaction.isAutocomplete();
-      const hasOnlyCharacter = !user && characterId && !interaction.isAutocomplete();
-      const hasNone = !user && !characterId && !interaction.isAutocomplete();
-      const hasBoth = user && characterId && !interaction.isAutocomplete();
-      if (hasBoth) {
-        void interaction.reply({
-          content:
-            "Você não pode usar os dois argumentos ao mesmo tempo. Escolha usuário ou personagem.",
-          ephemeral: true,
-        });
-        return;
-      }
-      if (hasOnlyUser || hasNone) {
-        const targetUser = hasOnlyUser ? user : interaction.user;
-        const charProfile = await getCharProfile(targetUser);
-        void interaction.editReply(charProfile);
-      }
-      if (hasOnlyCharacter || hasBoth) {
+      await interaction.deferReply();
+      const targetUser = user ?? interaction.user;
+
+      if (characterId) {
         const character = await CharacterFetcher.getCharacterById(characterId);
         const characterPost = new CharacterPost(character);
         const messageOptions = await characterPost.createMessageOptions({
           to: "profile",
         });
         void interaction.editReply(messageOptions);
+      } else {
+        const charProfile = await getCharProfile(targetUser);
+        void interaction.editReply(charProfile);
       }
     } catch (error) {
-      if (!interaction.isAutocomplete()) {
-        handleError(interaction, error);
-      }
+      handleError(interaction, error);
     }
   }
 
@@ -118,6 +130,9 @@ export class PlayerManager {
         ephemeral: false,
       });
       const form = await editCharacterForm(interaction);
+      if (!form) {
+        return;
+      }
       void replyOrFollowUp(interaction, form);
     } catch (error) {
       handleError(interaction, error);
@@ -127,6 +142,11 @@ export class PlayerManager {
   @ButtonComponent({ id: /editChar:\w+:\w+/ })
   async handleEditCharacterButton(interaction: ButtonInteraction): Promise<void> {
     await new CharacterEditor(interaction).handleEditCharacterButton();
+  }
+
+  @SelectMenuComponent({ id: /editChar:\w+:\w+/ })
+  async handleEditCharacterSelect(interaction: ButtonInteraction): Promise<void> {
+    await new CharacterEditor(interaction).handleEditCharacterSelect();
   }
 
   @ModalComponent({ id: /editChar:\w+:\w+/ })

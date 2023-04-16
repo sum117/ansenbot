@@ -3,10 +3,15 @@ import type {
   ChatInputCommandInteraction,
   InteractionReplyOptions,
   ModalSubmitInteraction,
+  StringSelectMenuInteraction,
 } from "discord.js";
 
 export default async function replyOrFollowUp(
-  interaction: ChatInputCommandInteraction | ModalSubmitInteraction | ButtonInteraction,
+  interaction:
+    | ChatInputCommandInteraction
+    | ModalSubmitInteraction
+    | ButtonInteraction
+    | StringSelectMenuInteraction,
   replyOptions:
     | (InteractionReplyOptions & {
         ephemeral?: boolean;
