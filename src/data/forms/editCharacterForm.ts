@@ -17,7 +17,7 @@ import replyOrFollowUp from "../../utils/replyOrFollowUp";
 const editCharacterForm = async (
   interaction: ChatInputCommandInteraction | ModalSubmitInteraction
 ): Promise<MultiForm | void> => {
-  let charId: string | null = "";
+  let charId: string | null;
   if (interaction.isCommand()) {
     charId = interaction.options.getString("personagem");
   } else {

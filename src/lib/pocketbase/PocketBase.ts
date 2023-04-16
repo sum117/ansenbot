@@ -38,11 +38,9 @@ export default class PocketBase {
     record: Pick<DBRecord, "id" | "collectionId" | "collectionName">;
     thumb?: boolean;
   }): string {
-    const url = pb.getFileUrl(record, fileName, {
+    return pb.getFileUrl(record, fileName, {
       thumb: thumb ? "512x512" : undefined,
     });
-
-    return url;
   }
 
   public static async validateRecord<T extends Pick<DBRecord, "id" | "created" | "updated">>(
@@ -58,59 +56,51 @@ export default class PocketBase {
     return prevData;
   }
 
-  public static async getEntityById<T extends RelationFields>({
+  public static getEntityById<T extends RelationFields>({
     entityType,
     id,
     expandFields = true,
   }: GetEntityParams): Promise<T> {
-    const response = await pb
+    return pb
       .collection(COLLECTIONS[entityType])
       .getOne<T>(
         id,
         expandFields ? PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)) : undefined
       );
-
-    return response;
   }
 
-  public static async createEntity<T extends RelationFields>({
+  public static createEntity<T extends RelationFields>({
     entityType,
     entityData,
     expandFields = true,
   }: CreateEntityParams<T>): Promise<T> {
-    const response = await pb
+    return pb
       .collection(COLLECTIONS[entityType])
       .create<T>(
         entityData,
         expandFields ? PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)) : undefined
       );
-    return response;
   }
 
-  public static async getAllEntities<T extends RelationFields>({
+  public static getAllEntities<T extends RelationFields>({
     entityType,
     page = 1,
   }: GetAllEntitiesParams): Promise<ListResult<T>> {
-    const response = await pb.collection(COLLECTIONS[entityType]).getList<T>(page, 24);
-
-    return response;
+    return pb.collection(COLLECTIONS[entityType]).getList<T>(page, 24);
   }
 
-  public static async getFirstListEntity<T extends RelationFields>({
+  public static getFirstListEntity<T extends RelationFields>({
     entityType,
     filter,
   }: GetFirstEntityByFilterParams): Promise<T> {
-    const response = await pb.collection(COLLECTIONS[entityType]).getFirstListItem<T>(...filter);
-    return response;
+    return pb.collection(COLLECTIONS[entityType]).getFirstListItem<T>(...filter);
   }
 
-  public static async getEntitiesByFilter<T extends RelationFields>({
+  public static getEntitiesByFilter<T extends RelationFields>({
     entityType,
     filter,
   }: GetEntitiesByFilterParams): Promise<ListResult<T>> {
-    const response = await pb.collection(COLLECTIONS[entityType]).getList<T>(...filter);
-
-    return response;
+    return pb.collection(COLLECTIONS[entityType]).getList<T>(...filter);
   }
 
   public static updateEntityWithFormData(

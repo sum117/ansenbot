@@ -7,6 +7,8 @@ export const COLLECTIONS = {
   status: "status",
   players: "players",
   memories: "memories",
+  spec: "spec",
+  startingSkills: "startingSkills",
 } as const;
 export const RELATION_FIELD_NAMES = {
   character: "character",
@@ -17,6 +19,8 @@ export const RELATION_FIELD_NAMES = {
   player: "player",
   characters: "characters",
   memory: "memory",
+  spec: "spec",
+  startingSkills: "startingSkills",
 } as const;
 export const MAX_FILE_SIZE = 15_000_000;
 export const ACCEPTED_IMAGE_TYPES = ["jpeg", "jpg", "png", "webp"];

@@ -56,7 +56,7 @@ export class OnOracleChat {
       if (response.text.length > 2000) {
         const text = split(response.text, "", 2000);
         for await (const t of text) {
-          message.reply(t);
+          await message.reply(t);
         }
       } else {
         await message.reply(response.text);

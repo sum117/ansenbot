@@ -65,7 +65,7 @@ export class OnRoleplayMessage {
       throw new BotError("Message is not in guild");
     }
     const lastMessages = await message.channel.messages.fetch({ limit: 10 });
-    const similarMessage = lastMessages.find((lastMessage) => {
+    return lastMessages.find((lastMessage) => {
       const prevCharacter = lastMessage.embeds[0]?.title;
       const prevContent = lastMessage.embeds[0]?.description;
 
@@ -77,7 +77,6 @@ export class OnRoleplayMessage {
         return true;
       }
     });
-    return similarMessage;
   }
 
   private isValidRoleplayMessage(message: Message): boolean {

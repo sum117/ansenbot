@@ -48,7 +48,7 @@ const memoryChoice: SlashOptionOptions<"memoria", "A memória que irá utilizar.
         name: memory.title,
         value: memory.title,
       }));
-      interaction.respond(choices);
+      void interaction.respond(choices);
     });
   },
 };
