@@ -9,6 +9,7 @@ import {
 import split from "just-split";
 
 import type { Prompt } from "../../../types/MultiForm";
+import { BotError } from "../../../utils/Errors";
 import { BaseMessageBuilder } from "../Builders/BaseMessageBuilder";
 
 export default class MultiForm extends BaseMessageBuilder {
@@ -26,13 +27,13 @@ export default class MultiForm extends BaseMessageBuilder {
 
   public getEmbedDescription(): string {
     const embed = this.embeds?.[0];
-    assert(embed, "No embed found");
+    assert(embed, new BotError("No embed found"));
     return EmbedBuilder.from(embed).data.description ?? "";
   }
 
   public setEmbedDescription(description: string): this {
     const embed = this.embeds?.[0];
-    assert(embed, "No embed found");
+    assert(embed, new BotError("No embed found"));
     this.embeds = [EmbedBuilder.from(embed).setDescription(description)];
     return this;
   }

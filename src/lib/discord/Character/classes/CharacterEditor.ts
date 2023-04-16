@@ -16,7 +16,7 @@ import promptBox from "../../../../data/modals/promptBox";
 import { createUpdateCharacterSchema } from "../../../../schemas/characterSchema";
 import { isImageUrl } from "../../../../schemas/utiltitySchemas";
 import type { Character, CredentialsArray, Faction } from "../../../../types/Character";
-import { BotError } from "../../../../utils/Errors";
+import { BotError, PocketBaseError } from "../../../../utils/Errors";
 import getZodStringLength from "../../../../utils/getZodStringLength";
 import handleError from "../../../../utils/handleError";
 import replyOrFollowUp from "../../../../utils/replyOrFollowUp";
@@ -41,15 +41,12 @@ export class CharacterEditor {
     }
     try {
       const field = this.interaction.component.label;
-      if (!field) {
-        return;
-      }
+      assert(field, new BotError("Could not find trigger message button label to edit character."));
+
       const [_, action, characterId] = this.getInteractionCredentials();
       const character = await CharacterFetcher.getCharacterById(characterId);
       const isOwner = this.checkOwnership(character);
-      if (!isOwner) {
-        return;
-      }
+      assert(isOwner, new PocketBaseError("You do not own this character."));
 
       const length = this.getLengths(action);
       const value = this.getCharacterUpdateValue(character, action);
@@ -134,7 +131,7 @@ export class CharacterEditor {
     const image = await isImageUrl.parseAsync(imageUrl);
     const response = await axios.get(image, { responseType: "arraybuffer" });
     const fileName = image.split("/").pop();
-    assert(fileName, "Não foi possível encontrar o nome do arquivo.");
+    assert(fileName, new BotError("Couldn't find file name in image url."));
     return {
       fileName,
       blob: new Blob([response.data], { type: response.headers["content-type"] }),

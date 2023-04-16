@@ -1,3 +1,4 @@
+import assert from "assert";
 import type {
   AutocompleteInteraction,
   ButtonInteraction,
@@ -24,7 +25,7 @@ import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import PlayerFetcher from "../../lib/pocketbase/PlayerFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
 import type { Player } from "../../types/Character";
-import { PocketBaseError } from "../../utils/Errors";
+import { BotError, PocketBaseError } from "../../utils/Errors";
 import handleError from "../../utils/handleError";
 import replyOrFollowUp from "../../utils/replyOrFollowUp";
 
@@ -130,9 +131,7 @@ export class CharacterEditorController {
         ephemeral: false,
       });
       const form = await editCharacterForm(interaction);
-      if (!form) {
-        return;
-      }
+      assert(form, new BotError("could not find form."));
       void replyOrFollowUp(interaction, form);
     } catch (error) {
       handleError(interaction, error);
