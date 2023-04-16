@@ -15,7 +15,7 @@ import type {
   Status,
 } from "../../types/Character";
 import type { CreateData, PocketBaseConstants } from "../../types/PocketBaseCRUD";
-import { PocketBaseError } from "../../utils/Errors";
+import { BotError, PocketBaseError } from "../../utils/Errors";
 import getSafeKeys from "../../utils/getSafeKeys";
 import PlayerFetcher from "./PlayerFetcher";
 import PocketBase from "./PocketBase";
@@ -254,7 +254,7 @@ export default class CharacterFetcher {
       };
 
       getSafeKeys(mergedSkills).forEach((key) => {
-        assert(mergedSkills, "Skills should be defined here");
+        assert(mergedSkills, new BotError("Skills should be defined here"));
         const value = mergedSkills[key] ?? 0;
         mergedSkills[key] = Math.floor(value / 2);
       });

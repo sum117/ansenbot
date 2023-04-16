@@ -1,3 +1,4 @@
+import assert from "assert";
 import type { ChatInputCommandInteraction, GuildTextBasedChannel } from "discord.js";
 import { AttachmentBuilder, channelMention, userMention } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
@@ -6,6 +7,7 @@ import mustache from "mustache";
 import { channelChoice, memoryChoice } from "../../data/choices";
 import MemoryFetcher from "../../lib/pocketbase/MemoryFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
+import { BotError } from "../../utils/Errors";
 import handleError from "../../utils/handleError";
 
 @Discord()
@@ -22,15 +24,11 @@ export class MemoryInvasionController {
     interaction: ChatInputCommandInteraction
   ): Promise<void> {
     try {
-      if (!interaction.inCachedGuild()) {
-        return;
-      }
+      assert(interaction.inCachedGuild(), new BotError("interaction sent outside of guild"));
 
       const memoryData = await MemoryFetcher.getAllMemories();
       const chosenMemory = memoryData.items.find((memory) => memory.title === memoryTitle);
-      if (!chosenMemory) {
-        return;
-      }
+      assert(chosenMemory, new BotError("memory not found"));
 
       const view = {
         memory: userMention(interaction.user.id),
