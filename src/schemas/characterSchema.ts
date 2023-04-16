@@ -16,7 +16,7 @@ const createUpdateCharacterSchema = z.object({
   gender: z.string(),
   age: z.number(),
   level: z.number(),
-  spec: z.string().max(64),
+  spec: z.array(z.string()),
   reputation: z.number(),
   profession: z.string().max(128).optional(),
   title: z.string().max(128).optional(),
@@ -98,6 +98,17 @@ const skillsSchema = baseSchema.extend({
   }),
 });
 
+const specSchema = baseSchema.extend({
+  name: z.string(),
+  phrase: z.string(),
+  characters: z.array(z.string()),
+  startingSkills: z.array(z.string()),
+  expand: characterExpanded
+    .extend({
+      startingSkills: skillsSchema.omit({ expand: true }),
+    })
+    .optional(),
+});
 const statusSchema = baseSchema.extend({
   health: z.number(),
   stamina: z.number(),
@@ -117,6 +128,7 @@ const fullCharacterSchema = baseCharacterSchema.extend({
     skills: skillsSchema,
     status: statusSchema,
     race: raceSchema,
+    spec: specSchema,
   }),
 });
 
@@ -132,5 +144,6 @@ export {
   postSchema,
   raceSchema,
   skillsSchema,
+  specSchema,
   statusSchema,
 };

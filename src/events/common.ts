@@ -59,7 +59,7 @@ export class Example {
         isPending: true,
         message: null,
       });
-      this.imageGenerationQueue.enqueue(async () => {
+      void this.imageGenerationQueue.enqueue(async () => {
         await this.generateAnimeImage();
       });
     } catch (error) {

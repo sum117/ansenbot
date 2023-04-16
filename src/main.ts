@@ -35,7 +35,7 @@ bot.on("interactionCreate", (interaction: Interaction) => {
 });
 
 bot.on("messageCreate", (message) => {
-  bot.executeCommand(message);
+  void bot.executeCommand(message);
 });
 
 bot.on("messageDelete", async (message) => {
@@ -62,4 +62,4 @@ async function run() {
 server.listen(8000, () => {
   console.log("Server started");
 });
-run();
+void run();

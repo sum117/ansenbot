@@ -1,5 +1,5 @@
 import type { BaseMessageOptions, ColorResolvable } from "discord.js";
-import { AttachmentBuilder, Collection, EmbedBuilder, userMention } from "discord.js";
+import { Collection, EmbedBuilder, userMention } from "discord.js";
 
 import { skillsDictionary } from "../../../../data/translations";
 import type { Character } from "../../../../types/Character";
@@ -9,6 +9,7 @@ import PocketBase from "../../../pocketbase/PocketBase";
 
 export default class CharacterPost {
   public embed: EmbedBuilder = new EmbedBuilder();
+
   constructor(private character: Character) {
     this.embed.setTitle(`${this.character.name} ${this.character.surname}`);
     this.embed.setDescription(this.formatCharacterDescription(this.character));
@@ -16,7 +17,7 @@ export default class CharacterPost {
     this.embed.setColor((this.character.expand.race.color as ColorResolvable) ?? null);
   }
 
-  public async createMessageOptions({
+  public createMessageOptions({
     to,
     content,
     attachmentUrl,
@@ -24,7 +25,7 @@ export default class CharacterPost {
     attachmentUrl?: string;
     content?: string;
     to: "message" | "profile";
-  }): Promise<BaseMessageOptions> {
+  }): BaseMessageOptions {
     const options: BaseMessageOptions = {};
     let embed: EmbedBuilder = new EmbedBuilder();
 
@@ -40,19 +41,12 @@ export default class CharacterPost {
       embed = this.getPostEmbed({ attachmentUrl, content });
     }
 
-    const image = await PocketBase.getImageUrl({
+    const image = PocketBase.getImageUrl({
       fileName: this.character.image,
       record: this.character,
       thumb: true,
     });
-    if (typeof image === "string") {
-      embed.setThumbnail(image);
-    } else {
-      const attachment = new AttachmentBuilder(image);
-      attachment.setName(this.character.image);
-      options.files = [attachment];
-      embed.setThumbnail("attachment://" + this.character.image);
-    }
+    embed.setThumbnail(image);
 
     options.embeds = [embed];
     return options;
@@ -67,6 +61,7 @@ export default class CharacterPost {
     this.embed.setTimestamp(Date.now());
     return this.embed;
   }
+
   private getProfileEmbed(): EmbedBuilder {
     if (!this.character.expand) {
       throw new BotError("Character must have expand data to create a profile!");
@@ -77,7 +72,7 @@ export default class CharacterPost {
     fields.set("Idade", this.character.age.toString());
     fields.set("Nível", this.character.level.toString());
     fields.set("Raça", this.character.expand.race.name);
-    fields.set("Classe", this.character.spec);
+    fields.set("Classe", this.character.spec.join(", "));
     if (this.character.expand.faction) {
       fields.set("Facção", this.character.expand.faction.name);
     }

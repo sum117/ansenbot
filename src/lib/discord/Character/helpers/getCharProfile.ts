@@ -16,9 +16,7 @@ export default async function getCharProfile(user: User): Promise<BaseMessageOpt
 
   const characterData = await CharacterFetcher.getCharacterById(player.currentCharacterId);
   const characterPost = new CharacterPost(characterData);
-  const messageOptions = await characterPost.createMessageOptions({
+  return characterPost.createMessageOptions({
     to: "profile",
   });
-
-  return messageOptions;
 }

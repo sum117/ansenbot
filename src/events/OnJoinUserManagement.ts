@@ -52,7 +52,7 @@ export class OnJoinUserManagement {
       });
 
       if (!onJoinChannel?.isTextBased()) {
-        throw new BotError("Cannot find onJoinChannel");
+        return;
       }
 
       const formMessage = await message.channel.send(onJoinForm(message));

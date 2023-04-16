@@ -1,6 +1,6 @@
 export class GameClock {
-  private realToGameRatio: number;
-  private startTime: number;
+  private readonly realToGameRatio: number;
+  private readonly startTime: number;
   private days: number;
 
   constructor(realToGameRatio = 8, startTime?: number | Date) {
@@ -46,7 +46,6 @@ export class GameClock {
 
   updateClock(): string {
     const gameTime = this.getCurrentGameTime();
-    const formattedGameTime = this.formatGameTime(gameTime);
-    return formattedGameTime;
+    return this.formatGameTime(gameTime);
   }
 }

@@ -37,12 +37,12 @@ export class CharacterEditor {
 
   async handleEditCharacterButton(): Promise<void> {
     if (!this.interaction.isButton()) {
-      throw new BotError("Ocorreu um erro ao tentar editar o personagem.");
+      return;
     }
     try {
       const field = this.interaction.component.label;
       if (!field) {
-        throw new BotError("Não foi possível encontrar o campo do personagem.");
+        return;
       }
       const [_, action, characterId] = this.getInteractionCredentials();
       const character = await CharacterFetcher.getCharacterById(characterId);

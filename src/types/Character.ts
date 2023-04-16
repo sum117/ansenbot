@@ -8,6 +8,7 @@ import type {
   postSchema,
   raceSchema,
   skillsSchema,
+  specSchema,
   statusSchema,
 } from "../schemas/characterSchema";
 
@@ -19,9 +20,20 @@ export type Player = z.infer<typeof playerSchema>;
 export type Skills = z.infer<typeof skillsSchema>;
 export type Status = z.infer<typeof statusSchema>;
 export type Race = z.infer<typeof raceSchema>;
+export type Spec = z.infer<typeof specSchema>;
+
 export type CredentialsArray = [
   string,
   "surname" | "name" | "personality" | "backstory" | "title" | "image",
   string
 ];
-export type RelationFields = Character | Faction | Memory | Post | Player | Skills | Status | Race;
+export type RelationFields =
+  | Character
+  | Faction
+  | Memory
+  | Post
+  | Player
+  | Skills
+  | Status
+  | Race
+  | Spec;

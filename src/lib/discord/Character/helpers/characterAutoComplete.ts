@@ -19,7 +19,7 @@ export function characterAutoCompleteFromPlayer(
         value: character.id,
       }));
 
-    interaction.respond(choices);
+    void interaction.respond(choices);
   });
 }
 
@@ -32,7 +32,7 @@ export function characterAutoCompleteFromAll(interaction: AutocompleteInteractio
         value: character.id,
       }));
 
-      interaction.respond(choices);
+      void interaction.respond(choices);
     });
 
   if (!userInput) {

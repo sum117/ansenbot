@@ -6,7 +6,6 @@ import mustache from "mustache";
 import { channelChoice, memoryChoice } from "../../data/choices";
 import MemoryFetcher from "../../lib/pocketbase/MemoryFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
-import { BotError } from "../../utils/Errors";
 import handleError from "../../utils/handleError";
 
 @Discord()
@@ -24,13 +23,13 @@ export class MemoryInvasionController {
   ): Promise<void> {
     try {
       if (!interaction.inCachedGuild()) {
-        throw new BotError("MemoryInvasionController attempted to be executed outside of a guild.");
+        return;
       }
 
       const memoryData = await MemoryFetcher.getAllMemories();
       const chosenMemory = memoryData.items.find((memory) => memory.title === memoryTitle);
       if (!chosenMemory) {
-        throw new BotError("Memory not found in data array.");
+        return;
       }
 
       const view = {
