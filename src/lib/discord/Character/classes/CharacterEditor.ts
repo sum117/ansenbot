@@ -6,6 +6,7 @@ import type {
   Message,
   ModalBuilder,
   ModalSubmitInteraction,
+  StringSelectMenuInteraction,
 } from "discord.js";
 import { TextInputStyle } from "discord.js";
 import type { ZodOptional, ZodString } from "zod";
@@ -14,17 +15,23 @@ import editCharacterForm from "../../../../data/forms/editCharacterForm";
 import promptBox from "../../../../data/modals/promptBox";
 import { createUpdateCharacterSchema } from "../../../../schemas/characterSchema";
 import { isImageUrl } from "../../../../schemas/utiltitySchemas";
-import type { Character, CredentialsArray } from "../../../../types/Character";
+import type { Character, CredentialsArray, Faction } from "../../../../types/Character";
 import { BotError } from "../../../../utils/Errors";
 import getZodStringLength from "../../../../utils/getZodStringLength";
 import handleError from "../../../../utils/handleError";
+import replyOrFollowUp from "../../../../utils/replyOrFollowUp";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import PocketBase from "../../../pocketbase/PocketBase";
 
 export class CharacterEditor {
-  private readonly interaction: ModalSubmitInteraction | ButtonInteraction;
+  private readonly interaction:
+    | ModalSubmitInteraction
+    | ButtonInteraction
+    | StringSelectMenuInteraction;
 
-  constructor(interaction: ModalSubmitInteraction | ButtonInteraction) {
+  constructor(
+    interaction: ModalSubmitInteraction | ButtonInteraction | StringSelectMenuInteraction
+  ) {
     this.interaction = interaction;
   }
 
@@ -39,6 +46,11 @@ export class CharacterEditor {
       }
       const [_, action, characterId] = this.getInteractionCredentials();
       const character = await CharacterFetcher.getCharacterById(characterId);
+      const isOwner = this.checkOwnership(character);
+      if (!isOwner) {
+        return;
+      }
+
       const length = this.getLengths(action);
       const value = this.getCharacterUpdateValue(character, action);
 
@@ -49,9 +61,24 @@ export class CharacterEditor {
     }
   }
 
+  async handleEditCharacterSelect(): Promise<void> {
+    if (!this.interaction.isSelectMenu()) {
+      throw new BotError("Ocorreu um erro ao tentar editar o personagem.");
+    }
+    try {
+      await this.interaction.deferReply();
+      const [_, _action, characterId] = this.getInteractionCredentials();
+      const newFactionId = this.interaction.values[0];
+      await this.updateFaction(characterId, newFactionId);
+      await this.updateForm("Facção");
+      void this.interaction.deleteReply();
+    } catch (error) {
+      handleError(this.interaction, error);
+    }
+  }
+
   async handleEditSubmit(): Promise<void> {
     try {
-      const formMessage = this.getFormMessage();
       await this.interaction.deferReply();
       const [_, action, characterId] = this.getInteractionCredentials();
       const character = await CharacterFetcher.getCharacterById(characterId);
@@ -67,7 +94,7 @@ export class CharacterEditor {
         character[action] = value;
         await this.validateAndUpdateCharacter(character);
       }
-      await this.updateFormMessage(formMessage, label);
+      await this.updateForm(label);
       void this.interaction.deleteReply();
     } catch (error) {
       handleError(this.interaction, error);
@@ -122,8 +149,12 @@ export class CharacterEditor {
     });
   }
 
-  private async updateFormMessage(formMessage: Message, label: string | undefined): Promise<void> {
+  private async updateForm(label: string | undefined): Promise<void> {
+    const formMessage = this.getFormMessage();
     const newForm = await editCharacterForm(this.interaction as ModalSubmitInteraction);
+    if (!newForm) {
+      throw new BotError("Não foi possível encontrar o formulário.");
+    }
     void formMessage.edit(newForm.setMessageContent(`✅ Última edição: ${label}`));
   }
 
@@ -162,5 +193,38 @@ export class CharacterEditor {
   private getLengths(action: CredentialsArray[1]): { min?: number; max?: number } {
     const zodKey = createUpdateCharacterSchema.shape[action] as ZodOptional<ZodString> | ZodString;
     return getZodStringLength(zodKey);
+  }
+
+  private checkOwnership(character: Character): boolean {
+    if (!CharacterFetcher.isOwner(this.interaction.user.id, character.playerId)) {
+      void replyOrFollowUp(this.interaction, "Você não é o dono desse personagem.");
+      return false;
+    }
+    return true;
+  }
+
+  private async updateFaction(characterId: string, newFactionId: string): Promise<void> {
+    const [character, newFaction] = await Promise.all([
+      await CharacterFetcher.getCharacterById(characterId),
+      await PocketBase.getEntityById<Faction>({ entityType: "factions", id: newFactionId }),
+    ]);
+
+    if (!this.checkOwnership(character)) {
+      void replyOrFollowUp(this.interaction, "Você não é o dono desse personagem.");
+      return;
+    }
+    if (character.faction) {
+      const oldFaction = await PocketBase.getEntityById<Faction>({
+        entityType: "factions",
+        id: character.faction,
+      });
+      oldFaction.characters = oldFaction.characters.filter((id) => id !== character.id);
+      await PocketBase.updateEntity<Faction>({ entityType: "factions", entityData: oldFaction });
+    }
+    newFaction.characters.includes(character.id) || newFaction.characters.push(character.id);
+    await Promise.all([
+      await this.validateAndUpdateCharacter({ ...character, faction: newFactionId }),
+      PocketBase.updateEntity({ entityType: "factions", entityData: newFaction }),
+    ]);
   }
 }

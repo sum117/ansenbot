@@ -194,7 +194,7 @@ export default class CharacterFetcher {
     }
   }
 
-  private static isOwner(userId: Snowflake, prevUserId: Snowflake): boolean {
+  public static isOwner(userId: Snowflake, prevUserId: Snowflake): boolean {
     return userId === prevUserId;
   }
 
