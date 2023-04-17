@@ -85,7 +85,7 @@ export class CharacterEditor {
       if (action === "image") {
         const imageForm = new FormData();
         const { fileName, blob } = await this.getImageBlob(value);
-        imageForm.append("file", blob, fileName);
+        imageForm.append("image", blob, fileName);
         await PocketBase.updateEntityWithFormData(characterId, "characters", imageForm);
       } else {
         character[action] = value;

@@ -128,7 +128,7 @@ const fullCharacterSchema = baseCharacterSchema.extend({
     skills: skillsSchema,
     status: statusSchema,
     race: raceSchema,
-    spec: specSchema,
+    spec: z.array(specSchema),
   }),
 });
 

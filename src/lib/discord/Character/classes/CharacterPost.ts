@@ -72,7 +72,7 @@ export default class CharacterPost {
     fields.set("Idade", this.character.age.toString());
     fields.set("Nível", this.character.level.toString());
     fields.set("Raça", this.character.expand.race.name);
-    fields.set("Classe", this.character.spec.join(", "));
+    fields.set("Classe", this.character.expand.spec.map((spec) => spec.name).join(", "));
     if (this.character.expand.faction) {
       fields.set("Facção", this.character.expand.faction.name);
     }
