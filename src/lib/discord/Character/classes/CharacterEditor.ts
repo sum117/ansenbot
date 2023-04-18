@@ -202,8 +202,8 @@ export class CharacterEditor {
 
   private async updateFaction(characterId: string, newFactionId: string): Promise<void> {
     const [character, newFaction] = await Promise.all([
-      await CharacterFetcher.getCharacterById(characterId),
-      await PocketBase.getEntityById<Faction>({ entityType: "factions", id: newFactionId }),
+      CharacterFetcher.getCharacterById(characterId),
+      PocketBase.getEntityById<Faction>({ entityType: "factions", id: newFactionId }),
     ]);
 
     if (!this.checkOwnership(character)) {
@@ -220,7 +220,7 @@ export class CharacterEditor {
     }
     newFaction.characters.includes(character.id) || newFaction.characters.push(character.id);
     await Promise.all([
-      await this.validateAndUpdateCharacter({ ...character, faction: newFactionId }),
+      this.validateAndUpdateCharacter({ ...character, faction: newFactionId }),
       PocketBase.updateEntity({ entityType: "factions", entityData: newFaction }),
     ]);
   }
