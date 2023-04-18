@@ -27,13 +27,3 @@ export type CredentialsArray = [
   "surname" | "name" | "personality" | "backstory" | "title" | "image",
   string
 ];
-export type RelationFields =
-  | Character
-  | Faction
-  | Memory
-  | Post
-  | Player
-  | Skills
-  | Status
-  | Race
-  | Spec;

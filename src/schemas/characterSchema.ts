@@ -1,13 +1,7 @@
 import type { HexColorString } from "discord.js";
 import { z } from "zod";
 
-const baseSchema = z.object({
-  id: z.string(),
-  collectionId: z.string(),
-  collectionName: z.string(),
-  created: z.string(),
-  updated: z.string(),
-});
+import baseSchema from "./baseSchema";
 
 const createUpdateCharacterSchema = z.object({
   name: z.string().min(3).max(128),
@@ -44,6 +38,8 @@ const characterExpanded = z.object({
 const factionSchema = baseSchema.extend({
   name: z.string(),
   characters: z.array(z.string()),
+  image: z.string(),
+  description: z.string(),
   expand: characterExpanded.optional(),
 });
 
@@ -78,6 +74,8 @@ const raceSchema = baseSchema.extend({
   name: z.string(),
   color: z.string().regex(/^#[0-9A-F]{6}$/i) as z.ZodType<HexColorString>,
   characters: z.array(z.string()),
+  image: z.string(),
+  description: z.string(),
   expand: characterExpanded.optional(),
 });
 
@@ -101,6 +99,8 @@ const skillsSchema = baseSchema.extend({
 const specSchema = baseSchema.extend({
   name: z.string(),
   phrase: z.string(),
+  description: z.string(),
+  image: z.string(),
   characters: z.array(z.string()),
   startingSkills: z.array(z.string()),
   expand: characterExpanded
@@ -134,7 +134,6 @@ const fullCharacterSchema = baseCharacterSchema.extend({
 
 export {
   baseCharacterSchema,
-  baseSchema,
   characterExpanded,
   createUpdateCharacterSchema,
   factionSchema,

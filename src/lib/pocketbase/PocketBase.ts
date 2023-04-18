@@ -1,7 +1,7 @@
 import PB, { type ListResult, type Record as DBRecord } from "pocketbase";
 
 import { COLLECTIONS, RELATION_FIELD_NAMES } from "../../data/constants";
-import type { RelationFields } from "../../types/Character";
+import type { Collection } from "../../types/Collection";
 import type {
   CreateEntityParams,
   DeleteEntityParams,
@@ -56,7 +56,7 @@ export default class PocketBase {
     return prevData;
   }
 
-  public static getEntityById<T extends RelationFields>({
+  public static getEntityById<T extends Collection>({
     entityType,
     id,
     expandFields = true,
@@ -69,7 +69,7 @@ export default class PocketBase {
       );
   }
 
-  public static createEntity<T extends RelationFields>({
+  public static createEntity<T extends Collection>({
     entityType,
     entityData,
     expandFields = true,
@@ -82,21 +82,21 @@ export default class PocketBase {
       );
   }
 
-  public static getAllEntities<T extends RelationFields>({
+  public static getAllEntities<T extends Collection>({
     entityType,
     page = 1,
   }: GetAllEntitiesParams): Promise<ListResult<T>> {
     return pb.collection(COLLECTIONS[entityType]).getList<T>(page, 24);
   }
 
-  public static getFirstListEntity<T extends RelationFields>({
+  public static getFirstListEntity<T extends Collection>({
     entityType,
     filter,
   }: GetFirstEntityByFilterParams): Promise<T> {
     return pb.collection(COLLECTIONS[entityType]).getFirstListItem<T>(...filter);
   }
 
-  public static getEntitiesByFilter<T extends RelationFields>({
+  public static getEntitiesByFilter<T extends Collection>({
     entityType,
     filter,
   }: GetEntitiesByFilterParams): Promise<ListResult<T>> {
@@ -111,7 +111,7 @@ export default class PocketBase {
     return pb.collection(COLLECTIONS[entityType]).update(entityId, formData);
   }
 
-  public static updateEntity<T extends RelationFields>({
+  public static updateEntity<T extends Collection>({
     entityType,
     entityData,
   }: UpdateEntityParams<T>): Promise<T> {

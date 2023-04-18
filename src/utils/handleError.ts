@@ -21,7 +21,7 @@ export default function handleError(
   error: unknown
 ): void {
   console.error(inspect(error, false, null, true));
-  let errorMessage = "Ocorreu um erro ao editar o personagem.";
+  let errorMessage = "Ocorreu um erro ao executar essa ação.";
 
   if (error instanceof PocketBaseError) {
     errorMessage = error.message;

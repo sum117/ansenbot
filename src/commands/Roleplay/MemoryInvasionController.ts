@@ -4,7 +4,7 @@ import { AttachmentBuilder, channelMention, userMention } from "discord.js";
 import { Discord, Slash, SlashOption } from "discordx";
 import mustache from "mustache";
 
-import { channelChoice, memoryChoice } from "../../data/choices";
+import { channelChoice, memoryChoice } from "../../lib/discord/Prompt/choices";
 import MemoryFetcher from "../../lib/pocketbase/MemoryFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
 import { BotError } from "../../utils/Errors";

@@ -11,8 +11,6 @@ import type {
 import { TextInputStyle } from "discord.js";
 import type { ZodOptional, ZodString } from "zod";
 
-import editCharacterForm from "../../../../data/forms/editCharacterForm";
-import promptBox from "../../../../data/modals/promptBox";
 import { createUpdateCharacterSchema } from "../../../../schemas/characterSchema";
 import { isImageUrl } from "../../../../schemas/utiltitySchemas";
 import type { Character, CredentialsArray, Faction } from "../../../../types/Character";
@@ -22,6 +20,8 @@ import handleError from "../../../../utils/handleError";
 import replyOrFollowUp from "../../../../utils/replyOrFollowUp";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import PocketBase from "../../../pocketbase/PocketBase";
+import editCharacterForm from "../../Prompt/forms/editCharacterForm";
+import promptBox from "../../Prompt/promptBox";
 
 export class CharacterEditor {
   private readonly interaction:

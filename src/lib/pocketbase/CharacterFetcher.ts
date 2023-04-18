@@ -4,16 +4,8 @@ import type { ListResult, RecordFullListQueryParams } from "pocketbase";
 
 import type { COLLECTIONS } from "../../data/constants";
 import { RELATION_FIELD_NAMES } from "../../data/constants";
-import type {
-  Character,
-  Faction,
-  Player,
-  Race,
-  RelationFields,
-  Skills,
-  Spec,
-  Status,
-} from "../../types/Character";
+import type { Character, Faction, Player, Race, Skills, Spec, Status } from "../../types/Character";
+import type { Collection } from "../../types/Collection";
 import type { CreateData, PocketBaseConstants } from "../../types/PocketBaseCRUD";
 import { BotError, PocketBaseError } from "../../utils/Errors";
 import getSafeKeys from "../../utils/getSafeKeys";
@@ -301,7 +293,7 @@ export default class CharacterFetcher {
     return true;
   }
 
-  private static async updateEntityWithCharacter<T extends RelationFields>(
+  private static async updateEntityWithCharacter<T extends Collection>(
     entity: T,
     character: Character
   ): Promise<void> {

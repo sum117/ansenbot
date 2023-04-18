@@ -9,6 +9,8 @@ export const COLLECTIONS = {
   memories: "memories",
   spec: "spec",
   startingSkills: "startingSkills",
+  destinyMaidens: "destinyMaidens",
+  forms: "forms",
 } as const;
 export const RELATION_FIELD_NAMES = {
   character: "character",

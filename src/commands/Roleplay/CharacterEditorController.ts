@@ -16,11 +16,15 @@ import {
   SlashOption,
 } from "discordx";
 
-import { characterChoiceFromAll, characterChoiceFromUser, userChoice } from "../../data/choices";
-import editCharacterForm from "../../data/forms/editCharacterForm";
 import { CharacterEditor } from "../../lib/discord/Character/classes/CharacterEditor";
 import CharacterPost from "../../lib/discord/Character/classes/CharacterPost";
 import getCharProfile from "../../lib/discord/Character/helpers/getCharProfile";
+import {
+  characterChoiceFromAll,
+  characterChoiceFromUser,
+  userChoice,
+} from "../../lib/discord/Prompt/choices";
+import editCharacterForm from "../../lib/discord/Prompt/forms/editCharacterForm";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import PlayerFetcher from "../../lib/pocketbase/PlayerFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
