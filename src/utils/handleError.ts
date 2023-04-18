@@ -4,13 +4,14 @@ import type {
   ModalSubmitInteraction,
   StringSelectMenuInteraction,
 } from "discord.js";
+import { DiscordAPIError } from "discord.js";
 import { ClientResponseError } from "pocketbase";
 import { inspect } from "util";
 import { ZodError } from "zod";
 
+import deleteDiscordMessage from "./deleteDiscordMessage";
 import { PocketBaseError } from "./Errors";
 import getSafeEntries from "./getSafeEntries";
-import replyOrFollowUp from "./replyOrFollowUp";
 
 export default function handleError(
   interaction:
@@ -22,7 +23,9 @@ export default function handleError(
 ): void {
   console.error(inspect(error, false, null, true));
   let errorMessage = "Ocorreu um erro ao executar essa ação.";
-
+  if (error instanceof DiscordAPIError) {
+    return;
+  }
   if (error instanceof PocketBaseError) {
     errorMessage = error.message;
   }
@@ -39,7 +42,8 @@ export default function handleError(
   if (error instanceof ZodError) {
     errorMessage = error.errors[0].message;
   }
-  void replyOrFollowUp(interaction, {
-    content: errorMessage,
+
+  void interaction.channel?.send(errorMessage).then((message) => {
+    deleteDiscordMessage(message, 5000);
   });
 }
