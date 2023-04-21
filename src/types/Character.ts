@@ -11,7 +11,9 @@ import type {
   specSchema,
   statusSchema,
 } from "../schemas/characterSchema";
+import { createUpdateCharacterSchema } from "../schemas/characterSchema";
 
+export type CreateUpdateCharacter = z.infer<typeof createUpdateCharacterSchema>;
 export type Character = z.infer<typeof fullCharacterSchema>;
 export type Faction = z.infer<typeof factionSchema>;
 export type Memory = z.infer<typeof memorySchema>;

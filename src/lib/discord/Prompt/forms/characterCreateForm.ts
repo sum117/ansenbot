@@ -11,16 +11,19 @@ import type { Form } from "../../../../types/MultiForm";
 import PocketBase from "../../../pocketbase/PocketBase";
 import MultiForm from "../MultiForm";
 
-type CharacterCreateForm = {
-  prompt: MultiForm;
-  step: Form;
-};
 const characterCreateForm = async (
   interaction: ButtonInteraction | SelectMenuInteraction
-): Promise<CharacterCreateForm> => {
+): Promise<{ totalSteps: number; step: Form; prompt: MultiForm }> => {
   const [_, state, stepId] = interaction.customId.split(":");
+  const stepsAmount = (
+    await PocketBase.getAllEntities<Form>({
+      entityType: "forms",
+      page: 1,
+    })
+  ).totalItems;
 
-  const currentStep = Number(stepId) < 1 ? 1 : Number(stepId) > 3 ? 3 : Number(stepId);
+  const currentStep =
+    Number(stepId) < 1 ? 1 : Number(stepId) > stepsAmount ? stepsAmount : Number(stepId);
   const nextStep = currentStep + 1;
   const previousStep = currentStep - 1;
   const step = await PocketBase.getFirstListEntity<Form>({
@@ -87,6 +90,7 @@ const characterCreateForm = async (
       controlFields: actionButtons,
     }),
     step,
+    totalSteps: stepsAmount,
   };
 };
 

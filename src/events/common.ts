@@ -7,7 +7,7 @@ import config from "../../config.json" assert { type: "json" };
 import { novelRequestImageGen } from "../lib/anime-img-gen/novelAIApi";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import { BotError } from "../utils/Errors";
-import Queue from "../utils/queue";
+import Queue from "../utils/Queue";
 
 @Discord()
 export class Example {
