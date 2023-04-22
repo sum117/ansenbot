@@ -3,30 +3,91 @@ import { z } from "zod";
 
 import baseSchema from "./baseSchema";
 
-const createUpdateCharacterSchema = z.object({
-  name: z.string().min(3).max(128),
-  surname: z.string().min(3).max(64),
-  image: z.string(),
-  gender: z.string(),
-  age: z.number(),
-  level: z.number(),
-  spec: z.array(z.string()),
-  reputation: z.number(),
-  profession: z.string().max(128).optional(),
-  title: z.string().max(128).optional(),
-  personality: z.string().max(1024).optional(),
-  appearance: z.string().max(512).optional(),
-  backstory: z.string().max(2048).optional(),
-  skills: z.string(),
-  status: z.string(),
-  race: z.array(z.string()),
-  faction: z.string().optional(),
-  memory: z.string().optional(),
-  playerId: z.string(),
-  destinyMaiden: z.string(),
-  player: z.string(),
-  posts: z.array(z.string()),
-});
+const createUpdateCharacterSchema = z.object(
+  {
+    name: z
+      .string({
+        required_error: "Você deve incluir o nome do personagem.",
+      })
+      .min(3, { message: "O nome do personagem deve ter pelo menos 3 caracteres." })
+      .max(128, { message: "O nome do personagem deve ter no máximo 128 caracteres." }),
+    surname: z
+      .string({
+        required_error: "Você deve incluir o sobrenome do personagem.",
+      })
+      .min(3, { message: "O sobrenome do personagem deve ter pelo menos 3 caracteres." })
+      .max(64, { message: "O sobrenome do personagem deve ter no máximo 64 caracteres." }),
+    image: z.string({
+      required_error: "Você deve incluir um link de imagem para o personagem.",
+    }),
+    gender: z.string({
+      required_error: "Você deve incluir o gênero do personagem.",
+    }),
+    age: z.number({
+      required_error: "Você deve incluir a idade do personagem.",
+    }),
+    level: z.number({
+      required_error: "Você deve incluir o nível do personagem.",
+    }),
+    spec: z.array(z.string(), {
+      required_error: "Você deve incluir as classes do personagem.",
+    }),
+    reputation: z.number({
+      required_error: "Você deve incluir a reputação do personagem.",
+    }),
+    profession: z
+      .string()
+      .max(128, { message: "A profissão do personagem deve ter no máximo 128 caracteres." })
+      .optional(),
+    title: z
+      .string()
+      .max(128, {
+        message: "O título do personagem deve ter no máximo 128 caracteres.",
+      })
+      .optional(),
+    personality: z
+      .string()
+      .max(1024, {
+        message: "A personalidade do personagem deve ter no máximo 1024 caracteres.",
+      })
+      .optional(),
+    appearance: z
+      .string()
+      .max(512, {
+        message: "A aparência do personagem deve ter no máximo 512 caracteres.",
+      })
+      .optional(),
+    backstory: z
+      .string()
+      .max(2048, {
+        message: "A história do personagem deve ter no máximo 2048 caracteres.",
+      })
+      .optional(),
+    skills: z.string({
+      required_error: "Houve um erro ao criar as skills do personagem.",
+    }),
+    status: z.string({
+      required_error: "Houe um erro ao criar o status do personagem.",
+    }),
+    race: z.array(z.string(), {
+      required_error: "Você deve incluir as raças do personagem.",
+    }),
+    faction: z.string().optional(),
+    memory: z.string().optional(),
+    playerId: z.string(),
+    destinyMaiden: z.string({
+      required_error: "Houve um erro ao escolher a Donzela do Destino do personagem.",
+    }),
+    player: z.string({
+      required_error: "Houve um erro ao escolher o jogador do personagem.",
+    }),
+    posts: z.array(z.string()),
+  },
+  {
+    description: "Schema para criação e atualização de personagens.",
+    required_error: "Você deve incluir todos os campos obrigatórios.",
+  }
+);
 
 const baseCharacterSchema = baseSchema.extend({
   ...createUpdateCharacterSchema.shape,
@@ -145,12 +206,13 @@ const beastsSchema = baseSchema.extend({
 const fullCharacterSchema = baseCharacterSchema.extend({
   expand: z.object({
     faction: factionSchema.optional(),
+    destinyMaiden: destinyMaidenSchema,
     memories: memorySchema.optional(),
     posts: postSchema,
     player: playerSchema,
     skills: skillsSchema,
     status: statusSchema,
-    race: raceSchema,
+    race: z.array(raceSchema),
     spec: z.array(specSchema),
   }),
 });

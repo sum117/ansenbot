@@ -30,12 +30,10 @@ const characterCreateForm = async (
     entityType: "forms",
     filter: [`step=${currentStep}`, {}],
   });
-  console.log(step.collection);
   const stepData = await PocketBase.getAllEntities<Faction | Race | Spec | DestinyMaiden>({
     entityType: step.collection,
     page: 1,
   });
-  console.log(stepData);
   const temp: Array<SelectMenuOptionBuilder | ButtonBuilder> = [];
   for (const item of stepData.items) {
     if (step.isSelectMenu) {

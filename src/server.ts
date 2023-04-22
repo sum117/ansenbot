@@ -9,7 +9,6 @@ server.post("/character", async (req: express.Request, res: express.Response) =>
   console.log(req.body);
   try {
     const characterData = await createUpdateCharacterSchema.parseAsync(req.body);
-    console.log(characterData);
   } catch (error) {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: error.message });

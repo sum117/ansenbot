@@ -3,19 +3,26 @@ import type {
   ChatInputCommandInteraction,
   Snowflake,
   StringSelectMenuInteraction,
+  TextChannel,
 } from "discord.js";
-import { ButtonInteraction, ModalSubmitInteraction, PermissionsBitField } from "discord.js";
+import {
+  ButtonInteraction,
+  ModalSubmitInteraction,
+  PermissionsBitField,
+  roleMention,
+  userMention,
+} from "discord.js";
 import { ButtonComponent, Discord, ModalComponent, SelectMenuComponent, Slash } from "discordx";
 
 import characterCreateForm from "../../lib/discord/Prompt/forms/characterCreateForm";
 import {
+  characterCreateModal,
   characterCreateModalOptional,
-  characterCreateModalRequired,
-} from "../../lib/discord/Prompt/forms/characterCreateModalRequired";
+} from "../../lib/discord/Prompt/forms/characterCreateModal";
 import characterCreateTrigger from "../../lib/discord/Prompt/forms/characterCreateTrigger";
 import PocketBase from "../../lib/pocketbase/PocketBase";
-import type { CreateUpdateCharacter, Faction, Race, Spec } from "../../types/Character";
-import { BotError } from "../../utils/Errors";
+import type { Character, CreateUpdateCharacter, Faction, Race, Spec } from "../../types/Character";
+import { BotError, PocketBaseError } from "../../utils/Errors";
 import handleError from "../../utils/handleError";
 import imageKit from "../../utils/imageKit";
 import numberInRange from "../../utils/numberInRange";
@@ -23,6 +30,10 @@ import { createUpdateCharacterSchema } from "../../schemas/characterSchema";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import { AnsenModal } from "../../lib/discord/Character/classes/AnsenModal";
 import characterCreateModalTrigger from "../../lib/discord/Prompt/forms/characterCreateModalTrigger";
+import config from "../../../config.json" assert { type: "json" };
+import CharacterPost from "../../lib/discord/Character/classes/CharacterPost";
+import mustache from "mustache";
+import characterApprovalBtnRow from "../../lib/discord/Prompt/characterApprovalBtnRow";
 
 @Discord()
 export class CharacterCreatorController {
@@ -34,7 +45,7 @@ export class CharacterCreatorController {
     }
   > = new Map();
   private modals = {
-    required: characterCreateModalRequired,
+    required: characterCreateModal,
     optional: characterCreateModalOptional,
   };
   private totalSteps = "0";
@@ -82,7 +93,6 @@ export class CharacterCreatorController {
     try {
       const [_, _type, requiredOrOptional] = interaction.customId.split(":");
       const modal = this.modals[requiredOrOptional as "required" | "optional"];
-      assert(modal, new BotError("Invalid modal type."));
 
       await this.handleModalSteps(modal, interaction);
     } catch (error) {
@@ -96,22 +106,57 @@ export class CharacterCreatorController {
   async handleCreateCharacterModalTrigger(interaction: ButtonInteraction): Promise<void> {
     try {
       const [_, _type, step] = interaction.customId.split(":");
+
       if (step === "done") {
-        const userInstance = this.characterCreatorInstances.get(interaction.user.id);
-        assert(userInstance, new BotError("Could not find creator instance."));
-        await this.sendCreateRequest(userInstance);
-        await userInstance.interaction.editReply({
-          content: "Personagem criado com sucesso!",
-          components: [],
-          embeds: [],
-        });
-        this.characterCreatorInstances.delete(interaction.user.id);
-        return;
+        await this.handleDoneStep(interaction);
+      } else {
+        await this.showCharacterModal(interaction);
       }
-      await this.showCharacterModal(interaction);
     } catch (error) {
       handleError(interaction, error);
     }
+  }
+
+  private async handleDoneStep(interaction: ButtonInteraction): Promise<void> {
+    const userInstance = this.characterCreatorInstances.get(interaction.user.id);
+    assert(userInstance, new BotError("Could not find creator instance."));
+
+    const character = await this.sendCreateRequest(userInstance);
+    assert(character, new PocketBaseError("Could not create character."));
+
+    await userInstance.interaction.editReply({
+      content: "Personagem criado com sucesso!",
+      components: [],
+      embeds: [],
+    });
+
+    const queueChannel = interaction.guild?.channels.cache.get(
+      config.channels.createCharacterQueue
+    ) as TextChannel;
+    assert(queueChannel, new BotError("Could not find queue channel."));
+
+    await this.sendCharacterProfile(queueChannel, character);
+    this.characterCreatorInstances.delete(interaction.user.id);
+  }
+
+  private async sendCharacterProfile(
+    queueChannel: TextChannel,
+    character: Character
+  ): Promise<void> {
+    const view = {
+      mentions: `${roleMention(config.roles.mod)}, ${roleMention(config.roles.admin)}`,
+      owner: userMention(character.playerId),
+    };
+
+    const characterProfile = new CharacterPost(character).createMessageOptions({
+      to: "profile",
+    });
+    (characterProfile.content = mustache.render(
+      "Um novo personagem de {{{owner}}} foi criado e está aguardando aprovação, {{{mentions}}}!",
+      view
+    )),
+      (characterProfile.components = [characterApprovalBtnRow(character)]);
+    await queueChannel.send(characterProfile);
   }
 
   private async handleModalSteps(modal: AnsenModal, interaction: ModalSubmitInteraction) {

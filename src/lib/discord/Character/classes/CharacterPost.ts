@@ -14,31 +14,31 @@ export default class CharacterPost {
     this.embed.setTitle(`${this.character.name} ${this.character.surname}`);
     this.embed.setDescription(this.formatCharacterDescription(this.character));
     this.embed.setAuthor(this.character.title ? { name: this.character.title } : null);
-    this.embed.setColor((this.character.expand.race.color as ColorResolvable) ?? null);
+    this.embed.setColor((this.character.expand.race[0].color as ColorResolvable) ?? null);
   }
 
   public createMessageOptions({
     to,
-    content,
+    embedContent,
     attachmentUrl,
   }: {
     attachmentUrl?: string;
-    content?: string;
+    embedContent?: string;
     to: "message" | "profile";
   }): BaseMessageOptions {
     const options: BaseMessageOptions = {};
     let embed: EmbedBuilder = new EmbedBuilder();
 
     if (to === "profile") {
-      if (content) {
+      if (embedContent) {
         throw new BotError("You can't provide content to a profile!");
       }
       embed = this.getProfileEmbed();
     } else {
-      if (!content) {
+      if (!embedContent) {
         throw new BotError("You must provide content to post!");
       }
-      embed = this.getPostEmbed({ attachmentUrl, content });
+      embed = this.getPostEmbed({ attachmentUrl, content: embedContent });
     }
 
     const image = PocketBase.getImageUrl({
@@ -71,11 +71,17 @@ export default class CharacterPost {
     fields.set("Gênero", this.formatCharacterGender(this.character));
     fields.set("Idade", this.character.age.toString());
     fields.set("Nível", this.character.level.toString());
-    fields.set("Raça", this.character.expand.race.name);
-    fields.set("Classe", this.character.expand.spec.map((spec) => spec.name).join(", "));
+    fields.set("Raça", this.character.expand.race.map((race) => race.name).join(" & "));
+    fields.set("Classe", this.character.expand.spec.map((spec) => spec.name).join(" & "));
+    fields.set("Dama do Destino", this.character.expand.destinyMaiden.name);
+
     if (this.character.expand.faction) {
       fields.set("Facção", this.character.expand.faction.name);
     }
+    if (this.character.profession) {
+      fields.set("Profissão", this.character.profession);
+    }
+
     fields.set("Skills", this.formatCharacterSkills(this.character));
     this.embed.addFields(
       fields

@@ -52,7 +52,7 @@ const editCharacterForm = async (
       view
     ),
     title: mustache.render("Edição de {{{characterName}}}", view),
-    embedColor: character.expand.race.color,
+    embedColor: character.expand.race[0].color,
     imageUrl: PocketBase.getImageUrl({
       record: character,
       fileName: character.image,
