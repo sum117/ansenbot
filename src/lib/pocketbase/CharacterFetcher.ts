@@ -181,7 +181,6 @@ export default class CharacterFetcher {
         entityData: skills,
         entityType: "skills",
       });
-      console.log("baseSkills", baseSkills);
       const baseStatus = await PocketBase.createEntity<Status>({
         entityData: {
           health: 100 + skills.vigor * 10,
@@ -190,7 +189,6 @@ export default class CharacterFetcher {
         },
         entityType: "status",
       });
-      console.log("baseStatus", baseStatus);
       const [playerToAddCharacter, factionToAddCharacter, maidenToAddCharacter] = await Promise.all(
         [
           PlayerFetcher.getPlayerById(playerId),
@@ -218,9 +216,7 @@ export default class CharacterFetcher {
         status: baseStatus.id,
       });
       formData.set("image", blob, fileName);
-      console.log(formData);
       const response = await PocketBase.createEntityWithFormData<Character>("characters", formData);
-      console.log("response", response);
       await CharacterFetcher.syncCharacterRelations({
         baseSkills,
         baseStatus,

@@ -3,6 +3,13 @@
     "gameTime": "1096087760626012250",
     "log": "1094437907814686821",
     "createCharacter": "1093650402332909578",
+    "createCharacterQueue": "1093650525205041252",
+    "createCharacterApproved": "1094398557102014464",
+    "createCharacterDenied": "1094398567503900762",
     "imageGen": "1094406804286492803"
+  },
+  "roles": {
+    "admin": "1088097720272687166",
+    "mod": "1088097937772511264"
   }
 }

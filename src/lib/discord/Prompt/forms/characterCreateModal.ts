@@ -2,7 +2,7 @@ import { TextInputStyle } from "discord.js";
 
 import { AnsenModal } from "../../Character/classes/AnsenModal";
 
-const characterCreateModalRequired = new AnsenModal({
+const characterCreateModal = new AnsenModal({
   customId: "createChar:modal:required",
   title: "Criação de Personagem | Campos Obrigatórios",
 });
@@ -92,6 +92,8 @@ const characterBackstoryField = AnsenModal.makeField({
   placeholder: "Uma pessoa que nasceu em uma família rica e que sempre teve tudo o que queria.",
   style: TextInputStyle.Paragraph,
   customId: "createChar:modal:backstory",
+  minLength: 128,
+  maxLength: 2048,
 });
 
 const characterPersonalityField = AnsenModal.makeField({
@@ -104,7 +106,7 @@ const characterPersonalityField = AnsenModal.makeField({
   minLength: 128,
 });
 
-characterCreateModalRequired.addFields([
+characterCreateModal.addFields([
   characterNameField,
   characterSurnameField,
   characterAgeField,
@@ -120,4 +122,4 @@ characterCreateModalOptional.addFields([
   characterPersonalityField,
 ]);
 
-export { characterCreateModalRequired, characterCreateModalOptional };
+export { characterCreateModal, characterCreateModalOptional };

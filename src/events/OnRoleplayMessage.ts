@@ -24,7 +24,7 @@ export class OnRoleplayMessage {
       const characterPost = new CharacterPost(currentCharacter);
       const messageOptions = await characterPost.createMessageOptions({
         to: "message",
-        content: message.content,
+        embedContent: message.content,
         attachmentUrl: message.attachments.first()?.url,
       });
       void deleteDiscordMessage(message, 1000);
