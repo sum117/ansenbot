@@ -19,10 +19,11 @@ const createUpdateCharacterSchema = z.object({
   backstory: z.string().max(2048).optional(),
   skills: z.string(),
   status: z.string(),
-  race: z.string(),
+  race: z.array(z.string()),
   faction: z.string().optional(),
   memory: z.string().optional(),
   playerId: z.string(),
+  destinyMaiden: z.string(),
   player: z.string(),
   posts: z.array(z.string()),
 });
@@ -98,7 +99,6 @@ const skillsSchema = baseSchema.extend({
 
 const specSchema = baseSchema.extend({
   name: z.string(),
-  phrase: z.string(),
   description: z.string(),
   image: z.string(),
   characters: z.array(z.string()),
@@ -119,6 +119,29 @@ const statusSchema = baseSchema.extend({
   }),
 });
 
+const destinyMaidenSchema = baseSchema.extend({
+  name: z.string(),
+  image: z.string(),
+  description: z.string(),
+  characters: z.array(z.string()),
+  expand: z.object({
+    characters: z.array(baseCharacterSchema),
+  }),
+});
+
+const beastsSchema = baseSchema.extend({
+  name: z.string(),
+  image: z.string(),
+  description: z.string(),
+  health: z.number(),
+  stamina: z.number(),
+  domesticable: z.boolean(),
+  weight: z.number(),
+  height: z.number(),
+  dangerLevel: z.number(),
+  biome: z.string(),
+  damageType: z.array(z.string()),
+});
 const fullCharacterSchema = baseCharacterSchema.extend({
   expand: z.object({
     faction: factionSchema.optional(),
@@ -144,5 +167,7 @@ export {
   raceSchema,
   skillsSchema,
   specSchema,
+  destinyMaidenSchema,
+  beastsSchema,
   statusSchema,
 };

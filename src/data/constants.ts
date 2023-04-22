@@ -10,6 +10,7 @@ export const COLLECTIONS = {
   spec: "spec",
   startingSkills: "startingSkills",
   destinyMaidens: "destinyMaidens",
+  beasts: "beasts",
   forms: "forms",
 } as const;
 export const RELATION_FIELD_NAMES = {
@@ -22,6 +23,7 @@ export const RELATION_FIELD_NAMES = {
   characters: "characters",
   memory: "memory",
   spec: "spec",
+  destinyMaiden: "destinyMaiden",
   startingSkills: "startingSkills",
 } as const;
 export const MAX_FILE_SIZE = 15_000_000;

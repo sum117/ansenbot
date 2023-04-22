@@ -1,5 +1,7 @@
 import type {
+  Beast,
   Character,
+  DestinyMaiden,
   Faction,
   Memory,
   Player,
@@ -21,4 +23,6 @@ export type Collection =
   | Status
   | Race
   | Form
+  | Beast
+  | DestinyMaiden
   | Spec;

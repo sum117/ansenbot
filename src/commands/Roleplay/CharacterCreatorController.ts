@@ -8,7 +8,10 @@ import { ButtonInteraction, ModalSubmitInteraction, PermissionsBitField } from "
 import { ButtonComponent, Discord, ModalComponent, SelectMenuComponent, Slash } from "discordx";
 
 import characterCreateForm from "../../lib/discord/Prompt/forms/characterCreateForm";
-import { characterCreateModalRequired } from "../../lib/discord/Prompt/forms/characterCreateModalRequired";
+import {
+  characterCreateModalOptional,
+  characterCreateModalRequired,
+} from "../../lib/discord/Prompt/forms/characterCreateModalRequired";
 import characterCreateTrigger from "../../lib/discord/Prompt/forms/characterCreateTrigger";
 import PocketBase from "../../lib/pocketbase/PocketBase";
 import type { CreateUpdateCharacter, Faction, Race, Spec } from "../../types/Character";
@@ -32,7 +35,7 @@ export class CharacterCreatorController {
   > = new Map();
   private modals = {
     required: characterCreateModalRequired,
-    optional: characterCreateModalRequired,
+    optional: characterCreateModalOptional,
   };
   private totalSteps = "0";
 
@@ -93,6 +96,18 @@ export class CharacterCreatorController {
   async handleCreateCharacterModalTrigger(interaction: ButtonInteraction): Promise<void> {
     try {
       const [_, _type, step] = interaction.customId.split(":");
+      if (step === "done") {
+        const userInstance = this.characterCreatorInstances.get(interaction.user.id);
+        assert(userInstance, new BotError("Could not find creator instance."));
+        await this.sendCreateRequest(userInstance);
+        await userInstance.interaction.editReply({
+          content: "Personagem criado com sucesso!",
+          components: [],
+          embeds: [],
+        });
+        this.characterCreatorInstances.delete(interaction.user.id);
+        return;
+      }
       await this.showCharacterModal(interaction);
     } catch (error) {
       handleError(interaction, error);
@@ -104,7 +119,6 @@ export class CharacterCreatorController {
     const mainInstance = await this.getCreatorInstance(interaction);
     assert(mainInstance, new BotError("Could not find creator instance."));
     const userInputs = customIds.map((id) => interaction.fields.getTextInputValue(id));
-    console.log(userInputs);
     const getCollectionName = (id: string) => id.split(":")[2];
 
     for (const [index, id] of customIds.entries()) {
@@ -168,7 +182,6 @@ export class CharacterCreatorController {
 
       this.characterCreatorInstances.set(interaction.user.id, mainInstance);
       this.updateFormPrompt(form, entities);
-      void interaction.channel?.send(JSON.stringify(mainInstance.form));
     }
     void mainInstance.interaction.editReply(form.prompt);
   }
@@ -321,6 +334,15 @@ export class CharacterCreatorController {
   ) {
     const { form } = instance;
     assert(form, new BotError("Could not find form data."));
+    form.level = 4;
+    form.reputation = 0;
+    form.skills = "";
+    form.status = "";
+    form.memory = "";
+    form.playerId = instance.interaction.user.id;
+    form.player = "";
+    form.posts = [""];
+
     const character = createUpdateCharacterSchema.parse(form);
     return CharacterFetcher.createCharacter(character, instance.interaction.user.id);
   }

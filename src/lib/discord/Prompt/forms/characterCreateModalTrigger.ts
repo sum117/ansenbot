@@ -25,7 +25,7 @@ const characterCreateTrigger = (canFinish: boolean, fallbackStep: string) =>
         .setLabel("Finalizar")
         .setDisabled(!canFinish)
         .setStyle(ButtonStyle.Success)
-        .setCustomId("createChar:done"),
+        .setCustomId("createChar:modal:done"),
       new ButtonBuilder()
         .setLabel("Cancelar")
         .setStyle(ButtonStyle.Danger)

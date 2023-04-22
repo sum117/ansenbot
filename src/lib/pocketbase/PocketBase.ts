@@ -111,6 +111,15 @@ export default class PocketBase {
     return pb.collection(COLLECTIONS[entityType]).update(entityId, formData);
   }
 
+  public static createEntityWithFormData<T extends Collection>(
+    entityType: keyof typeof COLLECTIONS,
+    formData: FormData
+  ): Promise<T> {
+    return pb
+      .collection(COLLECTIONS[entityType])
+      .create<T>(formData, PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)));
+  }
+
   public static updateEntity<T extends Collection>({
     entityType,
     entityData,

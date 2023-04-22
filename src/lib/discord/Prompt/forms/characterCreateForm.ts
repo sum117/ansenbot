@@ -6,7 +6,7 @@ import {
   StringSelectMenuOptionBuilder,
 } from "discord.js";
 
-import type { Faction, Race, Spec } from "../../../../types/Character";
+import type { DestinyMaiden, Faction, Race, Spec } from "../../../../types/Character";
 import type { Form } from "../../../../types/MultiForm";
 import PocketBase from "../../../pocketbase/PocketBase";
 import MultiForm from "../MultiForm";
@@ -30,10 +30,12 @@ const characterCreateForm = async (
     entityType: "forms",
     filter: [`step=${currentStep}`, {}],
   });
-  const stepData = await PocketBase.getAllEntities<Faction | Race | Spec>({
+  console.log(step.collection);
+  const stepData = await PocketBase.getAllEntities<Faction | Race | Spec | DestinyMaiden>({
     entityType: step.collection,
     page: 1,
   });
+  console.log(stepData);
   const temp: Array<SelectMenuOptionBuilder | ButtonBuilder> = [];
   for (const item of stepData.items) {
     if (step.isSelectMenu) {

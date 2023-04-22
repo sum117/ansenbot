@@ -42,6 +42,16 @@ const characterAgeField = AnsenModal.makeField({
   maxLength: 3,
 });
 
+const characterGenderField = AnsenModal.makeField({
+  label: "Gênero",
+  required: true,
+  placeholder: "Digite um gênero válido.",
+  style: TextInputStyle.Short,
+  customId: "createChar:modal:gender",
+  minLength: 4,
+  maxLength: 64,
+});
+
 const characterImageField = AnsenModal.makeField({
   label: "Imagem",
   required: true,
@@ -98,6 +108,7 @@ characterCreateModalRequired.addFields([
   characterNameField,
   characterSurnameField,
   characterAgeField,
+  characterGenderField,
   characterImageField,
 ]);
 
