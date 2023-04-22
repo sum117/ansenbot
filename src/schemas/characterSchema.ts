@@ -1,13 +1,7 @@
 import type { HexColorString } from "discord.js";
 import { z } from "zod";
 
-const baseSchema = z.object({
-  id: z.string(),
-  collectionId: z.string(),
-  collectionName: z.string(),
-  created: z.string(),
-  updated: z.string(),
-});
+import baseSchema from "./baseSchema";
 
 const createUpdateCharacterSchema = z.object({
   name: z.string().min(3).max(128),
@@ -25,10 +19,11 @@ const createUpdateCharacterSchema = z.object({
   backstory: z.string().max(2048).optional(),
   skills: z.string(),
   status: z.string(),
-  race: z.string(),
+  race: z.array(z.string()),
   faction: z.string().optional(),
   memory: z.string().optional(),
   playerId: z.string(),
+  destinyMaiden: z.string(),
   player: z.string(),
   posts: z.array(z.string()),
 });
@@ -44,6 +39,8 @@ const characterExpanded = z.object({
 const factionSchema = baseSchema.extend({
   name: z.string(),
   characters: z.array(z.string()),
+  image: z.string(),
+  description: z.string(),
   expand: characterExpanded.optional(),
 });
 
@@ -78,6 +75,8 @@ const raceSchema = baseSchema.extend({
   name: z.string(),
   color: z.string().regex(/^#[0-9A-F]{6}$/i) as z.ZodType<HexColorString>,
   characters: z.array(z.string()),
+  image: z.string(),
+  description: z.string(),
   expand: characterExpanded.optional(),
 });
 
@@ -100,7 +99,8 @@ const skillsSchema = baseSchema.extend({
 
 const specSchema = baseSchema.extend({
   name: z.string(),
-  phrase: z.string(),
+  description: z.string(),
+  image: z.string(),
   characters: z.array(z.string()),
   startingSkills: z.array(z.string()),
   expand: characterExpanded
@@ -119,6 +119,29 @@ const statusSchema = baseSchema.extend({
   }),
 });
 
+const destinyMaidenSchema = baseSchema.extend({
+  name: z.string(),
+  image: z.string(),
+  description: z.string(),
+  characters: z.array(z.string()),
+  expand: z.object({
+    characters: z.array(baseCharacterSchema),
+  }),
+});
+
+const beastsSchema = baseSchema.extend({
+  name: z.string(),
+  image: z.string(),
+  description: z.string(),
+  health: z.number(),
+  stamina: z.number(),
+  domesticable: z.boolean(),
+  weight: z.number(),
+  height: z.number(),
+  dangerLevel: z.number(),
+  biome: z.string(),
+  damageType: z.array(z.string()),
+});
 const fullCharacterSchema = baseCharacterSchema.extend({
   expand: z.object({
     faction: factionSchema.optional(),
@@ -134,7 +157,6 @@ const fullCharacterSchema = baseCharacterSchema.extend({
 
 export {
   baseCharacterSchema,
-  baseSchema,
   characterExpanded,
   createUpdateCharacterSchema,
   factionSchema,
@@ -145,5 +167,7 @@ export {
   raceSchema,
   skillsSchema,
   specSchema,
+  destinyMaidenSchema,
+  beastsSchema,
   statusSchema,
 };

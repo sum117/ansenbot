@@ -7,12 +7,12 @@ import {
 } from "discord.js";
 import mustache from "mustache";
 
-import MultiForm from "../../lib/discord/Prompt/MultiForm";
-import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
-import PocketBase from "../../lib/pocketbase/PocketBase";
-import type { Faction } from "../../types/Character";
-import { BotError } from "../../utils/Errors";
-import replyOrFollowUp from "../../utils/replyOrFollowUp";
+import type { Faction } from "../../../../types/Character";
+import { BotError } from "../../../../utils/Errors";
+import replyOrFollowUp from "../../../../utils/replyOrFollowUp";
+import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
+import PocketBase from "../../../pocketbase/PocketBase";
+import MultiForm from "../MultiForm";
 
 const editCharacterForm = async (
   interaction: ChatInputCommandInteraction | ModalSubmitInteraction

@@ -2,8 +2,8 @@ import type { Message } from "discord.js";
 import { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, userMention } from "discord.js";
 import mustache from "mustache";
 
-import MultiForm from "../../lib/discord/Prompt/MultiForm";
-import { JOIN_FORM_VALUES } from "../constants";
+import { JOIN_FORM_VALUES } from "../../../../data/constants";
+import MultiForm from "../MultiForm";
 
 /**
  * @description Formulário de registro de novos membros no servidor

@@ -1,5 +1,4 @@
 import assert from "assert";
-import axios from "axios";
 import type {
   APIButtonComponent,
   ButtonInteraction,
@@ -11,10 +10,7 @@ import type {
 import { TextInputStyle } from "discord.js";
 import type { ZodOptional, ZodString } from "zod";
 
-import editCharacterForm from "../../../../data/forms/editCharacterForm";
-import promptBox from "../../../../data/modals/promptBox";
 import { createUpdateCharacterSchema } from "../../../../schemas/characterSchema";
-import { isImageUrl } from "../../../../schemas/utiltitySchemas";
 import type { Character, CredentialsArray, Faction } from "../../../../types/Character";
 import { BotError, PocketBaseError } from "../../../../utils/Errors";
 import getZodStringLength from "../../../../utils/getZodStringLength";
@@ -22,6 +18,9 @@ import handleError from "../../../../utils/handleError";
 import replyOrFollowUp from "../../../../utils/replyOrFollowUp";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import PocketBase from "../../../pocketbase/PocketBase";
+import editCharacterForm from "../../Prompt/forms/editCharacterForm";
+import promptBox from "../../Prompt/promptBox";
+import getImageBlob from "../../../../utils/getImageBlob";
 
 export class CharacterEditor {
   private readonly interaction:
@@ -84,7 +83,7 @@ export class CharacterEditor {
 
       if (action === "image") {
         const imageForm = new FormData();
-        const { fileName, blob } = await this.getImageBlob(value);
+        const { fileName, blob } = await getImageBlob(value);
         imageForm.append("image", blob, fileName);
         await PocketBase.updateEntityWithFormData(characterId, "characters", imageForm);
       } else {
@@ -121,21 +120,6 @@ export class CharacterEditor {
       return component.customId?.includes(action);
     });
     return (button as APIButtonComponent).label;
-  }
-
-  private async getImageBlob(value: string): Promise<{
-    fileName: string;
-    blob: Blob;
-  }> {
-    const imageUrl = value.replace(/\?.*/, "");
-    const image = await isImageUrl.parseAsync(imageUrl);
-    const response = await axios.get(image, { responseType: "arraybuffer" });
-    const fileName = image.split("/").pop();
-    assert(fileName, new BotError("Couldn't find file name in image url."));
-    return {
-      fileName,
-      blob: new Blob([response.data], { type: response.headers["content-type"] }),
-    };
   }
 
   private async validateAndUpdateCharacter(character: Character): Promise<void> {
@@ -202,8 +186,8 @@ export class CharacterEditor {
 
   private async updateFaction(characterId: string, newFactionId: string): Promise<void> {
     const [character, newFaction] = await Promise.all([
-      await CharacterFetcher.getCharacterById(characterId),
-      await PocketBase.getEntityById<Faction>({ entityType: "factions", id: newFactionId }),
+      CharacterFetcher.getCharacterById(characterId),
+      PocketBase.getEntityById<Faction>({ entityType: "factions", id: newFactionId }),
     ]);
 
     if (!this.checkOwnership(character)) {
@@ -220,7 +204,7 @@ export class CharacterEditor {
     }
     newFaction.characters.includes(character.id) || newFaction.characters.push(character.id);
     await Promise.all([
-      await this.validateAndUpdateCharacter({ ...character, faction: newFactionId }),
+      this.validateAndUpdateCharacter({ ...character, faction: newFactionId }),
       PocketBase.updateEntity({ entityType: "factions", entityData: newFaction }),
     ]);
   }

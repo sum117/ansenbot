@@ -19,6 +19,7 @@ export class BaseMessageBuilder implements BaseMessageOptions {
     this.content = content;
     return this;
   }
+
   setEmbeds(embeds: EmbedBuilder[]): this {
     this.embeds = embeds;
     return this;
@@ -33,8 +34,17 @@ export class BaseMessageBuilder implements BaseMessageOptions {
     this.allowedMentions = allowedMentions;
     return this;
   }
+
   setComponents(components: BaseMessageOptions["components"]): this {
     this.components = components;
+    return this;
+  }
+
+  addComponents(components: BaseMessageOptions["components"]): this {
+    if (!components) {
+      return this;
+    }
+    this.components = this.components?.concat(components) ?? components;
     return this;
   }
 }
