@@ -1,6 +1,7 @@
 import type {
   ButtonInteraction,
   ChatInputCommandInteraction,
+  Message,
   ModalSubmitInteraction,
   StringSelectMenuInteraction,
 } from "discord.js";
@@ -10,11 +11,12 @@ import { inspect } from "util";
 import { ZodError } from "zod";
 
 import deleteDiscordMessage from "./deleteDiscordMessage";
-import { PocketBaseError } from "./Errors";
+import { BotError, PocketBaseError } from "./Errors";
 import getSafeEntries from "./getSafeEntries";
 
 export default function handleError(
   interaction:
+    | Message
     | ChatInputCommandInteraction
     | ModalSubmitInteraction
     | ButtonInteraction
@@ -41,6 +43,10 @@ export default function handleError(
 
   if (error instanceof ZodError) {
     errorMessage = error.errors[0].message;
+  }
+
+  if (error instanceof BotError) {
+    errorMessage = error.message;
   }
 
   void interaction.channel?.send(errorMessage).then((message) => {
