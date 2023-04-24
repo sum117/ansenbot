@@ -19,6 +19,7 @@ await pb.admins.authWithPassword(
   process.env.POCKETBASE_ADMIN_PASSWORD ??
     (console.error("No admin password provided"), process.exit(1))
 );
+pb.autoCancellation(false);
 
 export default class PocketBase {
   public static expand(

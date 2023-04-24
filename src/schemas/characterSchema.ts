@@ -82,6 +82,11 @@ const createUpdateCharacterSchema = z.object(
       required_error: "Houve um erro ao escolher o jogador do personagem.",
     }),
     posts: z.array(z.string()),
+    inventory: z.array(z.string()),
+    xp: z.number(),
+    skillPoints: z.number(),
+    ascendedSkills: z.array(z.string()),
+    skillTraits: z.array(z.string()),
   },
   {
     description: "Schema para criação e atualização de personagens.",
@@ -95,6 +100,23 @@ const baseCharacterSchema = baseSchema.extend({
 
 const characterExpanded = z.object({
   characters: z.array(baseCharacterSchema),
+});
+const itemSchema = baseSchema.extend({
+  name: z.string(),
+  description: z.string(),
+  type: z.string(),
+  hunger: z.number(),
+  health: z.number(),
+  stamina: z.number(),
+  void: z.number(),
+});
+
+const inventoryItem = baseSchema.extend({
+  item: z.string(),
+  character: z.string(),
+  amount: z.number(),
+  isPoisoned: z.boolean(),
+  isCooked: z.boolean(),
 });
 
 const factionSchema = baseSchema.extend({
@@ -141,6 +163,13 @@ const raceSchema = baseSchema.extend({
   expand: characterExpanded.optional(),
 });
 
+const effectSchema = baseSchema.extend({
+  name: z.string(),
+  description: z.string(),
+  type: z.string(),
+  duration: z.number(),
+  amount: z.number(),
+});
 const skillsSchema = baseSchema.extend({
   vigor: z.number(),
   strength: z.number(),
@@ -173,7 +202,13 @@ const specSchema = baseSchema.extend({
 const statusSchema = baseSchema.extend({
   health: z.number(),
   stamina: z.number(),
-  money: z.number(),
+  spirit: z.number(),
+  hunger: z.number(),
+  sleep: z.number(),
+  void: z.number(),
+  despair: z.number(),
+  immune: z.array(z.string()),
+  effects: z.array(z.string()),
   character: z.string().optional(),
   expand: z.object({
     character: baseCharacterSchema,
@@ -232,4 +267,7 @@ export {
   destinyMaidenSchema,
   beastsSchema,
   statusSchema,
+  effectSchema,
+  inventoryItem,
+  itemSchema,
 };

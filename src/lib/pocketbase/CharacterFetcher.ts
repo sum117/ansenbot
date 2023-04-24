@@ -122,6 +122,13 @@ export default class CharacterFetcher {
     }
   }
 
+  public static async updateCharacter(character: Character): Promise<Character> {
+    return PocketBase.updateEntity<Character>({
+      entityType: "characters",
+      entityData: character,
+    });
+  }
+
   public static async deleteCharacter(userId: Snowflake, id: Character["id"]): Promise<void> {
     try {
       const character = await PocketBase.getEntityById<Character>({
@@ -184,8 +191,14 @@ export default class CharacterFetcher {
       const baseStatus = await PocketBase.createEntity<Status>({
         entityData: {
           health: 100 + skills.vigor * 10,
-          money: 0,
+          spirit: 0,
           stamina: 100 + skills.fortitude * 10,
+          despair: 0,
+          hunger: 0,
+          void: 0,
+          sleep: 0,
+          effects: [],
+          immune: [],
         },
         entityType: "status",
       });

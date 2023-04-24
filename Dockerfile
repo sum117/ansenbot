@@ -9,9 +9,9 @@ COPY package.json .
 
 # Install dependencies
 RUN apk add --no-cache --virtual .build-deps make gcc g++ python3 && \
-    npm install && \
+    npm install --legacy-peer-deps && \
     apk del .build-deps
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Move source files
 COPY src ./src
@@ -32,9 +32,9 @@ COPY --from=build-runner /tmp/app/package.json /app/package.json
 
 # Install dependencies
 RUN apk add --no-cache --virtual .build-deps make gcc g++ python3 && \
-    npm install && \
+    npm install --legacy-peer-deps && \
     apk del .build-deps
-RUN npm install --omit=dev
+RUN npm install --omit=dev --legacy-peer-deps
 
 # Move build files
 COPY --from=build-runner /tmp/app/build /app/build

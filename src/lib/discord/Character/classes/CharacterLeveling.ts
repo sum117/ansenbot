@@ -1,16 +1,19 @@
+import { Character, Skills } from "../../../../types/Character";
+import { PocketBaseConstants } from "../../../../types/PocketBaseCRUD";
+
 export type TCharacterLeveling = {
-  characterLevel?: number;
-  characterPoints?: number;
+  level?: number;
+  xp?: number;
   characterSpareSkillPoints?: number;
   characterAscendedSkills?: string[];
-  characterSkillsWithTraits?: string[];
+  skillTraits?: string[];
 };
 
 export class CharacterLeveling {
   public characterLevel: number;
   public characterSpareSkillPoints: number;
-  public characterPoints: number;
-  public characterSkills: Record<string, number>;
+  public characterXp: number;
+  public characterSkills: Partial<Omit<Skills, keyof PocketBaseConstants | "character" | "expand">>;
   public characterAscendedSkills: string[];
   public characterSkillsWithTraits: string[];
   public costPerLevel: number[];
@@ -19,22 +22,16 @@ export class CharacterLeveling {
   constructor(
     maxLevel = 99,
     increaseFactor: number,
-    skills: Record<string, number> = {},
-    {
-      characterLevel = 1,
-      characterSpareSkillPoints = 0,
-      characterPoints = 0,
-      characterAscendedSkills = [],
-      characterSkillsWithTraits = [],
-    }: TCharacterLeveling
+    skills: Partial<Omit<Skills, keyof PocketBaseConstants | "character" | "expand">>,
+    { level = 1, skillPoints = 0, xp = 0, ascendedSkills = [], skillTraits = [] }: Character
   ) {
     this.maxLevel = maxLevel;
-    this.characterLevel = characterLevel;
-    this.characterSpareSkillPoints = characterSpareSkillPoints;
-    this.characterPoints = characterPoints;
+    this.characterLevel = level;
+    this.characterSpareSkillPoints = skillPoints;
+    this.characterXp = xp;
     this.characterSkills = skills;
-    this.characterAscendedSkills = characterAscendedSkills;
-    this.characterSkillsWithTraits = characterSkillsWithTraits;
+    this.characterAscendedSkills = ascendedSkills;
+    this.characterSkillsWithTraits = skillTraits;
     this.costPerLevel = this.calculateCostPerLevel(increaseFactor);
   }
 
@@ -48,19 +45,19 @@ export class CharacterLeveling {
 
   public addCharacterPoints(amount: number): void {
     const traitMultiplier = 1 + 0.1 * this.characterSkillsWithTraits.length;
-    this.characterPoints += Math.floor(amount * traitMultiplier);
+    this.characterXp += Math.floor(amount * traitMultiplier);
   }
 
   public canLevelUpCharacter(): boolean {
     return (
       this.characterLevel < this.maxLevel &&
-      this.characterPoints >= this.costPerLevel[this.characterLevel + 1]
+      this.characterXp >= this.costPerLevel[this.characterLevel + 1]
     );
   }
 
   public levelUpCharacter(): boolean {
     if (this.canLevelUpCharacter()) {
-      this.characterPoints -= this.costPerLevel[this.characterLevel + 1];
+      this.characterXp -= this.costPerLevel[this.characterLevel + 1];
       this.characterLevel++;
       this.characterSpareSkillPoints += 10;
       return true;
@@ -69,8 +66,12 @@ export class CharacterLeveling {
     }
   }
 
-  public canIncreaseSkill(skill: string): boolean {
-    const isMax = this.characterSkills[skill] < this.maxLevel;
+  public canIncreaseSkill(skill: keyof typeof this.characterSkills): boolean {
+    const level = this.characterSkills[skill];
+    if (!level) {
+      return false;
+    }
+    const isMax = level < this.maxLevel;
     const hasPoints = this.characterSpareSkillPoints > 0;
     const isAscended = this.characterAscendedSkills.includes(skill);
 
@@ -80,9 +81,13 @@ export class CharacterLeveling {
     return isMax && hasPoints;
   }
 
-  public increaseSkill(skill: string): boolean {
+  public increaseSkill(skill: keyof typeof this.characterSkills): boolean {
     if (this.canIncreaseSkill(skill)) {
-      this.characterSkills[skill]++;
+      const level = this.characterSkills[skill];
+      if (!level) {
+        return false;
+      }
+      this.characterSkills[skill] = level + 1;
       this.characterSpareSkillPoints--;
       return true;
     } else {

@@ -10,3 +10,23 @@ export const skillsDictionary = {
   strength: "💪 Força",
   vigor: "🏃‍♂️ Vigor",
 } as const;
+
+export const statusDictionary = {
+  health: "❤️ Vida",
+  stamina: "🔋 Energia",
+  spirit: "🔮 Espírito",
+  hunger: "🍔 Fome",
+  sleep: "😴 Sono",
+  void: "🌑 Vazio",
+  despair: "😭 Desespero",
+} as const;
+
+export const statesDictionary = {
+  health: "💔 Com Pouca Vida",
+  stamina: "🏃 Com Pouca Energia",
+  spirit: "🔮 Com Pouco Espírito",
+  hunger: "🍖 Com Fome",
+  sleep: "💤 Com Sono",
+  void: "💀 Virando Vazio",
+  despair: "🪦 Prateando",
+} as const;

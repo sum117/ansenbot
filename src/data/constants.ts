@@ -11,7 +11,10 @@ export const COLLECTIONS = {
   startingSkills: "startingSkills",
   destinyMaidens: "destinyMaidens",
   beasts: "beasts",
+  inventory: "inventory",
+  items: "items",
   forms: "forms",
+  effects: "effects",
 } as const;
 export const RELATION_FIELD_NAMES = {
   character: "character",
@@ -19,12 +22,14 @@ export const RELATION_FIELD_NAMES = {
   race: "race",
   skills: "skills",
   status: "status",
+  effects: "effects",
   player: "player",
   characters: "characters",
   memory: "memory",
   spec: "spec",
   destinyMaiden: "destinyMaiden",
   startingSkills: "startingSkills",
+  inventory: "inventory",
 } as const;
 export const MAX_FILE_SIZE = 15_000_000;
 export const ACCEPTED_IMAGE_TYPES = ["jpeg", "jpg", "png", "webp"];
@@ -41,3 +46,21 @@ export const JOIN_FORM_VALUES = {
   teen: "teen",
   wantsMentor: "true",
 } as const;
+
+export const ITEM_TYPES = {
+  consumable: "consumable",
+  armor: "armor",
+  weapon: "weapon",
+  spell: "spell",
+} as const;
+
+export const STATUS_SKILLS_RELATION = {
+  health: "vigor",
+  sleep: "fortitude",
+  hunger: "fortitude",
+  void: "darkness",
+  stamina: "strength",
+  despair: "darkness",
+} as const;
+
+export const STATUS_GAIN_PER_LEVEL = 10 as const;

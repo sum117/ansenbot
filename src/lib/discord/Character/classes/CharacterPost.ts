@@ -1,5 +1,13 @@
-import type { BaseMessageOptions, ColorResolvable } from "discord.js";
-import { Collection, EmbedBuilder, userMention } from "discord.js";
+import {
+  ActionRowBuilder,
+  BaseMessageOptions,
+  ButtonBuilder,
+  ButtonStyle,
+  Collection,
+  ColorResolvable,
+  EmbedBuilder,
+  userMention,
+} from "discord.js";
 
 import { skillsDictionary } from "../../../../data/translations";
 import type { Character } from "../../../../types/Character";
@@ -47,6 +55,16 @@ export default class CharacterPost {
       thumb: true,
     });
     embed.setThumbnail(image);
+
+    options.components = [
+      new ActionRowBuilder<ButtonBuilder>().setComponents([
+        new ButtonBuilder()
+          .setCustomId(`character:status:${this.character.id}:${this.character.playerId}`)
+          .setLabel("Status")
+          .setEmoji("📊")
+          .setStyle(ButtonStyle.Primary),
+      ]),
+    ];
 
     options.embeds = [embed];
     return options;
