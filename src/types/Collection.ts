@@ -2,7 +2,10 @@ import type {
   Beast,
   Character,
   DestinyMaiden,
+  Effect,
   Faction,
+  InventoryItem,
+  Item,
   Memory,
   Player,
   Post,
@@ -25,4 +28,7 @@ export type Collection =
   | Form
   | Beast
   | DestinyMaiden
+  | InventoryItem
+  | Item
+  | Effect
   | Spec;
