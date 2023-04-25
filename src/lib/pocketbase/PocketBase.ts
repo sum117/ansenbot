@@ -1,4 +1,4 @@
-import PB, { type ListResult, type Record as DBRecord } from "pocketbase";
+import PB, { type ListResult, type Record as DBRecord, RecordSubscription } from "pocketbase";
 
 import { COLLECTIONS, RELATION_FIELD_NAMES } from "../../data/constants";
 import type { Collection } from "../../types/Collection";
@@ -12,6 +12,14 @@ import type {
   UpdateEntityParams,
 } from "../../types/PocketBaseCRUD";
 import { BotError } from "../../utils/Errors";
+import channelSchema from "../../schemas/channelSchema";
+import kebabCase from "lodash.kebabcase";
+import { ChannelType } from "discord.js";
+import { channelPlaceHolderEmbed } from "../discord/Channel/channelPlaceholderEmbed";
+import { Channel } from "../../types/Channel";
+import { bot } from "../../main";
+import config from "../../../config.json" assert { type: "json" };
+import dismissButton from "../discord/Channel/dismissButton";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(
@@ -137,7 +145,69 @@ export default class PocketBase {
     return pb.collection(COLLECTIONS[entityType]).update<T>(id, body);
   }
 
-  public static deleteEntity({ entityType, id }: DeleteEntityParams): Promise<boolean> {
-    return pb.collection(COLLECTIONS[entityType]).delete(id);
+  public static async deleteEntity(params: DeleteEntityParams): Promise<boolean> {
+    if ("filter" in params) {
+      const entity = await pb
+        .collection(COLLECTIONS[params.entityType])
+        .getFirstListItem(params.filter[0]);
+      return pb.collection(COLLECTIONS[params.entityType]).delete(entity.id);
+    }
+    return pb.collection(COLLECTIONS[params.entityType]).delete(params.id);
   }
 }
+
+export async function channelSubscriptionCallback(change: RecordSubscription<Channel>) {
+  try {
+    const record = channelSchema.parse(change.record);
+    const ansenfall = bot.guilds.cache.get(config.guilds.ansenfall);
+
+    if (!ansenfall) {
+      throw new BotError("Could not find Ansenfall guild");
+    }
+    if (change.action === "delete") {
+      void ansenfall.channels.cache.get(record.discordId)?.delete();
+    }
+    let channel = await ansenfall.channels.cache.get(record.discordId);
+
+    if (!channel) {
+      channel = await ansenfall.channels.create({
+        name: kebabCase(record.name),
+        parent: record.categoryId,
+        type: ChannelType.GuildText,
+      });
+    }
+
+    if (!channel.isTextBased()) {
+      throw new BotError("Channel created by Pocketbase is not text based, this should not happen");
+    }
+
+    const placeholderEmbed = channelPlaceHolderEmbed(record);
+    if (change.action === "update") {
+      const messageToUpdate = await channel.messages
+        .fetch(record.placeholderMessageId)
+        .catch(() => null);
+
+      if (messageToUpdate) {
+        await messageToUpdate.edit({ embeds: [placeholderEmbed] });
+      }
+    }
+
+    if (change.action !== "create") {
+      return;
+    }
+
+    const placeholderMessage = await channel.send({
+      embeds: [placeholderEmbed],
+      components: [dismissButton],
+    });
+    await pb.collection(COLLECTIONS.channels).update<Channel>(record.id, {
+      ...record,
+      discordId: channel.id,
+      placeholderMessageId: placeholderMessage.id,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export { pb };

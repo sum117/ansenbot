@@ -28,7 +28,7 @@ const characterCreateForm = async (
   const previousStep = currentStep - 1;
   const step = await PocketBase.getFirstListEntity<Form>({
     entityType: "forms",
-    filter: [`step=${currentStep}`, {}],
+    filter: [`step="${currentStep}"`, {}],
   });
   const stepData = await PocketBase.getAllEntities<Faction | Race | Spec | DestinyMaiden>({
     entityType: step.collection,

@@ -15,6 +15,7 @@ export const COLLECTIONS = {
   items: "items",
   forms: "forms",
   effects: "effects",
+  channels: "channels",
 } as const;
 export const RELATION_FIELD_NAMES = {
   character: "character",

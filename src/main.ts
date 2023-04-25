@@ -1,12 +1,17 @@
 import "dotenv/config";
+import EventSource from "eventsource";
 
 import { dirname, importx } from "@discordx/importer";
 import type { Interaction } from "discord.js";
-import { IntentsBitField, Options } from "discord.js";
+import { ChannelType, IntentsBitField, Options } from "discord.js";
 import { Client } from "discordx";
 
 import PostFetcher from "./lib/pocketbase/PostFetcher";
 import server from "./server";
+import { COLLECTIONS } from "./data/constants";
+import { channelSubscriptionCallback, pb } from "./lib/pocketbase/PocketBase";
+
+global.EventSource = EventSource as any;
 
 export const bot = new Client({
   intents: [
@@ -50,6 +55,8 @@ bot.on("messageDelete", async (message) => {
     }
   }
 });
+
+await pb.collection(COLLECTIONS.channels).subscribe("*", channelSubscriptionCallback);
 
 async function run() {
   await importx(`${dirname(import.meta.url)}/{events,commands}/**/*.{ts,js}`);

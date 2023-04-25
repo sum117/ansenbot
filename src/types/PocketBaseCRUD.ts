@@ -35,10 +35,19 @@ export type UpdateEntityParams<T extends Collection> = {
   entityType: keyof typeof COLLECTIONS;
 };
 
-export type DeleteEntityParams = {
+interface BaseDeleteEntityParams {
   entityType: keyof typeof COLLECTIONS;
+}
+
+type DeleteEntityParamsWithId = BaseDeleteEntityParams & {
   id: string;
 };
+
+type DeleteEntityParamsWithFilter = BaseDeleteEntityParams & {
+  filter: [string, RecordListQueryParams];
+};
+
+export type DeleteEntityParams = DeleteEntityParamsWithId | DeleteEntityParamsWithFilter;
 
 export type GetAllEntitiesParams = {
   entityType: keyof typeof COLLECTIONS;
