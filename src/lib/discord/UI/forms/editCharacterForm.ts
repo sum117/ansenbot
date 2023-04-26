@@ -12,7 +12,7 @@ import { BotError } from "../../../../utils/Errors";
 import replyOrFollowUp from "../../../../utils/replyOrFollowUp";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import PocketBase from "../../../pocketbase/PocketBase";
-import MultiForm from "../MultiForm";
+import MultiForm from "../classes/MultiForm";
 
 const editCharacterForm = async (
   interaction: ChatInputCommandInteraction | ModalSubmitInteraction

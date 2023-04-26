@@ -1,6 +1,6 @@
 import { ButtonBuilder, ButtonStyle } from "discord.js";
 
-import MultiForm from "../MultiForm";
+import MultiForm from "../classes/MultiForm";
 
 const characterCreateTrigger = (canFinish: boolean, fallbackStep: string) =>
   new MultiForm({

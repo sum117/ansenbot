@@ -18,8 +18,8 @@ import handleError from "../../../../utils/handleError";
 import replyOrFollowUp from "../../../../utils/replyOrFollowUp";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import PocketBase from "../../../pocketbase/PocketBase";
-import editCharacterForm from "../../Prompt/forms/editCharacterForm";
-import promptBox from "../../Prompt/promptBox";
+import editCharacterForm from "../forms/editCharacterForm";
+import promptBox from "../promptBox";
 import getImageBlob from "../../../../utils/getImageBlob";
 
 export class CharacterEditor {

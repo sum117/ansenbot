@@ -63,6 +63,11 @@ export default class CharacterPost {
           .setLabel("Status")
           .setEmoji("📊")
           .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId(`character:inventory:${this.character.id}:${this.character.playerId}`)
+          .setLabel("Inventário")
+          .setEmoji("🎒")
+          .setStyle(ButtonStyle.Primary),
       ]),
     ];
 

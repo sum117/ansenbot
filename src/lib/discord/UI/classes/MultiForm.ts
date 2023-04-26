@@ -8,9 +8,9 @@ import {
 } from "discord.js";
 import split from "just-split";
 
-import type { Prompt, PromptWithController } from "../../../types/MultiForm";
-import { BotError } from "../../../utils/Errors";
-import { BaseMessageBuilder } from "../Builders/BaseMessageBuilder";
+import type { Prompt, PromptWithController } from "../../../../types/MultiForm";
+import { BotError } from "../../../../utils/Errors";
+import { BaseMessageBuilder } from "../../Builders/BaseMessageBuilder";
 
 export default class MultiForm extends BaseMessageBuilder {
   constructor(public readonly prompt: Prompt | PromptWithController) {

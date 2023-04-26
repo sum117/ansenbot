@@ -10,7 +10,7 @@ import { BotError } from "../utils/Errors";
 import Queue from "../utils/Queue";
 
 @Discord()
-export class Example {
+export class OnImageGenerationRequest {
   private imageGenerationQueue = new Queue();
   private pendingUserImageRequests = new Collection<
     Snowflake,

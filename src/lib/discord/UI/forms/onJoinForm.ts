@@ -3,7 +3,7 @@ import { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, userMention } f
 import mustache from "mustache";
 
 import { JOIN_FORM_VALUES } from "../../../../data/constants";
-import MultiForm from "../MultiForm";
+import MultiForm from "../classes/MultiForm";
 
 /**
  * @description Formulário de registro de novos membros no servidor

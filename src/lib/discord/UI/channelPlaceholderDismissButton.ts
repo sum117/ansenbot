@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
-const dismissButton = new ActionRowBuilder<ButtonBuilder>().setComponents(
+const channelPlaceholderDismissButton = new ActionRowBuilder<ButtonBuilder>().setComponents(
   new ButtonBuilder()
     .setCustomId("dismissPresentation")
     .setStyle(ButtonStyle.Primary)
@@ -8,4 +8,4 @@ const dismissButton = new ActionRowBuilder<ButtonBuilder>().setComponents(
     .setEmoji("👋")
 );
 
-export default dismissButton;
+export default channelPlaceholderDismissButton;

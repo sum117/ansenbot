@@ -9,7 +9,7 @@ import {
 import type { DestinyMaiden, Faction, Race, Spec } from "../../../../types/Character";
 import type { Form } from "../../../../types/MultiForm";
 import PocketBase from "../../../pocketbase/PocketBase";
-import MultiForm from "../MultiForm";
+import MultiForm from "../classes/MultiForm";
 
 const characterCreateForm = async (
   interaction: ButtonInteraction | SelectMenuInteraction

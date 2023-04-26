@@ -1,6 +1,6 @@
 import { TextInputStyle } from "discord.js";
 
-import { AnsenModal } from "../../Character/classes/AnsenModal";
+import { AnsenModal } from "../classes/AnsenModal";
 
 const characterCreateModal = new AnsenModal({
   customId: "createChar:modal:required",
