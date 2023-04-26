@@ -15,6 +15,7 @@ import type {
   Status,
 } from "./Character";
 import type { Form } from "./MultiForm";
+import { Channel } from "./Channel";
 
 export type Collection =
   | Character
@@ -31,4 +32,5 @@ export type Collection =
   | InventoryItem
   | Item
   | Effect
+  | Channel
   | Spec;
