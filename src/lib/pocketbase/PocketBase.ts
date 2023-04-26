@@ -15,11 +15,11 @@ import { BotError } from "../../utils/Errors";
 import channelSchema from "../../schemas/channelSchema";
 import kebabCase from "lodash.kebabcase";
 import { ChannelType } from "discord.js";
-import { channelPlaceHolderEmbed } from "../discord/Channel/channelPlaceholderEmbed";
+import { channelPlaceHolderEmbed } from "../discord/UI/channelPlaceholderEmbed";
 import { Channel } from "../../types/Channel";
 import { bot } from "../../main";
 import config from "../../../config.json" assert { type: "json" };
-import dismissButton from "../discord/Channel/dismissButton";
+import channelPlaceholderDismissButton from "../discord/UI/channelPlaceholderDismissButton";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(
@@ -198,7 +198,7 @@ export async function channelSubscriptionCallback(change: RecordSubscription<Cha
 
     const placeholderMessage = await channel.send({
       embeds: [placeholderEmbed],
-      components: [dismissButton],
+      components: [channelPlaceholderDismissButton],
     });
     await pb.collection(COLLECTIONS.channels).update<Channel>(record.id, {
       ...record,

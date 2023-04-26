@@ -30,3 +30,10 @@ export const statesDictionary = {
   void: "💀 Virando Vazio",
   despair: "🪦 Prateando",
 } as const;
+
+export const itemTypesEmojis = {
+  consumable: "🍔",
+  armor: "🛡️",
+  weapon: "⚔️",
+  spell: "🔮",
+};

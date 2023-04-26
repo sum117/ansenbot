@@ -5,7 +5,7 @@ import { Discord, On, SelectMenuComponent } from "discordx";
 import mustache from "mustache";
 
 import { JOIN_FORM_VALUES } from "../data/constants";
-import onJoinForm from "../lib/discord/Prompt/forms/onJoinForm";
+import onJoinForm from "../lib/discord/UI/forms/onJoinForm";
 import type { Properties } from "../types/Utils";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import { BotError } from "../utils/Errors";

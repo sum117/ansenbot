@@ -14,12 +14,12 @@ import {
 } from "discord.js";
 import { ButtonComponent, Discord, ModalComponent, SelectMenuComponent, Slash } from "discordx";
 
-import characterCreateForm from "../../lib/discord/Prompt/forms/characterCreateForm";
+import characterCreateForm from "../../lib/discord/UI/forms/characterCreateForm";
 import {
   characterCreateModal,
   characterCreateModalOptional,
-} from "../../lib/discord/Prompt/forms/characterCreateModal";
-import characterCreateTrigger from "../../lib/discord/Prompt/forms/characterCreateTrigger";
+} from "../../lib/discord/UI/forms/characterCreateModal";
+import characterCreateTrigger from "../../lib/discord/UI/forms/characterCreateTrigger";
 import PocketBase from "../../lib/pocketbase/PocketBase";
 import type { Character, CreateUpdateCharacter, Faction, Race, Spec } from "../../types/Character";
 import { BotError, PocketBaseError } from "../../utils/Errors";
@@ -28,12 +28,12 @@ import imageKit from "../../utils/imageKit";
 import numberInRange from "../../utils/numberInRange";
 import { createUpdateCharacterSchema } from "../../schemas/characterSchema";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
-import { AnsenModal } from "../../lib/discord/Character/classes/AnsenModal";
-import characterCreateModalTrigger from "../../lib/discord/Prompt/forms/characterCreateModalTrigger";
+import { AnsenModal } from "../../lib/discord/UI/classes/AnsenModal";
+import characterCreateModalTrigger from "../../lib/discord/UI/forms/characterCreateModalTrigger";
 import config from "../../../config.json" assert { type: "json" };
-import CharacterPost from "../../lib/discord/Character/classes/CharacterPost";
+import CharacterPost from "../../lib/discord/UI/classes/CharacterPost";
 import mustache from "mustache";
-import characterApprovalBtnRow from "../../lib/discord/Prompt/characterApprovalBtnRow";
+import characterApprovalBtnRow from "../../lib/discord/UI/characterApprovalBtnRow";
 
 @Discord()
 export class CharacterCreatorController {
@@ -387,6 +387,10 @@ export class CharacterCreatorController {
     form.playerId = instance.interaction.user.id;
     form.player = "";
     form.posts = [""];
+    form.xp = 0;
+    form.skillPoints = 0;
+    form.ascendedSkills = [];
+    form.skillTraits = [];
 
     const character = createUpdateCharacterSchema.parse(form);
     return CharacterFetcher.createCharacter(character, instance.interaction.user.id);

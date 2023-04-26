@@ -31,6 +31,7 @@ export const RELATION_FIELD_NAMES = {
   destinyMaiden: "destinyMaiden",
   startingSkills: "startingSkills",
   inventory: "inventory",
+  item: "item",
 } as const;
 export const MAX_FILE_SIZE = 15_000_000;
 export const ACCEPTED_IMAGE_TYPES = ["jpeg", "jpg", "png", "webp"];

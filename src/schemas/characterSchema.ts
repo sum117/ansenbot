@@ -81,12 +81,26 @@ const createUpdateCharacterSchema = z.object(
     player: z.string({
       required_error: "Houve um erro ao escolher o jogador do personagem.",
     }),
-    posts: z.array(z.string()),
-    inventory: z.array(z.string()),
-    xp: z.number(),
-    skillPoints: z.number(),
-    ascendedSkills: z.array(z.string()),
-    skillTraits: z.array(z.string()),
+    posts: z.array(z.string(), {
+      required_error: "Houve um erro ao criar os posts do personagem.",
+    }),
+    inventory: z.array(z.string(), {
+      required_error: "Houve um erro ao criar o inventário do personagem.",
+    }),
+    xp: z.number({
+      required_error: "Houve um erro ao criar a experiência do personagem.",
+    }),
+    skillPoints: z.number({
+      required_error: "Houve um erro ao criar os pontos de habilidade do personagem.",
+    }),
+    ascendedSkills: z.array(z.string(), {
+      required_error: "Houve um erro ao criar as habilidades ascendentes do personagem.",
+    }),
+    skillTraits: z.array(
+      z.string({
+        required_error: "Houve um erro ao criar os traços de habilidade do personagem.",
+      })
+    ),
   },
   {
     description: "Schema para criação e atualização de personagens.",
@@ -117,6 +131,11 @@ const inventoryItem = baseSchema.extend({
   amount: z.number(),
   isPoisoned: z.boolean(),
   isCooked: z.boolean(),
+  expand: z
+    .object({
+      item: itemSchema,
+    })
+    .optional(),
 });
 
 const factionSchema = baseSchema.extend({

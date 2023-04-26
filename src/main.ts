@@ -46,7 +46,7 @@ bot.on("messageCreate", (message) => {
 bot.on("messageDelete", async (message) => {
   if (message.embeds.length && !message.partial) {
     try {
-      const foundPost = await PostFetcher.getPostByMessageId(message.id);
+      const foundPost = await PostFetcher.getPostByMessageId(message.id).catch(() => null);
       if (foundPost) {
         void PostFetcher.deletePost(message);
       }

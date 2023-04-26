@@ -5,14 +5,11 @@ import {
   ChannelType,
   EmbedBuilder,
   Message,
-  userMention,
 } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On } from "discordx";
 
-import CharacterPost from "../lib/discord/Character/classes/CharacterPost";
-import CharacterFetcher from "../lib/pocketbase/CharacterFetcher";
-import PlayerFetcher from "../lib/pocketbase/PlayerFetcher";
+import CharacterPost from "../lib/discord/UI/classes/CharacterPost";
 import PostFetcher from "../lib/pocketbase/PostFetcher";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import equalityPercentage from "../utils/equalityPercentage";
@@ -24,12 +21,13 @@ import { Character, Effect, Skills, Status } from "../types/Character";
 import { STATUS_SKILLS_RELATION } from "../data/constants";
 import getSafeEntries from "../utils/getSafeEntries";
 import { EffectFetcher } from "../lib/pocketbase/EffectFetcher";
-import { SkillsFetcher } from "../lib/pocketbase/SkillsFetcher";
 import { statesDictionary } from "../data/translations";
 import getMaxStatus from "../lib/discord/Character/helpers/getMaxStatus";
 import isStatus from "../lib/discord/Character/helpers/isStatus";
-import getStatusBars from "../lib/discord/Character/helpers/getStatusBars";
+import getStatusBars from "../lib/discord/UI/helpers/getStatusBars";
 import PocketBase from "../lib/pocketbase/PocketBase";
+import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
+import getRoleplayDataFromUserId from "../lib/discord/Character/helpers/getRoleplayDataFromUserId";
 
 @Discord()
 export class OnRoleplayMessage {
@@ -41,7 +39,7 @@ export class OnRoleplayMessage {
       }
 
       const { currentCharacter, characterManager, view, status, skills } =
-        await this.getRoleplayData(message);
+        await getRoleplayDataFromUserId(message);
 
       await Promise.all([
         this.processExperienceGain(view, message, currentCharacter, characterManager),
@@ -84,7 +82,7 @@ export class OnRoleplayMessage {
   async statusButton(interaction: ButtonInteraction): Promise<void> {
     try {
       const { currentCharacter, characterManager, view, status, skills } =
-        await this.getRoleplayData(interaction);
+        await getRoleplayDataFromUserId(interaction);
       const characterPost = new CharacterPost(currentCharacter);
       await this.addEffectsToEmbed(status, characterPost);
       await this.addStatusBarsToEmbed(skills, status, characterPost);
@@ -110,23 +108,6 @@ export class OnRoleplayMessage {
     } catch (error) {
       handleError(interaction, error);
     }
-  }
-
-  private async getRoleplayData(arg: Message<boolean> | ButtonInteraction) {
-    const authorId = arg instanceof Message ? arg.author.id : arg.customId.split(":")[3];
-    const player = await PlayerFetcher.getPlayerById(authorId);
-    const currentCharacter = await CharacterFetcher.getCharacterById(player.currentCharacterId);
-    const characterManager = new CharacterManager(currentCharacter);
-    const view = {
-      character: currentCharacter.name,
-      level: currentCharacter.level,
-      author: userMention(authorId),
-    };
-    const [status, skills] = await Promise.all([
-      characterManager.getStatuses(currentCharacter.status),
-      SkillsFetcher.getSkillsById(currentCharacter.skills),
-    ]);
-    return { currentCharacter, characterManager, view, status, skills };
   }
 
   private async addEffectsToEmbed(status: Status, characterPost: CharacterPost): Promise<void> {
@@ -203,17 +184,29 @@ export class OnRoleplayMessage {
     skills: Skills
   ): Promise<void> {
     const statusLoss = Math.ceil(message.content.length / 1000);
-
-    status.sleep -= statusLoss;
-    status.hunger -= statusLoss;
-    status.void -= statusLoss;
-    status.stamina -= statusLoss;
-
-    // if any of the status is below 25%, send warning message with what's low
-    const statusWarning = await this.getStatusWarning(skills, status, view);
+    const channel = await ChannelFetcher.getChannelById(message.channel.id);
+    const isSafe = channel?.isSafe ?? false;
+    const hasSleep = channel?.hasSleep ?? false;
+    const hasSpirit = channel?.hasSpirit ?? false;
+    let statusWarning: { message: string; updatedStatus: Status } | null = null;
+    if (!isSafe) {
+      status.sleep -= statusLoss;
+      status.hunger -= statusLoss;
+      status.void -= statusLoss;
+      status.stamina -= statusLoss;
+      // if any of the status is below 25%, send warning message with what's low
+      statusWarning = await this.getStatusWarning(skills, status, view);
+    } else if (isSafe && hasSleep) {
+      status.sleep += statusLoss;
+      status.void += statusLoss;
+      status.stamina += statusLoss;
+      status.effects = [];
+    }
+    if (hasSpirit) {
+      status.spirit += statusLoss;
+    }
 
     await characterManager.setStatus(statusWarning?.updatedStatus ?? status);
-
     if (statusWarning) {
       await message.channel.send(statusWarning.message);
     }
@@ -265,7 +258,7 @@ export class OnRoleplayMessage {
       const maxStatus = getMaxStatus(skills);
       const percentage = Math.max(0, (status[stat] / maxStatus[skill]) * 100);
       const shouldWarn = percentage < twentyFivePercent && !status.effects.includes(effect.id);
-      const isInDanger = percentage === 0;
+      const isInDanger = percentage <= 0;
       if (shouldWarn) {
         warningMessageArray.push(mustache.render(effect.description, view));
       }

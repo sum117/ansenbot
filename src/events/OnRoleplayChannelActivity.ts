@@ -11,11 +11,11 @@ import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On } from "discordx";
 import { Channel } from "../types/Channel";
 import config from "../../config.json" assert { type: "json" };
-import { channelPlaceHolderEmbed } from "../lib/discord/Channel/channelPlaceholderEmbed";
+import { channelPlaceHolderEmbed } from "../lib/discord/UI/channelPlaceholderEmbed";
 import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
 import handleError from "../utils/handleError";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
-import dismissButton from "../lib/discord/Channel/dismissButton";
+import channelPlaceholderDismissButton from "../lib/discord/UI/channelPlaceholderDismissButton";
 
 @Discord()
 export class OnRoleplayChannelActivity {
@@ -128,7 +128,7 @@ export class OnRoleplayChannelActivity {
         if (!message) {
           const newPresentationMessage = await channel.send({
             embeds: [presentationEmbed],
-            components: [dismissButton],
+            components: [channelPlaceholderDismissButton],
           });
           const oldMessage = await channel.messages
             .fetch(presentationMessage.placeholderMessageId)
@@ -195,7 +195,7 @@ export class OnRoleplayChannelActivity {
         const embed = channelPlaceHolderEmbed(channelData);
         const presentationMessage = await channel.send({
           embeds: [embed],
-          components: [dismissButton],
+          components: [channelPlaceholderDismissButton],
         });
         presentationMessageChannel = await ChannelFetcher.createChannelWithDiscordId({
           ...channelData,

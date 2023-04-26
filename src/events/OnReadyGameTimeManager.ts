@@ -3,7 +3,7 @@ import type { ArgsOf } from "discordx";
 import { Discord, Once } from "discordx";
 
 import config from "../../config.json" assert { type: "json" };
-import { GameClock } from "../lib/discord/Character/classes/GameTime";
+import { GameClock } from "../lib/discord/GameSystems/GameTime";
 import CharacterFetcher from "../lib/pocketbase/CharacterFetcher";
 import { BotError } from "../utils/Errors";
 
