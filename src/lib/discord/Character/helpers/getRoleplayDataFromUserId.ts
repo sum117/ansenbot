@@ -5,7 +5,7 @@ import { CharacterManager } from "../classes/CharacterManager";
 import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
 
 export default async function getRoleplayDataFromUserId(arg: Message<boolean> | ButtonInteraction) {
-  const authorId = arg instanceof Message ? arg.author.id : arg.customId.split(":")[3];
+  const authorId = arg instanceof Message ? arg.author.id : arg.customId.split(":")[4];
   const player = await PlayerFetcher.getPlayerById(authorId);
   const currentCharacter = await CharacterFetcher.getCharacterById(player.currentCharacterId);
   const characterManager = new CharacterManager(currentCharacter);

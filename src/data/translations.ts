@@ -31,12 +31,6 @@ export const statesDictionary = {
   despair: "🪦 Prateando",
 } as const;
 
-export const itemTypesEmojis = {
-  consumable: "🍔",
-  equipment: "🛡️",
-  spell: "🔮",
-};
-
 export const equipmentDictionary = {
   head: "👑 Cabeça",
   face: "🎭 Rosto",

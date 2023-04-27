@@ -79,7 +79,7 @@ export class OnRoleplayMessage {
     }
   }
 
-  @ButtonComponent({ id: /character:status:\w+:\d+/ })
+  @ButtonComponent({ id: /character:status:open:\w+:\d+/ })
   async statusButton(interaction: ButtonInteraction): Promise<void> {
     try {
       const { currentCharacter, characterManager, view, status, skills } =

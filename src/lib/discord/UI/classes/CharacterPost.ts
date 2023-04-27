@@ -59,12 +59,12 @@ export default class CharacterPost {
     options.components = [
       new ActionRowBuilder<ButtonBuilder>().setComponents([
         new ButtonBuilder()
-          .setCustomId(`character:status:${this.character.id}:${this.character.playerId}`)
+          .setCustomId(`character:status:open:null:${this.character.playerId}`)
           .setLabel("Status")
           .setEmoji("📊")
           .setStyle(ButtonStyle.Primary),
         new ButtonBuilder()
-          .setCustomId(`character:inventory:${this.character.id}:${this.character.playerId}`)
+          .setCustomId(`character:inventory:open:null:${this.character.playerId}`)
           .setLabel("Inventário")
           .setEmoji("🎒")
           .setStyle(ButtonStyle.Primary),
