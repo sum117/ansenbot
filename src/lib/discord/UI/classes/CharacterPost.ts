@@ -95,7 +95,7 @@ export default class CharacterPost {
     fields.set("Idade", this.character.age.toString());
     fields.set("Nível", this.character.level.toString());
     fields.set("Raça", this.character.expand.race.map((race) => race.name).join(" & "));
-    fields.set("Classe", this.character.expand.spec.map((spec) => spec.name).join(" & "));
+    fields.set("Classe", this.character.expand.specs.map((spec) => spec.name).join(" & "));
     fields.set("Dama do Destino", this.character.expand.destinyMaiden.name);
 
     if (this.character.expand.faction) {
@@ -127,10 +127,8 @@ export default class CharacterPost {
       collectionId: _collectionId,
       collectionName: _collectionName,
       id: _id,
-      character: _character,
       created: _created,
       updated: _updated,
-      expand: _expand,
       ...rest
     } = skills;
 

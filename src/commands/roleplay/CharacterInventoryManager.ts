@@ -2,14 +2,11 @@ import { ButtonComponent, Discord } from "discordx";
 import { ButtonInteraction, ButtonStyle, Snowflake } from "discord.js";
 import handleError from "../../utils/handleError";
 import mustache from "mustache";
-import { ItemFetcher } from "../../lib/pocketbase/ItemFetcher";
-import sortInventoryItems from "../../lib/discord/UI/helpers/sortInventoryItems";
 import makeInventoryStringArray from "../../lib/discord/UI/helpers/makeInventoryStringArray";
 import getRoleplayDataFromUserId from "../../lib/discord/Character/helpers/getRoleplayDataFromUserId";
-import countInventoryItemsReducer from "../../lib/discord/UI/helpers/countInventoryItems";
+
 import characterInventoryMessageOptions from "../../lib/discord/UI/characterInventoryMessageOptions";
-import { Character, InventoryItem } from "../../types/Character";
-import { ListResult } from "pocketbase";
+import { Character } from "../../types/Character";
 
 @Discord()
 export class CharacterInventoryManager {
@@ -32,14 +29,27 @@ export class CharacterInventoryManager {
         return;
       }
 
-      const inventory = await ItemFetcher.getCharacterInventory(currentCharacter.id);
-      const inventoryMessage = this.prepareInventoryMessage(inventory);
-      const counters = this.calculateInventoryCounters(inventory);
-      const { previousPage, nextPage } = this.calculatePageBounds(inventory);
+      const inventory = currentCharacter.expand.inventory;
+      const inventoryMessage = makeInventoryStringArray(inventory);
+
+      const charIdOrPage = interaction.customId.split(":")[2];
+      const page = isNaN(parseInt(charIdOrPage)) ? 1 : parseInt(charIdOrPage);
+      const pageSize = 10;
+      const pageStart = (page - 1) * pageSize;
+      const pageEnd = pageStart + pageSize;
+
+      const counters = {
+        consumable: inventory.consumables.length,
+        equipment: inventory.equipments.length,
+        spell: inventory.spells.length,
+      };
+
+      const previousPage = Math.max(0, page - 1);
+      const nextPage = Math.min(Math.ceil(inventoryMessage.length / pageSize), page + 1);
 
       const inventoryMessageOptions = characterInventoryMessageOptions({
         character: currentCharacter,
-        itemsStringArray: inventoryMessage,
+        itemsString: inventoryMessage.slice(pageStart, pageEnd).join("\n"),
         counters,
         previousPage,
         nextPage,
@@ -55,6 +65,13 @@ export class CharacterInventoryManager {
     interaction: ButtonInteraction
   ): Promise<ButtonInteraction> {
     let trackedInteraction = this.trackedInteraction.get(interaction.user.id);
+
+    if (isNaN(parseInt(interaction.customId.split(":")[2])) && trackedInteraction) {
+      await trackedInteraction.deleteReply();
+      this.trackedInteraction.delete(interaction.user.id);
+      trackedInteraction = undefined;
+    }
+
     if (!trackedInteraction) {
       await interaction.deferReply();
       this.trackedInteraction.set(interaction.user.id, interaction);
@@ -72,6 +89,7 @@ export class CharacterInventoryManager {
       void interaction.deleteReply();
       return true;
     }
+
     return false;
   }
 
@@ -94,34 +112,5 @@ export class CharacterInventoryManager {
       return true;
     }
     return false;
-  }
-
-  private prepareInventoryMessage(inventory: ListResult<InventoryItem>): string[] {
-    return inventory.items
-      .sort(sortInventoryItems)
-      .map(makeInventoryStringArray)
-      .filter((itemString): itemString is string => Boolean(itemString));
-  }
-
-  private calculateInventoryCounters(inventory: ListResult<InventoryItem>): {
-    consumable: number;
-    equipment: number;
-    spell: number;
-  } {
-    return inventory.items.reduce(countInventoryItemsReducer, {
-      consumable: 0,
-      equipment: 0,
-      spell: 0,
-    });
-  }
-
-  private calculatePageBounds(inventory: ListResult<InventoryItem>): {
-    previousPage: number;
-    nextPage: number;
-  } {
-    const previousPage = Math.max(0, inventory.page - 1);
-    const nextPage = Math.min(inventory.totalPages, inventory.page + 1);
-
-    return { previousPage, nextPage };
   }
 }

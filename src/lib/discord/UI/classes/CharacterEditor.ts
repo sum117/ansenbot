@@ -11,7 +11,7 @@ import { TextInputStyle } from "discord.js";
 import type { ZodOptional, ZodString } from "zod";
 
 import { createUpdateCharacterSchema } from "../../../../schemas/characterSchema";
-import type { Character, CredentialsArray, Faction } from "../../../../types/Character";
+import type { Character, CredentialsArray } from "../../../../types/Character";
 import { BotError, PocketBaseError } from "../../../../utils/Errors";
 import getZodStringLength from "../../../../utils/getZodStringLength";
 import handleError from "../../../../utils/handleError";
@@ -185,27 +185,11 @@ export class CharacterEditor {
   }
 
   private async updateFaction(characterId: string, newFactionId: string): Promise<void> {
-    const [character, newFaction] = await Promise.all([
-      CharacterFetcher.getCharacterById(characterId),
-      PocketBase.getEntityById<Faction>({ entityType: "factions", id: newFactionId }),
-    ]);
-
+    const character = await CharacterFetcher.getCharacterById(characterId);
     if (!this.checkOwnership(character)) {
       void replyOrFollowUp(this.interaction, "Você não é o dono desse personagem.");
       return;
     }
-    if (character.faction) {
-      const oldFaction = await PocketBase.getEntityById<Faction>({
-        entityType: "factions",
-        id: character.faction,
-      });
-      oldFaction.characters = oldFaction.characters.filter((id) => id !== character.id);
-      await PocketBase.updateEntity<Faction>({ entityType: "factions", entityData: oldFaction });
-    }
-    newFaction.characters.includes(character.id) || newFaction.characters.push(character.id);
-    await Promise.all([
-      this.validateAndUpdateCharacter({ ...character, faction: newFactionId }),
-      PocketBase.updateEntity({ entityType: "factions", entityData: newFaction }),
-    ]);
+    await this.validateAndUpdateCharacter({ ...character, faction: newFactionId });
   }
 }

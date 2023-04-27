@@ -1,146 +1,5 @@
 [
   {
-    "id": "knrmdmpv65zh6k5",
-    "name": "memories",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "rbemzfuz",
-        "name": "icon",
-        "type": "file",
-        "system": false,
-        "required": false,
-        "options": {
-          "maxSelect": 1,
-          "maxSize": 5242880,
-          "mimeTypes": [],
-          "thumbs": []
-        }
-      },
-      {
-        "id": "oxh7srgf",
-        "name": "title",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "s2jc7zor",
-        "name": "phrase",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "sf8o5mpz",
-        "name": "isActive",
-        "type": "bool",
-        "system": false,
-        "required": false,
-        "options": {}
-      },
-      {
-        "id": "olyetiem",
-        "name": "characters",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "414if0akua3rj86",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": null,
-          "displayFields": []
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
-    "id": "digme6l2t3s4pip",
-    "name": "posts",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "5ughocix",
-        "name": "content",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "urgfocnb",
-        "name": "messageId",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "43yajrvk",
-        "name": "player",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "z8cspjwqmp0qkf3",
-          "cascadeDelete": true,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "dtdthfir",
-        "name": "character",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "414if0akua3rj86",
-          "cascadeDelete": true,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
     "id": "_pb_users_auth_",
     "name": "users",
     "type": "auth",
@@ -191,228 +50,6 @@
       "onlyEmailDomains": null,
       "requireEmail": false
     }
-  },
-  {
-    "id": "z8cspjwqmp0qkf3",
-    "name": "players",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "dpqcvefh",
-        "name": "discordId",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "1vifoi8x",
-        "name": "characters",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "414if0akua3rj86",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": null,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "uiclhbpd",
-        "name": "currentCharacterId",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "q9njhe97",
-        "name": "posts",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "digme6l2t3s4pip",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": null,
-          "displayFields": []
-        }
-      }
-    ],
-    "indexes": [
-      "CREATE INDEX `idx_ebp3im0` ON `players` (`characters`)"
-    ],
-    "listRule": "",
-    "viewRule": "",
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
-    "id": "fqdic0fjqnrqz6l",
-    "name": "races",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "c9tmgejj",
-        "name": "image",
-        "type": "file",
-        "system": false,
-        "required": false,
-        "options": {
-          "maxSelect": 1,
-          "maxSize": 5242880,
-          "mimeTypes": [],
-          "thumbs": []
-        }
-      },
-      {
-        "id": "1nqagobs",
-        "name": "name",
-        "type": "text",
-        "system": false,
-        "required": true,
-        "options": {
-          "min": 8,
-          "max": 128,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "kis5a0fv",
-        "name": "color",
-        "type": "text",
-        "system": false,
-        "required": true,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "ghk4mv8c",
-        "name": "characters",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "414if0akua3rj86",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": null,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "rhu2mm0r",
-        "name": "description",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      }
-    ],
-    "indexes": [
-      "CREATE INDEX `_fqdic0fjqnrqz6l_created_idx` ON `races` (`created`)",
-      "CREATE UNIQUE INDEX `idx_unique_1nqagobs` ON `races` (`name`)",
-      "CREATE UNIQUE INDEX `idx_unique_kis5a0fv` ON `races` (`color`)"
-    ],
-    "listRule": null,
-    "viewRule": "",
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
-    "id": "u0gtuvz822622nm",
-    "name": "factions",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "k4ijzxpd",
-        "name": "name",
-        "type": "text",
-        "system": false,
-        "required": true,
-        "options": {
-          "min": 8,
-          "max": 128,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "syqe4qkd",
-        "name": "image",
-        "type": "file",
-        "system": false,
-        "required": false,
-        "options": {
-          "maxSelect": 1,
-          "maxSize": 5242880,
-          "mimeTypes": [],
-          "thumbs": []
-        }
-      },
-      {
-        "id": "s6bqijwc",
-        "name": "characters",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "414if0akua3rj86",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": null,
-          "displayFields": [
-            "name"
-          ]
-        }
-      },
-      {
-        "id": "ppwoo72h",
-        "name": "description",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      }
-    ],
-    "indexes": [
-      "CREATE INDEX `_u0gtuvz822622nm_created_idx` ON `factions` (`created`)",
-      "CREATE UNIQUE INDEX `idx_unique_k4ijzxpd` ON `factions` (`name`)"
-    ],
-    "listRule": null,
-    "viewRule": "",
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
   },
   {
     "id": "426jum8lzslaifa",
@@ -656,296 +293,6 @@
     "options": {}
   },
   {
-    "id": "4yxnsghqhsuul98",
-    "name": "spec",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "noif2axv",
-        "name": "name",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "aqfd7gqx",
-        "name": "image",
-        "type": "file",
-        "system": false,
-        "required": false,
-        "options": {
-          "maxSelect": 1,
-          "maxSize": 5242880,
-          "mimeTypes": [],
-          "thumbs": []
-        }
-      },
-      {
-        "id": "b5asdh7b",
-        "name": "description",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "msd2zccn",
-        "name": "characters",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "414if0akua3rj86",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": null,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "bafy4toq",
-        "name": "startingSkills",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "b2xz73qsg4u7uen",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      }
-    ],
-    "indexes": [
-      "CREATE INDEX `idx_qeU2oMt` ON `spec` (`startingSkills`)"
-    ],
-    "listRule": null,
-    "viewRule": "",
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
-    "id": "tked0sl52bfyxar",
-    "name": "skills",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "pewh7ps0",
-        "name": "vigor",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": 99
-        }
-      },
-      {
-        "id": "phnl31x6",
-        "name": "strength",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": 99
-        }
-      },
-      {
-        "id": "3sflog8m",
-        "name": "fortitude",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": 99
-        }
-      },
-      {
-        "id": "omswkmjk",
-        "name": "intelligence",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "byngn495",
-        "name": "dexterity",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": 99
-        }
-      },
-      {
-        "id": "nhzau0y5",
-        "name": "darkness",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": 99
-        }
-      },
-      {
-        "id": "3pbelwat",
-        "name": "order",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": 99
-        }
-      },
-      {
-        "id": "6ezyw0i5",
-        "name": "discovery",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "brzfvzqj",
-        "name": "stealth",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "ulrgsyv9",
-        "name": "charisma",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "r4ydgsde",
-        "name": "character",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "414if0akua3rj86",
-          "cascadeDelete": true,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      }
-    ],
-    "indexes": [
-      "CREATE INDEX `_tked0sl52bfyxar_created_idx` ON `skills` (`created`)",
-      "CREATE INDEX `idx_unique_r4ydgsde` ON `skills` (`character`)"
-    ],
-    "listRule": null,
-    "viewRule": "",
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
-    "id": "tdk9lq08vvuo4nx",
-    "name": "destinyMaidens",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "qjx4avrs",
-        "name": "name",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "perv63sh",
-        "name": "image",
-        "type": "file",
-        "system": false,
-        "required": false,
-        "options": {
-          "maxSelect": 1,
-          "maxSize": 5242880,
-          "mimeTypes": [],
-          "thumbs": []
-        }
-      },
-      {
-        "id": "p0syokjr",
-        "name": "description",
-        "type": "text",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null,
-          "pattern": ""
-        }
-      },
-      {
-        "id": "f1h7qvfr",
-        "name": "characters",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "414if0akua3rj86",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
     "id": "b2xz73qsg4u7uen",
     "name": "startingSkills",
     "type": "base",
@@ -1167,145 +514,6 @@
     "options": {}
   },
   {
-    "id": "vjf4oyo1bvfgvzk",
-    "name": "status",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "izqjagua",
-        "name": "health",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "op2kkfd3",
-        "name": "stamina",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "4kipa6lq",
-        "name": "spirit",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "pgzepvfx",
-        "name": "character",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "414if0akua3rj86",
-          "cascadeDelete": true,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "rmvmipgd",
-        "name": "hunger",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "wylplidg",
-        "name": "sleep",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "orla1ivi",
-        "name": "void",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "pdzjup4l",
-        "name": "despair",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "yyqx5yhy",
-        "name": "immune",
-        "type": "select",
-        "system": false,
-        "required": false,
-        "options": {
-          "maxSelect": 4,
-          "values": [
-            "hunger",
-            "sleep",
-            "void",
-            "despair"
-          ]
-        }
-      },
-      {
-        "id": "cihjr3le",
-        "name": "effects",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lodz13y431lc5vk",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": null,
-          "displayFields": []
-        }
-      }
-    ],
-    "indexes": [
-      "CREATE INDEX `_vjf4oyo1bvfgvzk_created_idx` ON `status` (`created`)",
-      "CREATE INDEX `idx_unique_pgzepvfx` ON `status` (`character`)"
-    ],
-    "listRule": null,
-    "viewRule": null,
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
     "id": "g60lknh8jeah1pt",
     "name": "channels",
     "type": "base",
@@ -1406,6 +614,830 @@
           "min": null,
           "max": null,
           "pattern": ""
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "tdk9lq08vvuo4nx",
+    "name": "destinyMaidens",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "qjx4avrs",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "perv63sh",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "p0syokjr",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "u0gtuvz822622nm",
+    "name": "factions",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "k4ijzxpd",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": true,
+        "options": {
+          "min": 8,
+          "max": 128,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "syqe4qkd",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "ppwoo72h",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `_u0gtuvz822622nm_created_idx` ON `factions` (`created`)",
+      "CREATE UNIQUE INDEX `idx_unique_k4ijzxpd` ON `factions` (`name`)"
+    ],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "tked0sl52bfyxar",
+    "name": "skills",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "pewh7ps0",
+        "name": "vigor",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "phnl31x6",
+        "name": "strength",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "3sflog8m",
+        "name": "fortitude",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "omswkmjk",
+        "name": "intelligence",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "byngn495",
+        "name": "dexterity",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "nhzau0y5",
+        "name": "darkness",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "3pbelwat",
+        "name": "order",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "6ezyw0i5",
+        "name": "discovery",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "brzfvzqj",
+        "name": "stealth",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "ulrgsyv9",
+        "name": "charisma",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "fqdic0fjqnrqz6l",
+    "name": "races",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "c9tmgejj",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "1nqagobs",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": true,
+        "options": {
+          "min": 8,
+          "max": 128,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "kis5a0fv",
+        "name": "color",
+        "type": "text",
+        "system": false,
+        "required": true,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "rhu2mm0r",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      }
+    ],
+    "indexes": [
+      "CREATE UNIQUE INDEX `idx_unique_1nqagobs` ON `races` (`name`)",
+      "CREATE UNIQUE INDEX `idx_unique_kis5a0fv` ON `races` (`color`)"
+    ],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "vjf4oyo1bvfgvzk",
+    "name": "status",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "izqjagua",
+        "name": "health",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "op2kkfd3",
+        "name": "stamina",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "4kipa6lq",
+        "name": "spirit",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "rmvmipgd",
+        "name": "hunger",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "wylplidg",
+        "name": "sleep",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "orla1ivi",
+        "name": "void",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "pdzjup4l",
+        "name": "despair",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "yyqx5yhy",
+        "name": "immune",
+        "type": "select",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 4,
+          "values": [
+            "hunger",
+            "sleep",
+            "void",
+            "despair"
+          ]
+        }
+      },
+      {
+        "id": "cihjr3le",
+        "name": "effects",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lodz13y431lc5vk",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "digme6l2t3s4pip",
+    "name": "posts",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "5ughocix",
+        "name": "content",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "urgfocnb",
+        "name": "messageId",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "z8cspjwqmp0qkf3",
+    "name": "players",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "dpqcvefh",
+        "name": "discordId",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "uiclhbpd",
+        "name": "currentCharacterId",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "q9njhe97",
+        "name": "posts",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "digme6l2t3s4pip",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "knrmdmpv65zh6k5",
+    "name": "memories",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "rbemzfuz",
+        "name": "icon",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "oxh7srgf",
+        "name": "title",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "s2jc7zor",
+        "name": "phrase",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "sf8o5mpz",
+        "name": "isActive",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "u3vujma1001ed3s",
+    "name": "items",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "vj64jksc",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "xcaorywh",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "dewlmjm9",
+        "name": "type",
+        "type": "select",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "consumable",
+            "equipment",
+            "spell"
+          ]
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "lskplu77wk579ba",
+    "name": "inventory",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "s5ewnnou",
+        "name": "consumables",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "cllfg920z9cgf14",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "rb37ttmv",
+        "name": "spells",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "y0mkwvd6y4ddg7s",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "nrmoxofb",
+        "name": "equipments",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "syxjao0szst5a48",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "cllfg920z9cgf14",
+    "name": "consumables",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "mex56bsl",
+        "name": "item",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "u3vujma1001ed3s",
+          "cascadeDelete": true,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "szvynqt7",
+        "name": "quantity",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "ilej4cq6",
+        "name": "isCooked",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "ahhwntnx",
+        "name": "isPoisoned",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "scodz7p2",
+        "name": "hunger",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "qr1zarm7",
+        "name": "health",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "p08rnyla",
+        "name": "stamina",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "6dmm3zfy",
+        "name": "void",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "y0mkwvd6y4ddg7s",
+    "name": "spells",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "dws3kmrz",
+        "name": "item",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "u3vujma1001ed3s",
+          "cascadeDelete": true,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "9rur7amc",
+        "name": "quantity",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
         }
       }
     ],
@@ -1722,20 +1754,6 @@
         }
       },
       {
-        "id": "hwfgoeof",
-        "name": "body",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "gpe7ohf28q0oixg",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
         "id": "qqozrywq",
         "name": "inventory",
         "type": "relation",
@@ -1745,7 +1763,7 @@
           "collectionId": "lskplu77wk579ba",
           "cascadeDelete": false,
           "minSelect": null,
-          "maxSelect": null,
+          "maxSelect": 1,
           "displayFields": []
         }
       },
@@ -1803,6 +1821,20 @@
             "charisma"
           ]
         }
+      },
+      {
+        "id": "t4d7jyns",
+        "name": "body",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "qsqah3mca83vpo2",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
       }
     ],
     "indexes": [
@@ -1817,35 +1849,19 @@
     "options": {}
   },
   {
-    "id": "lskplu77wk579ba",
-    "name": "inventoryItems",
+    "id": "qsqah3mca83vpo2",
+    "name": "body",
     "type": "base",
     "system": false,
     "schema": [
       {
-        "id": "92dykykc",
-        "name": "item",
+        "id": "pge1av2a",
+        "name": "head",
         "type": "relation",
         "system": false,
         "required": false,
         "options": {
-          "collectionId": "u3vujma1001ed3s",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": [
-            "name"
-          ]
-        }
-      },
-      {
-        "id": "n2jvq6ox",
-        "name": "character",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "414if0akua3rj86",
+          "collectionId": "syxjao0szst5a48",
           "cascadeDelete": false,
           "minSelect": null,
           "maxSelect": 1,
@@ -1853,65 +1869,162 @@
         }
       },
       {
-        "id": "ruixmtki",
-        "name": "amount",
-        "type": "number",
+        "id": "eejhdpzm",
+        "name": "face",
+        "type": "relation",
         "system": false,
         "required": false,
         "options": {
-          "min": null,
-          "max": null
+          "collectionId": "syxjao0szst5a48",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
         }
       },
       {
-        "id": "bbjvdb5c",
-        "name": "isEquipped",
-        "type": "bool",
+        "id": "hptig1p6",
+        "name": "shoulders",
+        "type": "relation",
         "system": false,
         "required": false,
-        "options": {}
+        "options": {
+          "collectionId": "syxjao0szst5a48",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
       },
       {
-        "id": "wbyuu0u5",
-        "name": "isCursed",
-        "type": "bool",
+        "id": "jc3vqup0",
+        "name": "chest",
+        "type": "relation",
         "system": false,
         "required": false,
-        "options": {}
+        "options": {
+          "collectionId": "syxjao0szst5a48",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
       },
       {
-        "id": "cwzokf7s",
-        "name": "isPoisoned",
-        "type": "bool",
+        "id": "vqim95hw",
+        "name": "amulet",
+        "type": "relation",
         "system": false,
         "required": false,
-        "options": {}
+        "options": {
+          "collectionId": "syxjao0szst5a48",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
       },
       {
-        "id": "mc954mrf",
-        "name": "isCooked",
-        "type": "bool",
+        "id": "vvgdt2bw",
+        "name": "back",
+        "type": "relation",
         "system": false,
         "required": false,
-        "options": {}
+        "options": {
+          "collectionId": "syxjao0szst5a48",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "4aqot1kl",
+        "name": "legs",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "syxjao0szst5a48",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "s0cnpj3x",
+        "name": "feet",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "syxjao0szst5a48",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "b5tta50f",
+        "name": "leftArm",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "syxjao0szst5a48",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "rtgt5iif",
+        "name": "rightArm",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "syxjao0szst5a48",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "eh1gqxsl",
+        "name": "rings",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "syxjao0szst5a48",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 4,
+          "displayFields": []
+        }
       }
     ],
     "indexes": [],
-    "listRule": null,
-    "viewRule": null,
+    "listRule": "",
+    "viewRule": "",
     "createRule": null,
     "updateRule": null,
     "deleteRule": null,
     "options": {}
   },
   {
-    "id": "u3vujma1001ed3s",
-    "name": "items",
+    "id": "4yxnsghqhsuul98",
+    "name": "specs",
     "type": "base",
     "system": false,
     "schema": [
       {
-        "id": "vj64jksc",
+        "id": "noif2axv",
         "name": "name",
         "type": "text",
         "system": false,
@@ -1923,7 +2036,20 @@
         }
       },
       {
-        "id": "xcaorywh",
+        "id": "aqfd7gqx",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "b5asdh7b",
         "name": "description",
         "type": "text",
         "system": false,
@@ -1933,9 +2059,57 @@
           "max": null,
           "pattern": ""
         }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "syxjao0szst5a48",
+    "name": "equipments",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "tp0hnses",
+        "name": "item",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "u3vujma1001ed3s",
+          "cascadeDelete": true,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
       },
       {
-        "id": "riy0skov",
+        "id": "elkl04xg",
+        "name": "quantity",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "tfrfdwfs",
+        "name": "isEquipped",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "y0h805b6",
         "name": "slot",
         "type": "select",
         "system": false,
@@ -1956,254 +2130,11 @@
             "rings"
           ]
         }
-      },
-      {
-        "id": "dewlmjm9",
-        "name": "type",
-        "type": "select",
-        "system": false,
-        "required": false,
-        "options": {
-          "maxSelect": 1,
-          "values": [
-            "consumable",
-            "armor",
-            "spell",
-            "weapon"
-          ]
-        }
-      },
-      {
-        "id": "xpshcilh",
-        "name": "hunger",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "ic4v7kjq",
-        "name": "health",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "nu38m5kc",
-        "name": "stamina",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
-      },
-      {
-        "id": "lxz1ewuq",
-        "name": "void",
-        "type": "number",
-        "system": false,
-        "required": false,
-        "options": {
-          "min": null,
-          "max": null
-        }
       }
     ],
     "indexes": [],
     "listRule": null,
-    "viewRule": "",
-    "createRule": null,
-    "updateRule": null,
-    "deleteRule": null,
-    "options": {}
-  },
-  {
-    "id": "gpe7ohf28q0oixg",
-    "name": "body",
-    "type": "base",
-    "system": false,
-    "schema": [
-      {
-        "id": "k3snsn3y",
-        "name": "head",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lskplu77wk579ba",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "zrcws0jp",
-        "name": "face",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lskplu77wk579ba",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "rjfq53sn",
-        "name": "shoulders",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lskplu77wk579ba",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "omgw0ivr",
-        "name": "chest",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lskplu77wk579ba",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "36wboa1x",
-        "name": "amulet",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lskplu77wk579ba",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "bbpom0mm",
-        "name": "back",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lskplu77wk579ba",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "xkwvmp79",
-        "name": "legs",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lskplu77wk579ba",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "k54iczd4",
-        "name": "feet",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lskplu77wk579ba",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "tpccwoqa",
-        "name": "leftArm",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lskplu77wk579ba",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "w3dgzxlg",
-        "name": "rightArm",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lskplu77wk579ba",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "scpydtdi",
-        "name": "rings",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "lskplu77wk579ba",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 4,
-          "displayFields": []
-        }
-      },
-      {
-        "id": "d8doy6vs",
-        "name": "character",
-        "type": "relation",
-        "system": false,
-        "required": false,
-        "options": {
-          "collectionId": "414if0akua3rj86",
-          "cascadeDelete": false,
-          "minSelect": null,
-          "maxSelect": 1,
-          "displayFields": []
-        }
-      }
-    ],
-    "indexes": [],
-    "listRule": "",
-    "viewRule": "",
+    "viewRule": null,
     "createRule": null,
     "updateRule": null,
     "deleteRule": null,

@@ -3,7 +3,7 @@ import { Character } from "../../../types/Character";
 
 export interface CharacterInventoryMessageOptions {
   character: Character;
-  itemsStringArray: string[];
+  itemsString: string;
   counters: {
     consumable: number;
     equipment: number;
@@ -15,14 +15,14 @@ export interface CharacterInventoryMessageOptions {
 
 export default function characterInventoryMessageOptions({
   character,
-  itemsStringArray,
+  itemsString,
   counters,
   previousPage,
   nextPage,
 }: CharacterInventoryMessageOptions) {
   const embed = new EmbedBuilder()
     .setTitle(`Inventário de ${character.name}`)
-    .setDescription(itemsStringArray.join("\n"))
+    .setDescription(itemsString)
     .setColor(character.expand.race[0].color)
     .addFields(
       { name: "Consumíveis", value: counters.consumable.toString(), inline: true },

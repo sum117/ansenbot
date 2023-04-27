@@ -1,24 +1,11 @@
 import assert from "assert";
 import type { Snowflake } from "discord.js";
 import type { ListResult, RecordFullListQueryParams } from "pocketbase";
-import type {
-  Character,
-  CharacterBody,
-  DestinyMaiden,
-  Faction,
-  Player,
-  Race,
-  Skills,
-  Spec,
-  Status,
-} from "../../types/Character";
-import type { COLLECTIONS } from "../../data/constants";
+import type { Character, CharacterBody, Inventory, Skills, Status } from "../../types/Character";
 import { RELATION_FIELD_NAMES } from "../../data/constants";
-import type { Collection } from "../../types/Collection";
 import type { CreateData, PocketBaseConstants } from "../../types/PocketBaseCRUD";
 import { BotError, PocketBaseError } from "../../utils/Errors";
 import getSafeKeys from "../../utils/getSafeKeys";
-import PlayerFetcher from "./PlayerFetcher";
 import PocketBase from "./PocketBase";
 import jsonToFormData from "../../utils/jsonToFormData";
 import getImageBlob from "../../utils/getImageBlob";
@@ -154,34 +141,29 @@ export default class CharacterFetcher {
     playerId: Snowflake
   ): Promise<Character | void> {
     try {
-      const [chosenSpec, secondChosenSpec, chosenRace, secondChosenRace] = (await Promise.all([
-        ...char.spec.map((spec) =>
-          PocketBase.getEntityById<Spec>({
-            entityType: "spec",
-            id: spec,
-            expandFields: true,
-          })
-        ),
-        ...char.race.map((race) =>
-          PocketBase.getEntityById<Race>({
-            entityType: "races",
-            id: race,
-            expandFields: true,
-          })
-        ),
-      ])) as [Spec, Spec, Race, Race];
+      const specOne = char.specs[0];
+      const specTwo = char.specs[1] ?? specOne;
+      const startingSkills = await PocketBase.getEntitiesByFilter<Skills>({
+        entityType: "startingSkills",
+        filter: [
+          1,
+          2,
+          {
+            filter: `spec="${specOne} || spec="${specTwo}"`,
+          },
+        ],
+      });
 
-      assert(chosenSpec.expand?.startingSkills, "Spec not found");
-      const sanitizedStartingSkillsOne = this.sanitizeStartingSkills(
-        chosenSpec.expand.startingSkills
-      );
+      assert(startingSkills.items[0], "starting skills for spec not found");
+
+      const sanitizedStartingSkillsOne = this.sanitizeStartingSkills(startingSkills.items[0]);
 
       const skills = this.sanitizeAndMergeStartingSkills(
         sanitizedStartingSkillsOne,
-        secondChosenSpec.expand?.startingSkills
+        startingSkills.items[1]
       );
 
-      const [baseSkills, baseStatus, body] = await Promise.all([
+      const [baseSkills, baseStatus, body, inventory] = await Promise.all([
         PocketBase.createEntity<Skills>({
           entityData: skills,
           entityType: "skills",
@@ -217,28 +199,16 @@ export default class CharacterFetcher {
           },
           entityType: "body",
         }),
+        PocketBase.createEntity<Inventory>({
+          entityData: {
+            consumables: [],
+            equipments: [],
+            spells: [],
+          },
+          entityType: "inventory",
+        }),
       ]);
 
-      const [playerToAddCharacter, factionToAddCharacter, maidenToAddCharacter] = await Promise.all(
-        [
-          PlayerFetcher.getPlayerById(playerId),
-
-          char.faction
-            ? PocketBase.getEntityById<Faction>({
-                entityType: "factions",
-                id: char.faction,
-              })
-            : undefined,
-          PocketBase.getEntityById<DestinyMaiden>({
-            entityType: "destinyMaidens",
-            id: char.destinyMaiden,
-          }),
-        ]
-      );
-
-      if (!playerToAddCharacter) {
-        return;
-      }
       const { blob, fileName } = await getImageBlob(char.image);
       const formData = jsonToFormData({
         ...char,
@@ -248,17 +218,7 @@ export default class CharacterFetcher {
       });
       formData.set("image", blob, fileName);
       const response = await PocketBase.createEntityWithFormData<Character>("characters", formData);
-      await CharacterFetcher.syncCharacterRelations({
-        baseSkills,
-        body,
-        baseStatus,
-        character: response,
-        factionToAddCharacter,
-        racesToAddCharacter: [chosenRace, secondChosenRace].filter((race) => !!race),
-        playerToAddCharacter,
-        maidenToAddCharacter,
-        specsToAddCharacter: [chosenSpec, secondChosenSpec].filter((spec) => !!spec),
-      });
+
       return response;
     } catch (error) {
       console.error(inspect(error, false, null, true));
@@ -280,7 +240,6 @@ export default class CharacterFetcher {
       updated: _updated,
       collectionName: _collectionName,
       collectionId: _collectionId,
-      expand: _expand,
       ...sanitizedStartingSkills
     } = startingSkills as Omit<Skills, "character"> & { spec: string };
 
@@ -308,68 +267,5 @@ export default class CharacterFetcher {
     } else {
       return startingSkillsOne;
     }
-  }
-
-  private static async syncCharacterRelations({
-    factionToAddCharacter,
-    racesToAddCharacter,
-    playerToAddCharacter,
-    specsToAddCharacter,
-    maidenToAddCharacter,
-    character,
-    baseSkills,
-    baseStatus,
-    body,
-  }: {
-    specsToAddCharacter: Spec[];
-    baseSkills: Skills;
-    body: CharacterBody;
-    baseStatus: Status;
-    character: Character;
-    factionToAddCharacter: Faction | undefined;
-    playerToAddCharacter: Player;
-    maidenToAddCharacter: DestinyMaiden;
-    racesToAddCharacter: Race[];
-  }): Promise<boolean> {
-    const updateTasks: Array<Promise<void>> = [
-      this.updateEntityWithCharacter(baseSkills, character),
-      this.updateEntityWithCharacter(baseStatus, character),
-      this.updateEntityWithCharacter(body, character),
-      this.updateEntityWithCharacter(playerToAddCharacter, character),
-      this.updateEntityWithCharacter(maidenToAddCharacter, character),
-    ];
-
-    if (factionToAddCharacter) {
-      updateTasks.push(this.updateEntityWithCharacter(factionToAddCharacter, character));
-    }
-
-    for (const spec of specsToAddCharacter) {
-      updateTasks.push(this.updateEntityWithCharacter(spec, character));
-    }
-
-    for (const race of racesToAddCharacter) {
-      updateTasks.push(this.updateEntityWithCharacter(race, character));
-    }
-
-    await Promise.all(updateTasks);
-    return true;
-  }
-
-  private static async updateEntityWithCharacter<T extends Collection>(
-    entity: T,
-    character: Character
-  ): Promise<void> {
-    const entityType = entity.collectionName as keyof typeof COLLECTIONS;
-
-    if ("character" in entity) {
-      entity.character = character.id;
-    } else if ("characters" in entity && Array.isArray(entity.characters)) {
-      entity.characters = [...entity.characters, character.id];
-    }
-
-    await PocketBase.updateEntity<T>({
-      entityType,
-      entityData: entity,
-    });
   }
 }

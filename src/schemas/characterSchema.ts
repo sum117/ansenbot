@@ -29,7 +29,7 @@ const createUpdateCharacterSchema = z.object(
     level: z.number({
       required_error: "Você deve incluir o nível do personagem.",
     }),
-    spec: z.array(z.string(), {
+    specs: z.array(z.string(), {
       required_error: "Você deve incluir as classes do personagem.",
     }),
     reputation: z.number({
@@ -84,7 +84,7 @@ const createUpdateCharacterSchema = z.object(
     posts: z.array(z.string(), {
       required_error: "Houve um erro ao criar os posts do personagem.",
     }),
-    inventory: z.array(z.string(), {
+    inventory: z.string({
       required_error: "Houve um erro ao criar o inventário do personagem.",
     }),
     xp: z.number({
@@ -115,34 +115,78 @@ const baseCharacterSchema = baseSchema.extend({
   ...createUpdateCharacterSchema.shape,
 });
 
-const characterExpanded = z.object({
-  characters: z.array(baseCharacterSchema),
-});
 const itemSchema = baseSchema.extend({
   name: z.string(),
   description: z.string(),
-  type: z.string(),
-  slot: z.string().optional(),
+  type: z.enum(["consumable", "spell", "equipment"]),
+});
+
+const consumableSchema = baseSchema.extend({
+  item: z.string(),
+  quantity: z.number(),
   hunger: z.number(),
   health: z.number(),
   stamina: z.number(),
   void: z.number(),
+  isCooked: z.boolean(),
+  isPoisoned: z.boolean(),
+  expand: z.object(
+    {
+      item: itemSchema.extend({
+        type: z.literal("consumable"),
+      }),
+    },
+    { invalid_type_error: "Não é um item consumível." }
+  ),
+});
+const spellSchema = baseSchema.extend({
+  item: z.string(),
+  quantity: z.number(),
+  expand: z.object(
+    {
+      item: itemSchema.extend({
+        type: z.literal("spell"),
+      }),
+    },
+    { invalid_type_error: "Não é um feitiço." }
+  ),
+});
+const equipmentSchema = baseSchema.extend({
+  item: z.string(),
+  quantity: z.number(),
+  slot: z.enum([
+    "head",
+    "face",
+    "shoulders",
+    "chest",
+    "amulet",
+    "back",
+    "legs",
+    "feet",
+    "leftArm",
+    "rightArm",
+    "rings",
+  ]),
+  isEquipped: z.boolean(),
+  expand: z.object(
+    {
+      item: itemSchema.extend({
+        type: z.literal("equipment"),
+      }),
+    },
+    { invalid_type_error: "Não é um equipamento." }
+  ),
 });
 
-const inventoryItem = baseSchema.extend({
-  item: z.string(),
-  character: z.string(),
-  amount: z.number(),
-  isPoisoned: z.boolean(),
-  isEquipped: z.boolean(),
-  isCursed: z.boolean(),
-  isCooked: z.boolean(),
-  expand: z
-    .object({
-      item: itemSchema,
-      character: baseCharacterSchema,
-    })
-    .optional(),
+const inventory = baseSchema.extend({
+  consumables: z.array(z.string()),
+  spells: z.array(z.string()),
+  equipments: z.array(z.string()),
+  expand: z.object({
+    consumables: z.array(consumableSchema).optional(),
+    spells: z.array(spellSchema).optional(),
+    equipments: z.array(equipmentSchema).optional(),
+  }),
 });
 
 const bodySchema = baseSchema.extend({
@@ -178,10 +222,8 @@ const bodySchema = baseSchema.extend({
 
 const factionSchema = baseSchema.extend({
   name: z.string(),
-  characters: z.array(z.string()),
   image: z.string(),
   description: z.string(),
-  expand: characterExpanded.optional(),
 });
 
 const memorySchema = baseSchema.extend({
@@ -189,19 +231,14 @@ const memorySchema = baseSchema.extend({
   title: z.string(),
   phrase: z.string(),
   isActive: z.boolean(),
-  characters: z.array(z.string()),
-  expand: characterExpanded.optional(),
 });
 const postSchema = baseSchema.extend({
   content: z.string(),
   messageId: z.string(),
-  player: z.string(),
-  character: z.string(),
 });
 
 const playerSchema = baseSchema.extend({
   discordId: z.string(),
-  characters: z.array(z.string()),
   currentCharacterId: z.string(),
   posts: z.array(z.string()),
   expand: z
@@ -214,10 +251,8 @@ const playerSchema = baseSchema.extend({
 const raceSchema = baseSchema.extend({
   name: z.string(),
   color: z.string().regex(/^#[0-9A-F]{6}$/i) as z.ZodType<HexColorString>,
-  characters: z.array(z.string()),
   image: z.string(),
   description: z.string(),
-  expand: characterExpanded.optional(),
 });
 
 const effectSchema = baseSchema.extend({
@@ -238,23 +273,12 @@ const skillsSchema = baseSchema.extend({
   discovery: z.number(),
   stealth: z.number(),
   charisma: z.number(),
-  character: z.string().optional(),
-  expand: z.object({
-    character: baseCharacterSchema,
-  }),
 });
 
 const specSchema = baseSchema.extend({
   name: z.string(),
   description: z.string(),
   image: z.string(),
-  characters: z.array(z.string()),
-  startingSkills: z.array(z.string()),
-  expand: characterExpanded
-    .extend({
-      startingSkills: skillsSchema.omit({ expand: true }),
-    })
-    .optional(),
 });
 const statusSchema = baseSchema.extend({
   health: z.number(),
@@ -266,10 +290,6 @@ const statusSchema = baseSchema.extend({
   despair: z.number(),
   immune: z.array(z.string()),
   effects: z.array(z.string()),
-  character: z.string().optional(),
-  expand: z.object({
-    character: baseCharacterSchema,
-  }),
 });
 
 const destinyMaidenSchema = baseSchema.extend({
@@ -305,15 +325,14 @@ const fullCharacterSchema = baseCharacterSchema.extend({
     skills: skillsSchema,
     status: statusSchema,
     race: z.array(raceSchema),
-    spec: z.array(specSchema),
+    specs: z.array(specSchema),
     body: bodySchema,
-    inventory: z.array(inventoryItem),
+    inventory: inventory,
   }),
 });
 
 export {
   baseCharacterSchema,
-  characterExpanded,
   createUpdateCharacterSchema,
   factionSchema,
   fullCharacterSchema,
@@ -327,7 +346,10 @@ export {
   beastsSchema,
   statusSchema,
   effectSchema,
-  inventoryItem,
+  inventory,
+  consumableSchema,
+  spellSchema,
+  equipmentSchema,
   itemSchema,
   bodySchema,
 };

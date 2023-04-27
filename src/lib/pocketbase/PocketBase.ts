@@ -52,19 +52,6 @@ export default class PocketBase {
     });
   }
 
-  public static async validateRecord<T extends Pick<DBRecord, "id" | "created" | "updated">>(
-    object: T,
-    fetcher: (id: string) => Promise<T>
-  ): Promise<T> {
-    const prevData = await fetcher(object.id);
-
-    if (prevData.created !== object.created || prevData.updated !== object.updated) {
-      throw new BotError("Invalid update");
-    }
-
-    return prevData;
-  }
-
   public static getEntityById<T extends Collection>({
     entityType,
     id,

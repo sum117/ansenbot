@@ -1,5 +1,5 @@
-import { InventoryItem } from "../../../../types/Character";
+import { Item } from "../../../../types/Item";
 
-export default function isInventoryItem(item: unknown): item is InventoryItem {
-  return typeof item === "object" && item !== null && "expand" in item && "amount" in item;
+export default function isInventoryItem(item: unknown): item is Item {
+  return typeof item === "object" && item !== null && "expand" in item && "quantity" in item;
 }

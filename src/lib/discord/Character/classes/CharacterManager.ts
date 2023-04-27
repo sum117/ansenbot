@@ -3,51 +3,39 @@ import {
   CharacterBody,
   Effect,
   ICharacterManager,
-  InventoryItem,
+  Inventory,
   Memory,
   Status,
 } from "../../../../types/Character";
 import PocketBase from "../../../pocketbase/PocketBase";
 import { BotError } from "../../../../utils/Errors";
-import { ITEM_TYPES } from "../../../../data/constants";
-import { ItemFetcher } from "../../../pocketbase/ItemFetcher";
+import { COLLECTIONS } from "../../../../data/constants";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
 import { Properties } from "../../../../types/Utils";
 import AnsenfallLeveling from "../helpers/ansenfallLeveling";
 import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
-import { PocketBaseConstants } from "../../../../types/PocketBaseCRUD";
+import { EquipmentItem, Item } from "../../../../types/Item";
+import { consumableSchema, equipmentSchema } from "../../../../schemas/characterSchema";
 
 export class CharacterManager implements ICharacterManager {
   public constructor(public character: Character) {}
 
-  async use(consumableId: InventoryItem["id"]): Promise<void> {
-    const itemId = this.character.inventory?.find((itemId) => itemId === consumableId);
+  async use(consumableId: Inventory["id"]): Promise<void> {
+    const consumableItem = consumableSchema.parse(this.getInventoryItem(consumableId));
+    const characterStatus = await this.getStatuses(this.character.status);
 
-    if (!itemId) {
+    if (consumableItem.quantity < 1) {
       throw new BotError("Item não encontrado no inventário.");
     }
 
-    const [inventoryReference, item, characterStatus] = await Promise.all([
-      await this.getInventoryItem(itemId),
-      await ItemFetcher.getItemById(itemId),
-      await this.getStatuses(this.character.status),
-    ]);
+    consumableItem.quantity -= 1;
+    characterStatus.health += consumableItem.health;
+    characterStatus.stamina += consumableItem.stamina;
+    characterStatus.hunger += consumableItem.hunger;
+    characterStatus.void += consumableItem.void;
 
-    if (inventoryReference.amount < 1) {
-      throw new BotError("Item não encontrado no inventário.");
-    }
-    if (item.type !== ITEM_TYPES.consumable) {
-      throw new BotError("Item não é um consumível.");
-    }
-
-    inventoryReference.amount -= 1;
-    characterStatus.health += item.health;
-    characterStatus.stamina += item.stamina;
-    characterStatus.hunger += item.hunger;
-    characterStatus.void += item.void;
-
-    await Promise.all([this.setInventoryItem(inventoryReference), this.setStatus(characterStatus)]);
+    await Promise.all([this.setInventoryItem(consumableItem), this.setStatus(characterStatus)]);
   }
 
   async sleep(hours: number): Promise<void> {
@@ -102,25 +90,16 @@ export class CharacterManager implements ICharacterManager {
     await this.setStatus(characterStatus);
   }
 
-  async addMemory(memoryId: string): Promise<Memory> {
+  async addMemory(memoryId: string): Promise<void> {
     this.character.memory = memoryId;
-    const memory = await MemoryFetcher.getMemoryById(this.character.memory);
-    memory.characters.push(this.character.id);
-    const updatedMemory = await MemoryFetcher.updateMemory(memory);
     void CharacterFetcher.updateCharacter(this.character);
-    return updatedMemory;
   }
 
   async removeMemory(memoryId: string): Promise<void> {
     this.character.memory = "";
-    const memory = await MemoryFetcher.getMemoryById(memoryId);
-    memory.characters = memory.characters.filter(
-      (characterId) => characterId !== this.character.id
-    );
-    await Promise.all([
-      CharacterFetcher.updateCharacter(this.character),
-      MemoryFetcher.updateMemory(memory),
-    ]);
+
+    await CharacterFetcher.updateCharacter(this.character);
+
     return;
   }
 
@@ -131,14 +110,8 @@ export class CharacterManager implements ICharacterManager {
     return MemoryFetcher.getMemoryById(this.character.memory);
   }
 
-  async getInventory(): Promise<InventoryItem[]> {
-    if (!this.character.inventory) {
-      return [];
-    }
-    const inventory = await Promise.all(
-      this.character.inventory.map((itemId) => this.getInventoryItem(itemId))
-    );
-    return inventory.filter((item) => item.amount > 0);
+  getInventory(): Inventory {
+    return this.character.expand.inventory;
   }
 
   setStatus(status: Status): Promise<Status> {
@@ -160,18 +133,25 @@ export class CharacterManager implements ICharacterManager {
     return this.getStatuses(this.character.status).then((status) => status[statusKey]);
   }
 
-  setInventoryItem(inventoryItem: InventoryItem): Promise<InventoryItem> {
-    return PocketBase.updateEntity<InventoryItem>({
-      entityType: "inventory",
-      entityData: inventoryItem,
+  setInventoryItem(item: Item): Promise<Item> {
+    return PocketBase.updateEntity<Item>({
+      entityType: item.collectionName as keyof typeof COLLECTIONS,
+      entityData: item,
     });
   }
 
-  getInventoryItem(inventoryItemId: InventoryItem["id"]): Promise<InventoryItem> {
-    return PocketBase.getEntityById<InventoryItem>({
-      entityType: "inventory",
-      id: inventoryItemId,
-    });
+  getInventoryItem(inventoryItemId: Inventory["id"]): Item {
+    const item = [
+      ...(this.character.expand.inventory.expand.consumables ?? []),
+      ...(this.character.expand.inventory.expand.spells ?? []),
+      ...(this.character.expand.inventory.expand.equipments ?? []),
+    ].find((item) => item.id === inventoryItemId);
+
+    if (!item || item.quantity < 1) {
+      throw new BotError("Item não encontrado no inventário.");
+    }
+
+    return item;
   }
 
   async getEquipmentItem(
@@ -185,21 +165,22 @@ export class CharacterManager implements ICharacterManager {
     return body.expand?.[slot];
   }
 
-  async setEquipment(inventoryRef: InventoryItem): Promise<CharacterBody> {
-    this.validateInventoryItem(inventoryRef);
+  async setEquipment(equipment: Item): Promise<CharacterBody> {
+    this.validateInventoryItem(equipment);
+    equipment = equipmentSchema.parse(equipment);
 
-    const slot = this.getSlotForItem(inventoryRef);
-    const equipment = await this.getEquipment();
+    const slot = equipment.slot;
+    const body = await this.getEquipment();
 
-    const equippedItem = equipment[slot];
+    const equippedItem = body[slot];
     const previousItems = Array.isArray(equippedItem) ? equippedItem : [equippedItem];
 
-    if (previousItems.includes(inventoryRef.id)) {
-      return this.unequipItem(inventoryRef, equipment, slot);
+    if (previousItems.includes(equipment.id)) {
+      return this.unequipItem(equipment, body, slot);
     } else if (previousItems.length && slot !== "rings") {
-      return this.swapEquippedItem(inventoryRef, equipment, slot, previousItems);
+      return this.swapEquippedItem(equipment, body, slot, previousItems);
     } else {
-      return this.equipNewItem(inventoryRef, equipment, slot);
+      return this.equipNewItem(equipment, body, slot);
     }
   }
 
@@ -210,79 +191,69 @@ export class CharacterManager implements ICharacterManager {
     });
   }
 
-  private validateInventoryItem(inventoryRef: InventoryItem): void {
-    if (inventoryRef.amount < 0) {
+  private validateInventoryItem(item: Item): void {
+    if (item.quantity < 0) {
       throw new BotError("Item não encontrado no inventário ou insuficiente.");
     }
 
-    if (inventoryRef.expand?.item.type !== ITEM_TYPES.armor) {
+    if (item.expand.item.type !== "equipment") {
       throw new BotError("Item não é um item equipável.");
     }
   }
 
-  private getSlotForItem(
-    inventoryRef: InventoryItem
-  ): keyof Omit<CharacterBody, keyof PocketBaseConstants | "expand"> {
-    const slot = inventoryRef.expand?.item.slot;
-    if (!slot) {
-      throw new BotError("Item não possui slot, portanto não é equipável.");
-    }
-    return slot as keyof Omit<CharacterBody, keyof PocketBaseConstants | "expand">;
-  }
-
   private async unequipItem(
-    inventoryRef: InventoryItem,
-    equipment: CharacterBody,
+    equipment: EquipmentItem,
+    body: CharacterBody,
     slot: keyof CharacterBody
   ): Promise<CharacterBody> {
-    inventoryRef.amount += 1;
-    inventoryRef.isEquipped = false;
-    await this.setInventoryItem(inventoryRef);
+    equipment.quantity += 1;
+    equipment.isEquipped = false;
+    await this.setInventoryItem(equipment);
 
-    const filterRing = (ring: string) => ring !== equipment[slot];
+    const filterRing = (ring: string) => ring !== body[slot];
     const updatedEquipment = {
-      ...equipment,
-      [slot]: slot === "rings" ? equipment.rings.filter(filterRing) : "",
+      ...body,
+      [slot]: slot === "rings" ? body.rings.filter(filterRing) : "",
     };
 
     return this.updateCharacterBody(updatedEquipment);
   }
 
   private async swapEquippedItem(
-    inventoryRef: InventoryItem,
-    equipment: CharacterBody,
+    equipment: EquipmentItem,
+    body: CharacterBody,
     slot: keyof CharacterBody,
     previousItems: string[]
   ): Promise<CharacterBody> {
-    const previousItem = await this.getInventoryItem(previousItems[0]);
-    previousItem.amount += 1;
+    const previousItem = equipmentSchema.parse(await this.getInventoryItem(previousItems[0]));
+
+    previousItem.quantity += 1;
     previousItem.isEquipped = false;
     await this.setInventoryItem(previousItem);
 
-    inventoryRef.amount -= 1;
-    inventoryRef.isEquipped = true;
-    await this.setInventoryItem(inventoryRef);
+    equipment.quantity -= 1;
+    equipment.isEquipped = true;
+    await this.setInventoryItem(equipment);
 
     const updatedEquipment = {
-      ...equipment,
-      [slot]: inventoryRef.id,
+      ...body,
+      [slot]: equipment.id,
     };
 
     return this.updateCharacterBody(updatedEquipment);
   }
 
   private async equipNewItem(
-    inventoryRef: InventoryItem,
-    equipment: CharacterBody,
+    equipment: EquipmentItem,
+    body: CharacterBody,
     slot: keyof CharacterBody
   ): Promise<CharacterBody> {
-    inventoryRef.amount -= 1;
-    inventoryRef.isEquipped = true;
-    await this.setInventoryItem(inventoryRef);
-
+    equipment.quantity -= 1;
+    equipment.isEquipped = true;
+    await this.setInventoryItem(equipment);
     const updatedEquipment = {
-      ...equipment,
-      [slot]: slot === "rings" ? [...equipment.rings, inventoryRef.id] : inventoryRef.id,
+      ...body,
+      [slot]: slot === "rings" ? [...body.rings, equipment.id] : equipment.id,
     };
 
     return this.updateCharacterBody(updatedEquipment);

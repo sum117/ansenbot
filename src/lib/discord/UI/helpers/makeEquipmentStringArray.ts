@@ -1,9 +1,8 @@
 import { equipmentDictionary } from "../../../../data/translations";
 import isInventoryItem from "../../Character/helpers/isInventoryItem";
-import { ItemFetcher } from "../../../pocketbase/ItemFetcher";
 import { CharacterBody } from "../../../../types/Character";
 
-export default async function makeEquipmentStringArray(equipment: CharacterBody) {
+export default async function makeEquipmentStringArray(body: CharacterBody) {
   const orderedKeys: (keyof typeof equipmentDictionary)[] = [
     "head",
     "face",
@@ -20,10 +19,10 @@ export default async function makeEquipmentStringArray(equipment: CharacterBody)
 
   const descriptionsPromises = orderedKeys.map(async (key) => {
     const itemSlot = equipmentDictionary[key];
-    const inventoryRef = equipment.expand?.[key];
+    const equipment = body.expand?.[key];
 
-    return isInventoryItem(inventoryRef)
-      ? `**${itemSlot}**: ${(await ItemFetcher.getItemById(inventoryRef.item)).name}`
+    return isInventoryItem(equipment)
+      ? `**${itemSlot}**: ${equipment.expand.item.name}`
       : `**${itemSlot}**: Nada Equipado`;
   });
 

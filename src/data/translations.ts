@@ -33,8 +33,7 @@ export const statesDictionary = {
 
 export const itemTypesEmojis = {
   consumable: "🍔",
-  armor: "🛡️",
-  weapon: "⚔️",
+  equipment: "🛡️",
   spell: "🔮",
 };
 

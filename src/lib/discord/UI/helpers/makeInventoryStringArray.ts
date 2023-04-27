@@ -1,11 +1,19 @@
+import { Inventory } from "../../../../types/Character";
 import { itemTypesEmojis } from "../../../../data/translations";
-import { InventoryItem } from "../../../../types/Character";
 
-export default function makeInventoryStringArray(inventoryRef: InventoryItem) {
-  const item = inventoryRef.expand?.item;
-  if (!item) {
-    return;
-  }
-  const typeEmoji = itemTypesEmojis[item.type as keyof typeof itemTypesEmojis];
-  return `${typeEmoji} **${item.name}** ${inventoryRef.amount}x`;
+export default function makeInventoryStringArray(inventory: Inventory) {
+  const inventoryArray = [
+    ...(inventory.expand.consumables ?? []),
+    ...(inventory.expand.equipments ?? []),
+    ...(inventory.expand.spells ?? []),
+  ];
+
+  const inventoryStringArray = inventoryArray.map((data) => {
+    const itemString = `${itemTypesEmojis[data.expand.item.type]} **${data.expand.item.name}** ${
+      data.quantity
+    }x`;
+    return itemString;
+  });
+
+  return inventoryStringArray;
 }

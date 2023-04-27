@@ -4,8 +4,7 @@ import type {
   DestinyMaiden,
   Effect,
   Faction,
-  InventoryItem,
-  Item,
+  Inventory,
   Memory,
   Player,
   Post,
@@ -15,6 +14,7 @@ import type {
   Status,
 } from "./Character";
 import { CharacterBody } from "./Character";
+import { Item } from "./Item";
 import type { Form } from "./MultiForm";
 import { Channel } from "./Channel";
 
@@ -31,7 +31,7 @@ export type Collection =
   | CharacterBody
   | Beast
   | DestinyMaiden
-  | InventoryItem
+  | Inventory
   | Item
   | Effect
   | Channel

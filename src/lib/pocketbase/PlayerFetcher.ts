@@ -23,7 +23,6 @@ export default class PlayerFetcher {
     return PocketBase.createEntity<Player>({
       entityData: {
         discordId: playerId,
-        characters: [],
         currentCharacterId: "",
         posts: [],
       },

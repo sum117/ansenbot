@@ -14,8 +14,9 @@ import type {
   specSchema,
   statusSchema,
 } from "../schemas/characterSchema";
-import { bodySchema, effectSchema, inventoryItem, itemSchema } from "../schemas/characterSchema";
+import { bodySchema, effectSchema, inventory } from "../schemas/characterSchema";
 import { Properties } from "./Utils";
+import { Item } from "./Item";
 
 export type CreateUpdateCharacter = z.infer<typeof createUpdateCharacterSchema>;
 export type Character = z.infer<typeof fullCharacterSchema>;
@@ -30,8 +31,7 @@ export type Effect = z.infer<typeof effectSchema>;
 export type Spec = z.infer<typeof specSchema>;
 export type DestinyMaiden = z.infer<typeof destinyMaidenSchema>;
 export type Beast = z.infer<typeof beastsSchema>;
-export type InventoryItem = z.infer<typeof inventoryItem>;
-export type Item = z.infer<typeof itemSchema>;
+export type Inventory = z.infer<typeof inventory>;
 export type CharacterBody = z.infer<typeof bodySchema>;
 export type CredentialsArray = [
   string,
@@ -40,7 +40,7 @@ export type CredentialsArray = [
 ];
 
 export interface ICharacterManager {
-  use: (consumableId: InventoryItem["id"]) => Promise<void>;
+  use: (consumableId: Inventory["id"]) => Promise<void>;
   sleep: (hours: number) => Promise<void>;
 
   heal: (amount: number) => Promise<void>;
@@ -55,16 +55,16 @@ export interface ICharacterManager {
   getStatuses: (statusId: Status["id"]) => Promise<Status>;
   getStatus: (statusKey: keyof Status) => Promise<Properties<Status>>;
 
-  addMemory: (memoryId: Memory["id"]) => Promise<Memory>;
+  addMemory: (memoryId: Memory["id"]) => Promise<void>;
   removeMemory: (memoryId: Memory["id"]) => Promise<void>;
   getMemory: () => Promise<Memory>;
   // setBeast: (beast: Beast) => Promise<Beast>;
   // getBeast: () => Promise<Beast>;
-  setInventoryItem: (inventoryItem: InventoryItem) => Promise<InventoryItem>;
-  getInventoryItem: (id: InventoryItem["id"]) => Promise<InventoryItem>;
-  getInventory: () => Promise<InventoryItem[]>;
+  setInventoryItem: (item: Item) => Promise<Item>;
+  getInventoryItem: (id: Inventory["id"]) => Item;
+  getInventory: () => Inventory;
 
-  setEquipment: (item: InventoryItem) => Promise<CharacterBody>;
+  setEquipment: (equipment: Item) => Promise<CharacterBody>;
   getEquipment: () => Promise<CharacterBody>;
   getEquipmentItem: (
     slot: keyof CharacterBody["expand"]

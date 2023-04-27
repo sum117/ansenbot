@@ -4,6 +4,7 @@ import type { Character, Player, Post } from "../../types/Character";
 import CharacterFetcher from "./CharacterFetcher";
 import PlayerFetcher from "./PlayerFetcher";
 import PocketBase from "./PocketBase";
+import { BotError } from "../../utils/Errors";
 
 export default class PostFetcher {
   public static getPostByMessageId(messageId: string): Promise<Post> {
@@ -13,11 +14,21 @@ export default class PostFetcher {
     });
   }
 
-  public static getLatestPostByCharacterId(characterId: string): Promise<Post> {
-    return PocketBase.getFirstListEntity({
-      entityType: "posts",
-      filter: [`character="${characterId}"`, {}],
+  public static async getLatestPostByCharacterId(characterId: string): Promise<Post> {
+    const character = await PocketBase.getFirstListEntity<Character>({
+      entityType: "characters",
+      filter: [`id="${characterId}"`, {}],
     });
+
+    if (!character.posts.length) {
+      throw new BotError("Esse personagem não tem posts!");
+    }
+
+    const latestPost = await PocketBase.getEntityById<Post>({
+      entityType: "posts",
+      id: character.posts[character.posts.length - 1],
+    });
+    return latestPost;
   }
 
   public static async createPost<T extends Message>(message: T): Promise<Post | void> {
@@ -25,8 +36,6 @@ export default class PostFetcher {
     const postCharacter = await CharacterFetcher.getCharacterById(postPlayer.currentCharacterId);
     const createdPost = await PocketBase.createEntity<Post>({
       entityData: {
-        character: postCharacter.id,
-        player: postPlayer.id,
         content: message.content,
         messageId: message.id,
       },
