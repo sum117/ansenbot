@@ -49,7 +49,10 @@ export default function handleError(
     errorMessage = error.message;
   }
 
-  void interaction.channel?.send(errorMessage).then((message) => {
-    deleteDiscordMessage(message, 5000);
-  });
+  void interaction.channel
+    ?.send(errorMessage)
+    .then((message) => {
+      deleteDiscordMessage(message, 5000);
+    })
+    .catch(() => {});
 }

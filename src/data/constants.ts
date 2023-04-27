@@ -51,6 +51,17 @@ export const RELATION_FIELD_NAMES = {
     "body.rightArm.item",
     "body.rings.item",
   ].join(","),
+  head: "head.item",
+  face: "face.item",
+  shoulders: "shoulders.item",
+  chest: "chest.item",
+  amulet: "amulet.item",
+  back: "back.item",
+  legs: "legs.item",
+  feet: "feet.item",
+  leftArm: "leftArm.item",
+  rightArm: "rightArm.item",
+  rings: "rings.item",
 } as const;
 export const MAX_FILE_SIZE = 15_000_000;
 export const ACCEPTED_IMAGE_TYPES = ["jpeg", "jpg", "png", "webp"];
@@ -82,5 +93,17 @@ export const STATUS_SKILLS_RELATION = {
   stamina: "strength",
   despair: "darkness",
 } as const;
+
+export const ITEM_TYPES_EMOJIS = {
+  consumable: "🍔",
+  equipment: "🛡️",
+  spell: "🔮",
+};
+
+export const ITEM_ACTIONS = {
+  equipment: "Equipar",
+  spell: "Memorizar Feitiço",
+  consumable: "Usar",
+};
 
 export const STATUS_GAIN_PER_LEVEL = 10 as const;
