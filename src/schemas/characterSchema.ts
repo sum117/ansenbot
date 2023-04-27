@@ -101,6 +101,9 @@ const createUpdateCharacterSchema = z.object(
         required_error: "Houve um erro ao criar os traços de habilidade do personagem.",
       })
     ),
+    body: z.string({
+      required_error: "Houve um erro ao criar o corpo do personagem.",
+    }),
   },
   {
     description: "Schema para criação e atualização de personagens.",
@@ -119,6 +122,7 @@ const itemSchema = baseSchema.extend({
   name: z.string(),
   description: z.string(),
   type: z.string(),
+  slot: z.string().optional(),
   hunger: z.number(),
   health: z.number(),
   stamina: z.number(),
@@ -130,10 +134,44 @@ const inventoryItem = baseSchema.extend({
   character: z.string(),
   amount: z.number(),
   isPoisoned: z.boolean(),
+  isEquipped: z.boolean(),
+  isCursed: z.boolean(),
   isCooked: z.boolean(),
   expand: z
     .object({
       item: itemSchema,
+      character: baseCharacterSchema,
+    })
+    .optional(),
+});
+
+const bodySchema = baseSchema.extend({
+  head: z.string(),
+  face: z.string(),
+  shoulders: z.string(),
+  amulet: z.string(),
+  chest: z.string(),
+  back: z.string(),
+  legs: z.string(),
+  feet: z.string(),
+  leftArm: z.string(),
+  rightArm: z.string(),
+  rings: z.array(z.string()),
+  character: z.string(),
+  expand: z
+    .object({
+      character: baseCharacterSchema,
+      head: itemSchema,
+      face: itemSchema,
+      shoulders: itemSchema,
+      amulet: itemSchema,
+      chest: itemSchema,
+      back: itemSchema,
+      legs: itemSchema,
+      feet: itemSchema,
+      leftArm: itemSchema,
+      rightArm: itemSchema,
+      rings: z.array(itemSchema),
     })
     .optional(),
 });
@@ -268,6 +306,8 @@ const fullCharacterSchema = baseCharacterSchema.extend({
     status: statusSchema,
     race: z.array(raceSchema),
     spec: z.array(specSchema),
+    body: bodySchema,
+    inventory: z.array(inventoryItem),
   }),
 });
 
@@ -289,4 +329,5 @@ export {
   effectSchema,
   inventoryItem,
   itemSchema,
+  bodySchema,
 };

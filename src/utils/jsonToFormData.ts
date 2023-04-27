@@ -9,7 +9,7 @@ export default function jsonToFormData(obj: any): FormData {
       // Se o valor for um array, adicione cada elemento individualmente
       if (Array.isArray(value)) {
         for (const item of value) {
-          formData.append(`${key}`, item);
+          formData.append(`${key}`, item as any);
         }
       } else {
         // Se o valor for um objeto, converta-o em JSON antes de adicioná-lo

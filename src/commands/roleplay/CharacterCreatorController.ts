@@ -391,6 +391,7 @@ export class CharacterCreatorController {
     form.skillPoints = 0;
     form.ascendedSkills = [];
     form.skillTraits = [];
+    form.body = "";
 
     const character = createUpdateCharacterSchema.parse(form);
     return CharacterFetcher.createCharacter(character, instance.interaction.user.id);

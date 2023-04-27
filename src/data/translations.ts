@@ -37,3 +37,17 @@ export const itemTypesEmojis = {
   weapon: "⚔️",
   spell: "🔮",
 };
+
+export const equipmentDictionary = {
+  head: "👑 Cabeça",
+  face: "🎭 Rosto",
+  shoulders: "👔 Ombros",
+  chest: "👕 Peito",
+  amulet: "📿 Amuleto",
+  back: "🧥 Costas",
+  legs: "👖 Pernas",
+  feet: "👞 Pés",
+  leftArm: "🛡️ Braço Esquerdo",
+  rightArm: "🛡️ Braço Direito",
+  rings: "💍 Anéis",
+};

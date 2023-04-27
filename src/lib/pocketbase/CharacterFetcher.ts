@@ -1,11 +1,9 @@
 import assert from "assert";
 import type { Snowflake } from "discord.js";
 import type { ListResult, RecordFullListQueryParams } from "pocketbase";
-
-import type { COLLECTIONS } from "../../data/constants";
-import { RELATION_FIELD_NAMES } from "../../data/constants";
 import type {
   Character,
+  CharacterBody,
   DestinyMaiden,
   Faction,
   Player,
@@ -14,6 +12,8 @@ import type {
   Spec,
   Status,
 } from "../../types/Character";
+import type { COLLECTIONS } from "../../data/constants";
+import { RELATION_FIELD_NAMES } from "../../data/constants";
 import type { Collection } from "../../types/Collection";
 import type { CreateData, PocketBaseConstants } from "../../types/PocketBaseCRUD";
 import { BotError, PocketBaseError } from "../../utils/Errors";
@@ -154,25 +154,22 @@ export default class CharacterFetcher {
     playerId: Snowflake
   ): Promise<Character | void> {
     try {
-      const [chosenSpec, secondChosenSpec] = await Promise.all(
-        char.spec.map((spec) =>
+      const [chosenSpec, secondChosenSpec, chosenRace, secondChosenRace] = (await Promise.all([
+        ...char.spec.map((spec) =>
           PocketBase.getEntityById<Spec>({
             entityType: "spec",
             id: spec,
             expandFields: true,
           })
-        )
-      );
-
-      const [chosenRace, secondChosenRace] = await Promise.all(
-        char.race.map((race) =>
+        ),
+        ...char.race.map((race) =>
           PocketBase.getEntityById<Race>({
             entityType: "races",
             id: race,
             expandFields: true,
           })
-        )
-      );
+        ),
+      ])) as [Spec, Spec, Race, Race];
 
       assert(chosenSpec.expand?.startingSkills, "Spec not found");
       const sanitizedStartingSkillsOne = this.sanitizeStartingSkills(
@@ -184,24 +181,44 @@ export default class CharacterFetcher {
         secondChosenSpec.expand?.startingSkills
       );
 
-      const baseSkills = await PocketBase.createEntity<Skills>({
-        entityData: skills,
-        entityType: "skills",
-      });
-      const baseStatus = await PocketBase.createEntity<Status>({
-        entityData: {
-          health: 100 + skills.vigor * 10,
-          spirit: 0,
-          stamina: 100 + skills.fortitude * 10,
-          despair: 0,
-          hunger: 0,
-          void: 0,
-          sleep: 0,
-          effects: [],
-          immune: [],
-        },
-        entityType: "status",
-      });
+      const [baseSkills, baseStatus, body] = await Promise.all([
+        PocketBase.createEntity<Skills>({
+          entityData: skills,
+          entityType: "skills",
+        }),
+        PocketBase.createEntity<Status>({
+          entityData: {
+            health: 100 + skills.vigor * 10,
+            spirit: 100,
+            stamina: 100 + skills.fortitude * 10,
+            despair: 100,
+            hunger: 100,
+            void: 100,
+            sleep: 100,
+            effects: [],
+            immune: [],
+          },
+          entityType: "status",
+        }),
+        PocketBase.createEntity<CharacterBody>({
+          entityData: {
+            head: "",
+            legs: "",
+            character: "",
+            amulet: "",
+            back: "",
+            chest: "",
+            face: "",
+            feet: "",
+            leftArm: "",
+            rightArm: "",
+            rings: [],
+            shoulders: "",
+          },
+          entityType: "body",
+        }),
+      ]);
+
       const [playerToAddCharacter, factionToAddCharacter, maidenToAddCharacter] = await Promise.all(
         [
           PlayerFetcher.getPlayerById(playerId),
@@ -227,11 +244,13 @@ export default class CharacterFetcher {
         ...char,
         skills: baseSkills.id,
         status: baseStatus.id,
+        body: body.id,
       });
       formData.set("image", blob, fileName);
       const response = await PocketBase.createEntityWithFormData<Character>("characters", formData);
       await CharacterFetcher.syncCharacterRelations({
         baseSkills,
+        body,
         baseStatus,
         character: response,
         factionToAddCharacter,
@@ -300,9 +319,11 @@ export default class CharacterFetcher {
     character,
     baseSkills,
     baseStatus,
+    body,
   }: {
     specsToAddCharacter: Spec[];
     baseSkills: Skills;
+    body: CharacterBody;
     baseStatus: Status;
     character: Character;
     factionToAddCharacter: Faction | undefined;
@@ -313,6 +334,7 @@ export default class CharacterFetcher {
     const updateTasks: Array<Promise<void>> = [
       this.updateEntityWithCharacter(baseSkills, character),
       this.updateEntityWithCharacter(baseStatus, character),
+      this.updateEntityWithCharacter(body, character),
       this.updateEntityWithCharacter(playerToAddCharacter, character),
       this.updateEntityWithCharacter(maidenToAddCharacter, character),
     ];

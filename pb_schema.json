@@ -1,0 +1,2212 @@
+[
+  {
+    "id": "knrmdmpv65zh6k5",
+    "name": "memories",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "rbemzfuz",
+        "name": "icon",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "oxh7srgf",
+        "name": "title",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "s2jc7zor",
+        "name": "phrase",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "sf8o5mpz",
+        "name": "isActive",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "olyetiem",
+        "name": "characters",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "digme6l2t3s4pip",
+    "name": "posts",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "5ughocix",
+        "name": "content",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "urgfocnb",
+        "name": "messageId",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "43yajrvk",
+        "name": "player",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "z8cspjwqmp0qkf3",
+          "cascadeDelete": true,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "dtdthfir",
+        "name": "character",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": true,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "_pb_users_auth_",
+    "name": "users",
+    "type": "auth",
+    "system": false,
+    "schema": [
+      {
+        "id": "users_name",
+        "name": "discordId",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "sulsuydu",
+        "name": "characters",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `__pb_users_auth__created_idx` ON `users` (`created`)"
+    ],
+    "listRule": "id = @request.auth.id",
+    "viewRule": "id = @request.auth.id",
+    "createRule": "",
+    "updateRule": "id = @request.auth.id",
+    "deleteRule": "id = @request.auth.id",
+    "options": {
+      "allowEmailAuth": true,
+      "allowOAuth2Auth": true,
+      "allowUsernameAuth": true,
+      "exceptEmailDomains": null,
+      "manageRule": null,
+      "minPasswordLength": 8,
+      "onlyEmailDomains": null,
+      "requireEmail": false
+    }
+  },
+  {
+    "id": "z8cspjwqmp0qkf3",
+    "name": "players",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "dpqcvefh",
+        "name": "discordId",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "1vifoi8x",
+        "name": "characters",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "uiclhbpd",
+        "name": "currentCharacterId",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "q9njhe97",
+        "name": "posts",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "digme6l2t3s4pip",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `idx_ebp3im0` ON `players` (`characters`)"
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "fqdic0fjqnrqz6l",
+    "name": "races",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "c9tmgejj",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "1nqagobs",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": true,
+        "options": {
+          "min": 8,
+          "max": 128,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "kis5a0fv",
+        "name": "color",
+        "type": "text",
+        "system": false,
+        "required": true,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "ghk4mv8c",
+        "name": "characters",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "rhu2mm0r",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `_fqdic0fjqnrqz6l_created_idx` ON `races` (`created`)",
+      "CREATE UNIQUE INDEX `idx_unique_1nqagobs` ON `races` (`name`)",
+      "CREATE UNIQUE INDEX `idx_unique_kis5a0fv` ON `races` (`color`)"
+    ],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "u0gtuvz822622nm",
+    "name": "factions",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "k4ijzxpd",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": true,
+        "options": {
+          "min": 8,
+          "max": 128,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "syqe4qkd",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "s6bqijwc",
+        "name": "characters",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": [
+            "name"
+          ]
+        }
+      },
+      {
+        "id": "ppwoo72h",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `_u0gtuvz822622nm_created_idx` ON `factions` (`created`)",
+      "CREATE UNIQUE INDEX `idx_unique_k4ijzxpd` ON `factions` (`name`)"
+    ],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "426jum8lzslaifa",
+    "name": "beasts",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "1ei6amgk",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "5a3dtucx",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "8ivl1qjo",
+        "name": "description",
+        "type": "editor",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "twluixvc",
+        "name": "health",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "j5t0ry2m",
+        "name": "stamina",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "7r9p8hcc",
+        "name": "domesticable",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "skvmqf3y",
+        "name": "weight",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "s455clsj",
+        "name": "height",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "6egt3jwm",
+        "name": "dangerLevel",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "vqqygiwo",
+        "name": "biome",
+        "type": "select",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "winter",
+            "autumn",
+            "summer",
+            "spring",
+            "undead",
+            "miasma"
+          ]
+        }
+      },
+      {
+        "id": "yqowwvtc",
+        "name": "damageType",
+        "type": "select",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 6,
+          "values": [
+            "darkness",
+            "light",
+            "physical",
+            "magic",
+            "fire",
+            "ice",
+            "water",
+            "earth",
+            "thorn",
+            "void",
+            "despair",
+            "bleed",
+            "poison"
+          ]
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "3nt7frt5nr3f7ni",
+    "name": "forms",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "mcxcbafw",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "4vl7zttw",
+        "name": "title",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "oeii0mj2",
+        "name": "step",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "revc6ksv",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "cn4qea3w",
+        "name": "collection",
+        "type": "select",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "factions",
+            "races",
+            "spec",
+            "destinyMaidens"
+          ]
+        }
+      },
+      {
+        "id": "wvswg8mh",
+        "name": "isSelectMenu",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "4yxnsghqhsuul98",
+    "name": "spec",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "noif2axv",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "aqfd7gqx",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "b5asdh7b",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "msd2zccn",
+        "name": "characters",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "bafy4toq",
+        "name": "startingSkills",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "b2xz73qsg4u7uen",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `idx_qeU2oMt` ON `spec` (`startingSkills`)"
+    ],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "tked0sl52bfyxar",
+    "name": "skills",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "pewh7ps0",
+        "name": "vigor",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "phnl31x6",
+        "name": "strength",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "3sflog8m",
+        "name": "fortitude",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "omswkmjk",
+        "name": "intelligence",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "byngn495",
+        "name": "dexterity",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "nhzau0y5",
+        "name": "darkness",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "3pbelwat",
+        "name": "order",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "6ezyw0i5",
+        "name": "discovery",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "brzfvzqj",
+        "name": "stealth",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "ulrgsyv9",
+        "name": "charisma",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "r4ydgsde",
+        "name": "character",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": true,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `_tked0sl52bfyxar_created_idx` ON `skills` (`created`)",
+      "CREATE INDEX `idx_unique_r4ydgsde` ON `skills` (`character`)"
+    ],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "tdk9lq08vvuo4nx",
+    "name": "destinyMaidens",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "qjx4avrs",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "perv63sh",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "p0syokjr",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "f1h7qvfr",
+        "name": "characters",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "b2xz73qsg4u7uen",
+    "name": "startingSkills",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "k780jh42",
+        "name": "spec",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "4yxnsghqhsuul98",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "6oakbrak",
+        "name": "vigor",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "pn9r3qdl",
+        "name": "strength",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "ksgwhy4l",
+        "name": "fortitude",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "ttcliqjz",
+        "name": "intelligence",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "rqgfhixn",
+        "name": "dexterity",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "udknzzil",
+        "name": "darkness",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "qaxbwyxh",
+        "name": "order",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "3dhjxjlt",
+        "name": "discovery",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "kigrz8jp",
+        "name": "stealth",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "uqddasli",
+        "name": "charisma",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `idx_8AjHMDZ` ON `startingSkills` (`created`)"
+    ],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "lodz13y431lc5vk",
+    "name": "effects",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "ntxbrpan",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "t3ngddt3",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "ycczjjmf",
+        "name": "type",
+        "type": "select",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "health",
+            "stamina",
+            "spirit",
+            "hunger",
+            "void",
+            "despair",
+            "sleep"
+          ]
+        }
+      },
+      {
+        "id": "eoaqt0bk",
+        "name": "duration",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "gctjspq1",
+        "name": "amount",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "vjf4oyo1bvfgvzk",
+    "name": "status",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "izqjagua",
+        "name": "health",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "op2kkfd3",
+        "name": "stamina",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "4kipa6lq",
+        "name": "spirit",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "pgzepvfx",
+        "name": "character",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": true,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "rmvmipgd",
+        "name": "hunger",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "wylplidg",
+        "name": "sleep",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "orla1ivi",
+        "name": "void",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "pdzjup4l",
+        "name": "despair",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "yyqx5yhy",
+        "name": "immune",
+        "type": "select",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 4,
+          "values": [
+            "hunger",
+            "sleep",
+            "void",
+            "despair"
+          ]
+        }
+      },
+      {
+        "id": "cihjr3le",
+        "name": "effects",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lodz13y431lc5vk",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `_vjf4oyo1bvfgvzk_created_idx` ON `status` (`created`)",
+      "CREATE INDEX `idx_unique_pgzepvfx` ON `status` (`character`)"
+    ],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "g60lknh8jeah1pt",
+    "name": "channels",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "iway4ouz",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 5242880,
+          "mimeTypes": [],
+          "thumbs": []
+        }
+      },
+      {
+        "id": "rfqjnozk",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "39igggx0",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "rj3zphi3",
+        "name": "isSafe",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "v2tq1vqi",
+        "name": "hasSpirit",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "whxrnggq",
+        "name": "hasSleep",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "qizshydg",
+        "name": "placeholderMessageId",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "rzr1kcwg",
+        "name": "discordId",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "etxbjrbw",
+        "name": "categoryId",
+        "type": "text",
+        "system": false,
+        "required": true,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "414if0akua3rj86",
+    "name": "characters",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "7e6zkin6",
+        "name": "image",
+        "type": "file",
+        "system": false,
+        "required": true,
+        "options": {
+          "maxSelect": 1,
+          "maxSize": 16777216,
+          "mimeTypes": [
+            "image/png",
+            "image/gif",
+            "image/jpeg",
+            "image/webp"
+          ],
+          "thumbs": [
+            "512x512"
+          ]
+        }
+      },
+      {
+        "id": "byn4erd5",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": true,
+        "options": {
+          "min": 3,
+          "max": 64,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "skmor6w6",
+        "name": "surname",
+        "type": "text",
+        "system": false,
+        "required": true,
+        "options": {
+          "min": 3,
+          "max": 64,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "piepgdub",
+        "name": "gender",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "mjkg8a46",
+        "name": "age",
+        "type": "number",
+        "system": false,
+        "required": true,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "1vb26gbr",
+        "name": "xp",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "rr73dxxo",
+        "name": "level",
+        "type": "number",
+        "system": false,
+        "required": true,
+        "options": {
+          "min": null,
+          "max": 99
+        }
+      },
+      {
+        "id": "nzlaawg3",
+        "name": "reputation",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": -99,
+          "max": 99
+        }
+      },
+      {
+        "id": "9uv4re6t",
+        "name": "profession",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": 128,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "nithnlen",
+        "name": "title",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": 3,
+          "max": 128,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "bkyueboj",
+        "name": "personality",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": 128,
+          "max": 1024,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "gyi8wpem",
+        "name": "appearance",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": 128,
+          "max": 512,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "injytnk0",
+        "name": "backstory",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": 128,
+          "max": 2096,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "eigruz4g",
+        "name": "skills",
+        "type": "relation",
+        "system": false,
+        "required": true,
+        "options": {
+          "collectionId": "tked0sl52bfyxar",
+          "cascadeDelete": true,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "xdj6gkfu",
+        "name": "status",
+        "type": "relation",
+        "system": false,
+        "required": true,
+        "options": {
+          "collectionId": "vjf4oyo1bvfgvzk",
+          "cascadeDelete": true,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "ag2iq5fm",
+        "name": "race",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "fqdic0fjqnrqz6l",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "flc9i55e",
+        "name": "faction",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "u0gtuvz822622nm",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "6mbwjapj",
+        "name": "memory",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "knrmdmpv65zh6k5",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "pjqweyuw",
+        "name": "playerId",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "gvvpq1my",
+        "name": "player",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "z8cspjwqmp0qkf3",
+          "cascadeDelete": true,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "lfdpuxwp",
+        "name": "posts",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "digme6l2t3s4pip",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "15qbwebj",
+        "name": "spec",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "4yxnsghqhsuul98",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "cn414pol",
+        "name": "destinyMaiden",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "tdk9lq08vvuo4nx",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "hwfgoeof",
+        "name": "body",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "gpe7ohf28q0oixg",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "qqozrywq",
+        "name": "inventory",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": null,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "xxfr8wkv",
+        "name": "skillPoints",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "bjee4vbv",
+        "name": "ascendedSkills",
+        "type": "select",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 2,
+          "values": [
+            "vigor",
+            "strength",
+            "fortitude",
+            "intelligence",
+            "dexterity",
+            "darkness",
+            "order",
+            "discovery",
+            "stealth",
+            "charisma"
+          ]
+        }
+      },
+      {
+        "id": "dfgvgbsn",
+        "name": "skillTraits",
+        "type": "select",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 10,
+          "values": [
+            "vigor",
+            "strength",
+            "fortitude",
+            "intelligence",
+            "dexterity",
+            "darkness",
+            "order",
+            "discovery",
+            "stealth",
+            "charisma"
+          ]
+        }
+      }
+    ],
+    "indexes": [
+      "CREATE INDEX `_414if0akua3rj86_created_idx` ON `characters` (`created`)",
+      "CREATE INDEX `idx_CmHSLC7` ON `characters` (`playerId`)"
+    ],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "lskplu77wk579ba",
+    "name": "inventoryItems",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "92dykykc",
+        "name": "item",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "u3vujma1001ed3s",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": [
+            "name"
+          ]
+        }
+      },
+      {
+        "id": "n2jvq6ox",
+        "name": "character",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "ruixmtki",
+        "name": "amount",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "bbjvdb5c",
+        "name": "isEquipped",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "wbyuu0u5",
+        "name": "isCursed",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "cwzokf7s",
+        "name": "isPoisoned",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      },
+      {
+        "id": "mc954mrf",
+        "name": "isCooked",
+        "type": "bool",
+        "system": false,
+        "required": false,
+        "options": {}
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": null,
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "u3vujma1001ed3s",
+    "name": "items",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "vj64jksc",
+        "name": "name",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "xcaorywh",
+        "name": "description",
+        "type": "text",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "pattern": ""
+        }
+      },
+      {
+        "id": "riy0skov",
+        "name": "slot",
+        "type": "select",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "head",
+            "face",
+            "shoulders",
+            "chest",
+            "amulet",
+            "back",
+            "legs",
+            "feet",
+            "leftArm",
+            "rightArm",
+            "rings"
+          ]
+        }
+      },
+      {
+        "id": "dewlmjm9",
+        "name": "type",
+        "type": "select",
+        "system": false,
+        "required": false,
+        "options": {
+          "maxSelect": 1,
+          "values": [
+            "consumable",
+            "armor",
+            "spell",
+            "weapon"
+          ]
+        }
+      },
+      {
+        "id": "xpshcilh",
+        "name": "hunger",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "ic4v7kjq",
+        "name": "health",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "nu38m5kc",
+        "name": "stamina",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      },
+      {
+        "id": "lxz1ewuq",
+        "name": "void",
+        "type": "number",
+        "system": false,
+        "required": false,
+        "options": {
+          "min": null,
+          "max": null
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": null,
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  },
+  {
+    "id": "gpe7ohf28q0oixg",
+    "name": "body",
+    "type": "base",
+    "system": false,
+    "schema": [
+      {
+        "id": "k3snsn3y",
+        "name": "head",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "zrcws0jp",
+        "name": "face",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "rjfq53sn",
+        "name": "shoulders",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "omgw0ivr",
+        "name": "chest",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "36wboa1x",
+        "name": "amulet",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "bbpom0mm",
+        "name": "back",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "xkwvmp79",
+        "name": "legs",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "k54iczd4",
+        "name": "feet",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "tpccwoqa",
+        "name": "leftArm",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "w3dgzxlg",
+        "name": "rightArm",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "scpydtdi",
+        "name": "rings",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "lskplu77wk579ba",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 4,
+          "displayFields": []
+        }
+      },
+      {
+        "id": "d8doy6vs",
+        "name": "character",
+        "type": "relation",
+        "system": false,
+        "required": false,
+        "options": {
+          "collectionId": "414if0akua3rj86",
+          "cascadeDelete": false,
+          "minSelect": null,
+          "maxSelect": 1,
+          "displayFields": []
+        }
+      }
+    ],
+    "indexes": [],
+    "listRule": "",
+    "viewRule": "",
+    "createRule": null,
+    "updateRule": null,
+    "deleteRule": null,
+    "options": {}
+  }
+]

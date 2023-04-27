@@ -14,7 +14,7 @@ import type {
   specSchema,
   statusSchema,
 } from "../schemas/characterSchema";
-import { effectSchema, inventoryItem, itemSchema } from "../schemas/characterSchema";
+import { bodySchema, effectSchema, inventoryItem, itemSchema } from "../schemas/characterSchema";
 import { Properties } from "./Utils";
 
 export type CreateUpdateCharacter = z.infer<typeof createUpdateCharacterSchema>;
@@ -32,6 +32,7 @@ export type DestinyMaiden = z.infer<typeof destinyMaidenSchema>;
 export type Beast = z.infer<typeof beastsSchema>;
 export type InventoryItem = z.infer<typeof inventoryItem>;
 export type Item = z.infer<typeof itemSchema>;
+export type CharacterBody = z.infer<typeof bodySchema>;
 export type CredentialsArray = [
   string,
   "surname" | "name" | "personality" | "backstory" | "title" | "image",
@@ -62,4 +63,10 @@ export interface ICharacterManager {
   setInventoryItem: (inventoryItem: InventoryItem) => Promise<InventoryItem>;
   getInventoryItem: (id: InventoryItem["id"]) => Promise<InventoryItem>;
   getInventory: () => Promise<InventoryItem[]>;
+
+  setEquipment: (item: InventoryItem) => Promise<CharacterBody>;
+  getEquipment: () => Promise<CharacterBody>;
+  getEquipmentItem: (
+    slot: keyof CharacterBody["expand"]
+  ) => Promise<CharacterBody[keyof CharacterBody]>;
 }

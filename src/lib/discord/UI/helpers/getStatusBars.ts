@@ -17,8 +17,8 @@ export default function getStatusBars(skills: Skills, status: Status) {
         getMaxStatus(skills)[STATUS_SKILLS_RELATION.stamina],
         status.stamina,
         10,
-        "🟨",
-        "🟪"
+        "🟥",
+        "🟨"
       )
       .shift();
 

@@ -14,6 +14,7 @@ import type {
   Spec,
   Status,
 } from "./Character";
+import { CharacterBody } from "./Character";
 import type { Form } from "./MultiForm";
 import { Channel } from "./Channel";
 
@@ -27,6 +28,7 @@ export type Collection =
   | Status
   | Race
   | Form
+  | CharacterBody
   | Beast
   | DestinyMaiden
   | InventoryItem

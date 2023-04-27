@@ -17,7 +17,7 @@ import { BotError } from "../utils/Errors";
 import handleError from "../utils/handleError";
 import { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
 import mustache from "mustache";
-import { Character, Effect, Skills, Status } from "../types/Character";
+import { Character, CharacterBody, Effect, Skills, Status } from "../types/Character";
 import { STATUS_SKILLS_RELATION } from "../data/constants";
 import getSafeEntries from "../utils/getSafeEntries";
 import { EffectFetcher } from "../lib/pocketbase/EffectFetcher";
@@ -28,6 +28,7 @@ import getStatusBars from "../lib/discord/UI/helpers/getStatusBars";
 import PocketBase from "../lib/pocketbase/PocketBase";
 import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
 import getRoleplayDataFromUserId from "../lib/discord/Character/helpers/getRoleplayDataFromUserId";
+import makeEquipmentStringArray from "../lib/discord/UI/helpers/makeEquipmentStringArray";
 
 @Discord()
 export class OnRoleplayMessage {
@@ -84,8 +85,13 @@ export class OnRoleplayMessage {
       const { currentCharacter, characterManager, view, status, skills } =
         await getRoleplayDataFromUserId(interaction);
       const characterPost = new CharacterPost(currentCharacter);
-      await this.addEffectsToEmbed(status, characterPost);
-      await this.addStatusBarsToEmbed(skills, status, characterPost);
+      const equipment = await characterManager.getEquipment();
+
+      await Promise.all([
+        this.addEffectsToEmbed(status, characterPost),
+        this.addStatusBarsToEmbed(skills, status, characterPost),
+        this.addEquipmentToEmbed(equipment, characterPost),
+      ]);
 
       const text = characterPost.embed.data.title;
       const iconURL = PocketBase.getImageUrl({
@@ -135,6 +141,16 @@ export class OnRoleplayMessage {
     characterPost.embed.addFields({
       name: "Status",
       value: statusBars.join("\n\n"),
+      inline: true,
+    });
+  }
+
+  private async addEquipmentToEmbed(equipment: CharacterBody, characterPost: CharacterPost) {
+    const equipmentString = await makeEquipmentStringArray(equipment);
+
+    characterPost.embed.addFields({
+      name: "Equipamento",
+      value: equipmentString.filter(Boolean).join("\n"),
       inline: true,
     });
   }

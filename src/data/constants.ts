@@ -11,11 +11,12 @@ export const COLLECTIONS = {
   startingSkills: "startingSkills",
   destinyMaidens: "destinyMaidens",
   beasts: "beasts",
-  inventory: "inventory",
+  inventory: "inventoryItems",
   items: "items",
   forms: "forms",
   effects: "effects",
   channels: "channels",
+  body: "body",
 } as const;
 export const RELATION_FIELD_NAMES = {
   character: "character",
@@ -32,6 +33,18 @@ export const RELATION_FIELD_NAMES = {
   startingSkills: "startingSkills",
   inventory: "inventory",
   item: "item",
+  body: "body",
+  head: "head",
+  face: "face",
+  shoulders: "shoulders",
+  chest: "chest",
+  amulet: "amulet",
+  back: "back",
+  legs: "legs",
+  feet: "feet",
+  leftArm: "leftArm",
+  rightArm: "rightArm",
+  rings: "rings",
 } as const;
 export const MAX_FILE_SIZE = 15_000_000;
 export const ACCEPTED_IMAGE_TYPES = ["jpeg", "jpg", "png", "webp"];

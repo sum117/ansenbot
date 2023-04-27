@@ -1,5 +1,6 @@
 import {
   Character,
+  CharacterBody,
   Effect,
   ICharacterManager,
   InventoryItem,
@@ -15,6 +16,7 @@ import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
 import { Properties } from "../../../../types/Utils";
 import AnsenfallLeveling from "../helpers/ansenfallLeveling";
 import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
+import { PocketBaseConstants } from "../../../../types/PocketBaseCRUD";
 
 export class CharacterManager implements ICharacterManager {
   public constructor(public character: Character) {}
@@ -169,6 +171,127 @@ export class CharacterManager implements ICharacterManager {
     return PocketBase.getEntityById<InventoryItem>({
       entityType: "inventory",
       id: inventoryItemId,
+    });
+  }
+
+  async getEquipmentItem(
+    slot: keyof CharacterBody["expand"]
+  ): Promise<CharacterBody[keyof CharacterBody] | undefined> {
+    const body = await PocketBase.getEntityById<CharacterBody>({
+      entityType: "body",
+      id: this.character.body,
+    });
+
+    return body.expand?.[slot];
+  }
+
+  async setEquipment(inventoryRef: InventoryItem): Promise<CharacterBody> {
+    this.validateInventoryItem(inventoryRef);
+
+    const slot = this.getSlotForItem(inventoryRef);
+    const equipment = await this.getEquipment();
+
+    const equippedItem = equipment[slot];
+    const previousItems = Array.isArray(equippedItem) ? equippedItem : [equippedItem];
+
+    if (previousItems.includes(inventoryRef.id)) {
+      return this.unequipItem(inventoryRef, equipment, slot);
+    } else if (previousItems.length && slot !== "rings") {
+      return this.swapEquippedItem(inventoryRef, equipment, slot, previousItems);
+    } else {
+      return this.equipNewItem(inventoryRef, equipment, slot);
+    }
+  }
+
+  getEquipment(): Promise<CharacterBody> {
+    return PocketBase.getEntityById<CharacterBody>({
+      entityType: "body",
+      id: this.character.body,
+    });
+  }
+
+  private validateInventoryItem(inventoryRef: InventoryItem): void {
+    if (inventoryRef.amount < 0) {
+      throw new BotError("Item não encontrado no inventário ou insuficiente.");
+    }
+
+    if (inventoryRef.expand?.item.type !== ITEM_TYPES.armor) {
+      throw new BotError("Item não é um item equipável.");
+    }
+  }
+
+  private getSlotForItem(
+    inventoryRef: InventoryItem
+  ): keyof Omit<CharacterBody, keyof PocketBaseConstants | "expand"> {
+    const slot = inventoryRef.expand?.item.slot;
+    if (!slot) {
+      throw new BotError("Item não possui slot, portanto não é equipável.");
+    }
+    return slot as keyof Omit<CharacterBody, keyof PocketBaseConstants | "expand">;
+  }
+
+  private async unequipItem(
+    inventoryRef: InventoryItem,
+    equipment: CharacterBody,
+    slot: keyof CharacterBody
+  ): Promise<CharacterBody> {
+    inventoryRef.amount += 1;
+    inventoryRef.isEquipped = false;
+    await this.setInventoryItem(inventoryRef);
+
+    const filterRing = (ring: string) => ring !== equipment[slot];
+    const updatedEquipment = {
+      ...equipment,
+      [slot]: slot === "rings" ? equipment.rings.filter(filterRing) : "",
+    };
+
+    return this.updateCharacterBody(updatedEquipment);
+  }
+
+  private async swapEquippedItem(
+    inventoryRef: InventoryItem,
+    equipment: CharacterBody,
+    slot: keyof CharacterBody,
+    previousItems: string[]
+  ): Promise<CharacterBody> {
+    const previousItem = await this.getInventoryItem(previousItems[0]);
+    previousItem.amount += 1;
+    previousItem.isEquipped = false;
+    await this.setInventoryItem(previousItem);
+
+    inventoryRef.amount -= 1;
+    inventoryRef.isEquipped = true;
+    await this.setInventoryItem(inventoryRef);
+
+    const updatedEquipment = {
+      ...equipment,
+      [slot]: inventoryRef.id,
+    };
+
+    return this.updateCharacterBody(updatedEquipment);
+  }
+
+  private async equipNewItem(
+    inventoryRef: InventoryItem,
+    equipment: CharacterBody,
+    slot: keyof CharacterBody
+  ): Promise<CharacterBody> {
+    inventoryRef.amount -= 1;
+    inventoryRef.isEquipped = true;
+    await this.setInventoryItem(inventoryRef);
+
+    const updatedEquipment = {
+      ...equipment,
+      [slot]: slot === "rings" ? [...equipment.rings, inventoryRef.id] : inventoryRef.id,
+    };
+
+    return this.updateCharacterBody(updatedEquipment);
+  }
+
+  private updateCharacterBody(entityData: CharacterBody): Promise<CharacterBody> {
+    return PocketBase.updateEntity<CharacterBody>({
+      entityType: "body",
+      entityData: entityData,
     });
   }
 }
