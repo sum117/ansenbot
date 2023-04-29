@@ -37,7 +37,7 @@ export const RELATION_FIELD_NAMES = {
     "inventory.spells.item",
     "inventory.equipments.item",
   ].join(","),
-  item: "item",
+  item: ["item", "consumables(item)", "equipments(item)", "spells(item)"],
   body: [
     "body.head.item",
     "body.face.item",
@@ -50,6 +50,7 @@ export const RELATION_FIELD_NAMES = {
     "body.leftArm.item",
     "body.rightArm.item",
     "body.rings.item",
+    "body.spells.item",
   ].join(","),
   head: "head.item",
   face: "face.item",
@@ -62,6 +63,7 @@ export const RELATION_FIELD_NAMES = {
   leftArm: "leftArm.item",
   rightArm: "rightArm.item",
   rings: "rings.item",
+  spells: "spells.item",
 } as const;
 export const MAX_FILE_SIZE = 15_000_000;
 export const ACCEPTED_IMAGE_TYPES = ["jpeg", "jpg", "png", "webp"];
@@ -94,6 +96,15 @@ export const STATUS_SKILLS_RELATION = {
   despair: "darkness",
 } as const;
 
+export const STATUS_NAMES = {
+  health: "Saúde",
+  sleep: "Sono",
+  hunger: "Fome",
+  void: "Vazio",
+  stamina: "Energia",
+  despair: "Desespero",
+} as const;
+
 export const ITEM_TYPES_EMOJIS = {
   consumable: "🍔",
   equipment: "🛡️",
@@ -104,6 +115,11 @@ export const ITEM_ACTIONS = {
   equipment: "Equipar",
   spell: "Memorizar Feitiço",
   consumable: "Usar",
+};
+export const ITEM_ACTIONS_CUSTOM_IDS = {
+  equipment: "equip",
+  spell: "equip",
+  consumable: "use",
 };
 
 export const STATUS_GAIN_PER_LEVEL = 10 as const;

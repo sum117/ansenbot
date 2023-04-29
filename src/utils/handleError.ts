@@ -49,6 +49,10 @@ export default function handleError(
     errorMessage = error.message;
   }
 
+  if (error instanceof DiscordAPIError) {
+    return;
+  }
+
   void interaction.channel
     ?.send(errorMessage)
     .then((message) => {

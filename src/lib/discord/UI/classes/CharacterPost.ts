@@ -132,10 +132,15 @@ export default class CharacterPost {
       ...rest
     } = skills;
 
-    const skillRows = getSafeEntries(rest).map(([skillName, skillLevel]) => {
-      const skill = skillsDictionary[skillName];
-      return `${skill}: ${skillLevel}`;
-    });
+    const skillRows = getSafeEntries(rest)
+      .map(([skillName, skillLevel]) => {
+        if (skillName === "expand") {
+          return;
+        }
+        const skill = skillsDictionary[skillName];
+        return `${skill}: ${skillLevel}`;
+      })
+      .filter(Boolean);
 
     return skillRows.join("\n");
   }

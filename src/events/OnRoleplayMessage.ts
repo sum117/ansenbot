@@ -39,8 +39,13 @@ export class OnRoleplayMessage {
         return;
       }
 
-      const { currentCharacter, characterManager, view, status, skills } =
-        await getRoleplayDataFromUserId(message);
+      const roleplayData = await getRoleplayDataFromUserId(message).catch(() => null);
+
+      if (!roleplayData) {
+        return;
+      }
+
+      const { currentCharacter, characterManager, view, status, skills } = roleplayData;
 
       await Promise.all([
         this.processExperienceGain(view, message, currentCharacter, characterManager),

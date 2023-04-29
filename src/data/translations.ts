@@ -41,6 +41,13 @@ export const equipmentDictionary = {
   legs: "👖 Pernas",
   feet: "👞 Pés",
   leftArm: "🛡️ Braço Esquerdo",
-  rightArm: "🛡️ Braço Direito",
+  rightArm: "🗡️ Braço Direito",
   rings: "💍 Anéis",
+  spells: "📜 Feitiços",
+};
+
+export const itemTypesDictionary = {
+  consumable: "🍔 Consumível",
+  equipment: "🛡️ Equipamento",
+  spell: "📜 Feitiço",
 };

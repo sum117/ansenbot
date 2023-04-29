@@ -1,8 +1,17 @@
 import PocketBase from "./PocketBase";
-import { Item } from "../../types/Item";
+import { BaseItem, Item, ItemWithRole } from "../../types/Item";
 
 export class ItemFetcher {
-  public static async getItemById<T extends Item>(id: Item["id"]): Promise<T> {
+  public static async getItemById<T extends BaseItem>(id: Item["id"]): Promise<T> {
     return PocketBase.getEntityById<T>({ entityType: "items", id: id });
+  }
+
+  public static async getItemWithRole<T extends ItemWithRole>(
+    id: Item["id"]
+  ): Promise<ItemWithRole> {
+    return PocketBase.getEntityById<T>({
+      entityType: "items",
+      id: id,
+    });
   }
 }

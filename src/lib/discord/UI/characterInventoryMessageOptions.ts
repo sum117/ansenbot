@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 import { Character } from "../../../types/Character";
-import { ITEM_ACTIONS, ITEM_TYPES } from "../../../data/constants";
+import { ITEM_ACTIONS, ITEM_ACTIONS_CUSTOM_IDS, ITEM_TYPES } from "../../../data/constants";
 
 export interface CharacterInventoryMessageOptions {
   character: Character;
@@ -50,8 +50,16 @@ export default function characterInventoryMessageOptions({
       .setStyle(ButtonStyle.Primary),
     new ButtonBuilder()
       .setLabel(ITEM_ACTIONS[kind])
-      .setCustomId(`character:item:use:${selectedItemId}:${character.playerId}:${currentPage}:null`)
+      .setCustomId(
+        `character:item:${ITEM_ACTIONS_CUSTOM_IDS[kind]}:${selectedItemId}:${character.playerId}:${currentPage}:null`
+      )
       .setStyle(ButtonStyle.Success),
+    new ButtonBuilder()
+      .setLabel("Info")
+      .setCustomId(
+        `character:item:info:${selectedItemId}:${character.playerId}:${currentPage}:null`
+      )
+      .setStyle(ButtonStyle.Secondary),
     new ButtonBuilder()
       .setLabel("Descartar")
       .setCustomId(
