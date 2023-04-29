@@ -278,6 +278,7 @@ const skillsSchema = baseSchema.extend({
   discovery: z.number(),
   stealth: z.number(),
   charisma: z.number(),
+  expand: z.object({}).optional(),
 });
 
 const specSchema = baseSchema.extend({
