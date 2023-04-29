@@ -37,7 +37,7 @@ export const RELATION_FIELD_NAMES = {
     "inventory.spells.item",
     "inventory.equipments.item",
   ].join(","),
-  item: "item",
+  item: ["item", "consumables(item)", "equipments(item)", "spells(item)"],
   body: [
     "body.head.item",
     "body.face.item",
@@ -94,6 +94,15 @@ export const STATUS_SKILLS_RELATION = {
   void: "darkness",
   stamina: "strength",
   despair: "darkness",
+} as const;
+
+export const STATUS_NAMES = {
+  health: "Saúde",
+  sleep: "Sono",
+  hunger: "Fome",
+  void: "Vazio",
+  stamina: "Energia",
+  despair: "Desespero",
 } as const;
 
 export const ITEM_TYPES_EMOJIS = {

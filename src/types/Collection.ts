@@ -14,7 +14,7 @@ import type {
   Status,
 } from "./Character";
 import { CharacterBody } from "./Character";
-import { Item } from "./Item";
+import { BaseItem, Item } from "./Item";
 import type { Form } from "./MultiForm";
 import { Channel } from "./Channel";
 
@@ -25,6 +25,7 @@ export type Collection =
   | Post
   | Player
   | Skills
+  | BaseItem
   | Status
   | Race
   | Form

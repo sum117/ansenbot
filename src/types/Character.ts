@@ -41,7 +41,7 @@ export type CredentialsArray = [
 ];
 
 export interface ICharacterManager {
-  use: (consumableId: Inventory["id"]) => Promise<string>;
+  use: (consumableId: Item["id"]) => Promise<string>;
   sleep: (hours: number) => Promise<void>;
 
   heal: (amount: number) => Promise<void>;

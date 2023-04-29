@@ -28,7 +28,7 @@ import { type equipmentDictionary } from "../../../../data/translations";
 export class CharacterManager implements ICharacterManager {
   public constructor(public character: Character) {}
 
-  async use(consumableId: Inventory["id"]): Promise<string> {
+  async use(consumableId: Item["id"]): Promise<string> {
     const consumableItem = consumableSchema.parse(this.getInventoryItem(consumableId));
     const characterStatus = await this.getStatuses(this.character.status);
     const view = {
@@ -52,6 +52,20 @@ export class CharacterManager implements ICharacterManager {
       "✅ {{{author}}}, {{{character}}} usou {{{item}}} e recuperou {{{health}}} de vida, {{{stamina}}} de estamina, {{{hunger}}} de fome e {{{void}}} de vazio.",
       view
     );
+  }
+
+  async discard(itemId: Item["id"]): Promise<string> {
+    const item = consumableSchema
+      .or(equipmentSchema)
+      .or(spellSchema)
+      .parse(await this.getInventoryItem(itemId));
+    item.quantity -= 1;
+    await this.setInventoryItem(item);
+    return mustache.render("{{{author}}}, {{{character}}} descartou 1 de {{{item}}}.", {
+      author: userMention(this.character.playerId),
+      character: this.character.name,
+      item: item.expand.item.name,
+    });
   }
 
   async sleep(hours: number): Promise<void> {

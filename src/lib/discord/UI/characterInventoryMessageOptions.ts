@@ -55,6 +55,12 @@ export default function characterInventoryMessageOptions({
       )
       .setStyle(ButtonStyle.Success),
     new ButtonBuilder()
+      .setLabel("Info")
+      .setCustomId(
+        `character:item:info:${selectedItemId}:${character.playerId}:${currentPage}:null`
+      )
+      .setStyle(ButtonStyle.Secondary),
+    new ButtonBuilder()
       .setLabel("Descartar")
       .setCustomId(
         `character:item:discard:${selectedItemId}:${character.playerId}:${currentPage}:null`
