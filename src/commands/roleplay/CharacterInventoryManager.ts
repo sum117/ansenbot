@@ -1,6 +1,7 @@
 import { ButtonComponent, Discord } from "discordx";
-import { ButtonInteraction, ButtonStyle, Snowflake } from "discord.js";
+import { ButtonInteraction, ButtonStyle, Snowflake, userMention } from "discord.js";
 import handleError from "../../utils/handleError";
+import { equipmentSchema, spellSchema } from "../../schemas/characterSchema";
 import mustache from "mustache";
 import getRoleplayDataFromUserId from "../../lib/discord/Character/helpers/getRoleplayDataFromUserId";
 import { Character } from "../../types/Character";
@@ -9,7 +10,7 @@ import makeInventoryStringArray from "../../lib/discord/UI/helpers/makeInventory
 
 // placeholder:action:kind:itemId:playerId:page:(previous|next)
 const INVENTORY_REGEX =
-  /character:(inventory|item):(browse|use|discard|open):(\w+):\d+(:\d+:(previous|next|null))?/;
+  /character:(inventory|item):(browse|use|discard|open|equip):(\w+):\d+(:\d+:(previous|next|null))?/;
 
 @Discord()
 export class CharacterInventoryManager {
@@ -18,19 +19,19 @@ export class CharacterInventoryManager {
   @ButtonComponent({ id: INVENTORY_REGEX })
   public async inventoryButton(interaction: ButtonInteraction) {
     try {
-      let [_, action, kind, itemId, playerId, page] = interaction.customId.split(":") as [
-        "character",
-        "inventory" | "item",
-        "browse" | "use" | "discard" | "open",
-        string,
-        string,
-        string | undefined
-      ];
-      const trackedInteraction = await this.getOrCreateTrackedInteraction(interaction);
+      let { itemId, page, kind } = this.getInventoryCredentialsFromCustomId(interaction);
 
-      if (this.shouldAbortInteraction(trackedInteraction, interaction)) {
-        return;
+      let useItemAction = "";
+      switch (kind) {
+        case "use": {
+          useItemAction = await this.useItemInteraction(interaction);
+        }
+        case "equip": {
+          useItemAction = await this.equipItemInteraction(interaction);
+        }
       }
+
+      const trackedInteraction = await this.getOrCreateTrackedInteraction(interaction);
       const { currentCharacter, view } = await getRoleplayDataFromUserId(interaction);
       if (await this.handleEmptyInventory(currentCharacter, trackedInteraction, view)) {
         return;
@@ -77,10 +78,48 @@ export class CharacterInventoryManager {
       };
 
       const messageOptions = characterInventoryMessageOptions(options);
-      await trackedInteraction.editReply(messageOptions);
+      await trackedInteraction.editReply({
+        content: useItemAction,
+        ...messageOptions,
+      });
     } catch (error) {
       handleError(interaction, error);
     }
+  }
+
+  private async useItemInteraction(interaction: ButtonInteraction) {
+    const { itemId } = this.getInventoryCredentialsFromCustomId(interaction);
+    const { characterManager } = await getRoleplayDataFromUserId(interaction);
+
+    const feedback = await characterManager.use(itemId);
+    return feedback;
+  }
+
+  private async equipItemInteraction(interaction: ButtonInteraction) {
+    const { itemId } = this.getInventoryCredentialsFromCustomId(interaction);
+    const { characterManager } = await getRoleplayDataFromUserId(interaction);
+
+    const item = equipmentSchema
+      .or(spellSchema)
+
+      .parse(await characterManager.getInventoryItem(itemId));
+
+    const view = {
+      author: userMention(characterManager.character.playerId),
+      item: item.expand.item.name,
+    };
+    await characterManager.setEquipment(item);
+    const equipment = await characterManager.getEquipmentItem(item.slot);
+    if (!equipment) {
+      return mustache.render(
+        "✅ {{{author}}}, seu personagem desequipou o item {{{item}}} com sucesso!",
+        view
+      );
+    }
+    return mustache.render(
+      "✅ {{{author}}}, seu personagem equipou o item {{{item}}} com sucesso!",
+      view
+    );
   }
 
   private async getOrCreateTrackedInteraction(
@@ -88,8 +127,8 @@ export class CharacterInventoryManager {
   ): Promise<ButtonInteraction> {
     let trackedInteraction = this.trackedInteraction.get(interaction.user.id);
 
-    if (isNaN(parseInt(interaction.customId.split(":")[2])) && trackedInteraction) {
-      await trackedInteraction.deleteReply();
+    if (interaction.customId.includes("inventory:open") && trackedInteraction) {
+      await trackedInteraction.deleteReply().catch(() => null);
       this.trackedInteraction.delete(interaction.user.id);
       trackedInteraction = undefined;
     }
@@ -99,6 +138,7 @@ export class CharacterInventoryManager {
       this.trackedInteraction.set(interaction.user.id, interaction);
       trackedInteraction = interaction;
     }
+    this.shouldAbortInteraction(trackedInteraction, interaction);
     return trackedInteraction;
   }
 
@@ -119,14 +159,14 @@ export class CharacterInventoryManager {
     itemsArray: T,
     currentPage: number,
     PAGE_SIZE: number
-  ) {
+  ): T[number][] {
     const startIndex = (currentPage - 1) * PAGE_SIZE;
     const endIndex = startIndex + PAGE_SIZE;
     let pageItems = itemsArray.slice(startIndex, endIndex).filter((item) => Boolean(item));
     if (!pageItems.length) {
       pageItems = itemsArray.slice(0, PAGE_SIZE).filter((item) => Boolean(item));
     }
-    return pageItems as T extends Array<infer U> ? Array<U> : never;
+    return pageItems;
   }
 
   private async handleEmptyInventory(
@@ -152,5 +192,17 @@ export class CharacterInventoryManager {
       return true;
     }
     return false;
+  }
+
+  private getInventoryCredentialsFromCustomId(interaction: ButtonInteraction) {
+    const [_, action, kind, itemId, playerId, page] = interaction.customId.split(":") as [
+      "character",
+      "inventory" | "item",
+      "browse" | "use" | "discard" | "open" | "equip",
+      string,
+      string,
+      string | undefined
+    ];
+    return { itemId, page, action, kind, playerId };
   }
 }

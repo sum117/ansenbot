@@ -142,6 +142,8 @@ const consumableSchema = baseSchema.extend({
 const spellSchema = baseSchema.extend({
   item: z.string(),
   quantity: z.number(),
+  isEquipped: z.boolean(),
+  slot: z.literal("spells"),
   expand: z.object(
     {
       item: itemSchema.extend({
@@ -166,6 +168,7 @@ const equipmentSchema = baseSchema.extend({
     "leftArm",
     "rightArm",
     "rings",
+    "spells",
   ]),
   isEquipped: z.boolean(),
   expand: z.object(
@@ -201,21 +204,23 @@ const bodySchema = baseSchema.extend({
   leftArm: z.string(),
   rightArm: z.string(),
   rings: z.array(z.string()),
+  spells: z.array(z.string()),
   character: z.string(),
   expand: z
     .object({
       character: baseCharacterSchema,
-      head: itemSchema,
-      face: itemSchema,
-      shoulders: itemSchema,
-      amulet: itemSchema,
-      chest: itemSchema,
-      back: itemSchema,
-      legs: itemSchema,
-      feet: itemSchema,
-      leftArm: itemSchema,
-      rightArm: itemSchema,
-      rings: z.array(itemSchema),
+      head: equipmentSchema,
+      face: equipmentSchema,
+      shoulders: equipmentSchema,
+      amulet: equipmentSchema,
+      chest: equipmentSchema,
+      back: equipmentSchema,
+      legs: equipmentSchema,
+      feet: equipmentSchema,
+      leftArm: equipmentSchema,
+      rightArm: equipmentSchema,
+      rings: z.array(equipmentSchema),
+      spells: z.array(spellSchema),
     })
     .optional(),
 });

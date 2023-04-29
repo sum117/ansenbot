@@ -195,6 +195,7 @@ export default class CharacterFetcher {
             leftArm: "",
             rightArm: "",
             rings: [],
+            spells: [],
             shoulders: "",
           },
           entityType: "body",

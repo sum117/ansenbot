@@ -43,4 +43,5 @@ export const equipmentDictionary = {
   leftArm: "🛡️ Braço Esquerdo",
   rightArm: "🛡️ Braço Direito",
   rings: "💍 Anéis",
+  spells: "📜 Feitiços",
 };
