@@ -91,7 +91,7 @@ export default class CharacterPost {
     }
     const fields = new Collection<string, string>();
     fields.set("Dono", userMention(this.character.playerId));
-    fields.set("Gênero", this.formatCharacterGender(this.character));
+    fields.set("Gênero", this.character.gender);
     fields.set("Idade", this.character.age.toString());
     fields.set("Nível", this.character.level.toString());
     fields.set("Raça", this.character.expand.race.map((race) => race.name).join(" & "));
@@ -155,9 +155,5 @@ export default class CharacterPost {
     }
 
     return parts.length ? parts.join("\n\n") : null;
-  }
-
-  private formatCharacterGender({ gender }: Character) {
-    return gender === "male" ? "Masculino" : "Feminino";
   }
 }

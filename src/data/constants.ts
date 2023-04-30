@@ -37,7 +37,7 @@ export const RELATION_FIELD_NAMES = {
     "inventory.spells.item",
     "inventory.equipments.item",
   ].join(","),
-  item: ["item", "consumables(item)", "equipments(item)", "spells(item)"],
+  item: ["item", "consumables(item)", "equipments(item)", "spells(item)"].join(","),
   body: [
     "body.head.item",
     "body.face.item",
@@ -109,17 +109,17 @@ export const ITEM_TYPES_EMOJIS = {
   consumable: "🍔",
   equipment: "🛡️",
   spell: "🔮",
-};
+} as const;
 
 export const ITEM_ACTIONS = {
   equipment: "Equipar",
   spell: "Memorizar Feitiço",
   consumable: "Usar",
-};
+} as const;
 export const ITEM_ACTIONS_CUSTOM_IDS = {
   equipment: "equip",
   spell: "equip",
   consumable: "use",
-};
+} as const;
 
 export const STATUS_GAIN_PER_LEVEL = 10 as const;
