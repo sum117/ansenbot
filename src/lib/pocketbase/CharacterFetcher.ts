@@ -2,7 +2,7 @@ import assert from "assert";
 import type { Snowflake } from "discord.js";
 import type { ListResult, RecordFullListQueryParams } from "pocketbase";
 import type { Character, CharacterBody, Inventory, Skills, Status } from "../../types/Character";
-import { RELATION_FIELD_NAMES } from "../../data/constants";
+import { RELATION_FIELD_NAMES, STATUS_GAIN_PER_LEVEL } from "../../data/constants";
 import type { CreateData, PocketBaseConstants } from "../../types/PocketBaseCRUD";
 import { BotError, PocketBaseError } from "../../utils/Errors";
 import getSafeKeys from "../../utils/getSafeKeys";
@@ -170,9 +170,10 @@ export default class CharacterFetcher {
         }),
         PocketBase.createEntity<Status>({
           entityData: {
-            health: 100 + skills.vigor * 10,
+            health: 100 + skills.vigor * STATUS_GAIN_PER_LEVEL,
             spirit: 100,
-            stamina: 100 + skills.fortitude * 10,
+            mana: 100 + skills.intelligence * STATUS_GAIN_PER_LEVEL,
+            stamina: 100 + skills.fortitude * STATUS_GAIN_PER_LEVEL,
             despair: 100,
             hunger: 100,
             void: 100,
