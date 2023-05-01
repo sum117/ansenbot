@@ -139,11 +139,42 @@ const consumableSchema = baseSchema.extend({
     { invalid_type_error: "Não é um item consumível." }
   ),
 });
+
+const skillNameSchema = z.enum([
+  "darkness",
+  "order",
+  "charisma",
+  "intelligence",
+  "discovery",
+  "stealth",
+  "fortitude",
+  "strength",
+  "dexterity",
+  "vigor",
+]);
+
+const statusNameSchema = z.enum([
+  "health",
+  "stamina",
+  "hunger",
+  "sleep",
+  "void",
+  "despair",
+  "spirit",
+]);
+
 const spellSchema = baseSchema.extend({
   item: z.string(),
   quantity: z.number(),
   isEquipped: z.boolean(),
   isBuff: z.boolean(),
+  type: skillNameSchema,
+  status: z.array(statusNameSchema),
+  manaCost: z.number(),
+  healthCost: z.number(),
+  staminaCost: z.number(),
+  quotient: z.number(),
+  multiplier: z.number(),
   slot: z.literal("spells"),
   expand: z.object(
     {
@@ -171,6 +202,11 @@ const equipmentSchema = baseSchema.extend({
     "rings",
     "spells",
   ]),
+  type: skillNameSchema,
+  isCursed: z.boolean(),
+  isWeapon: z.boolean(),
+  quotient: z.number(),
+  multiplier: z.number(),
   isEquipped: z.boolean(),
   expand: z.object(
     {
@@ -292,6 +328,7 @@ const statusSchema = baseSchema.extend({
   stamina: z.number(),
   spirit: z.number(),
   hunger: z.number(),
+  mana: z.number(),
   sleep: z.number(),
   void: z.number(),
   despair: z.number(),

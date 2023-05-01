@@ -22,6 +22,12 @@ export default function getStatusBars(skills: Skills, status: Status) {
       )
       .shift();
 
+  const manaBar =
+    "🔮 " +
+    progressBar
+      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.mana], status.mana, 7, "🟥", "🟦")
+      .shift();
+
   const voidBar =
     "💀  " +
     progressBar

@@ -90,9 +90,10 @@ export const ITEM_TYPES = {
 export const STATUS_SKILLS_RELATION = {
   health: "vigor",
   sleep: "fortitude",
+  mana: "intelligence",
   hunger: "fortitude",
   void: "darkness",
-  stamina: "strength",
+  stamina: "fortitude",
   despair: "darkness",
 } as const;
 
