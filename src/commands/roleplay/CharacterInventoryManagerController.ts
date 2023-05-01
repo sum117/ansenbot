@@ -57,7 +57,8 @@ export class CharacterInventoryManagerController {
       ];
 
       const trackedInteraction = await this.trackedInteraction.getOrCreateTrackedInteraction(
-        interaction
+        interaction,
+        "inventory:open"
       );
       if (await this.handleEmptyInventory(currentCharacter, trackedInteraction, view)) {
         return;

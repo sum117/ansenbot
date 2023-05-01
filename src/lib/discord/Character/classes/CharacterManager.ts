@@ -23,10 +23,11 @@ import {
 } from "../../../../schemas/characterSchema";
 import mustache from "mustache";
 import { userMention } from "discord.js";
-import { type equipmentDictionary } from "../../../../data/translations";
 import getMaxStatus from "../helpers/getMaxStatus";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import removePocketbaseConstants from "../../../../utils/removePocketbaseConstants";
+import { BodyPart } from "./CharacterCombat";
+import { equipmentDictionary } from "../../../../data/translations";
 
 export class CharacterManager implements ICharacterManager {
   public constructor(public character: Character) {}
@@ -205,9 +206,11 @@ export class CharacterManager implements ICharacterManager {
     return item;
   }
 
+  async getEquipmentItem<T extends BodyPart>(slot: T): Promise<EquipmentItem | undefined>;
   async getEquipmentItem<T extends keyof typeof equipmentDictionary>(
     slot: T
-  ): Promise<EquipmentItem | EquipmentItem[] | SpellItem[] | undefined> {
+  ): Promise<EquipmentItem | EquipmentItem[] | SpellItem[] | undefined>;
+  async getEquipmentItem(slot: BodyPart | keyof typeof equipmentDictionary) {
     const body = await PocketBase.getEntityById<CharacterBody>({
       entityType: "body",
       id: this.character.body,

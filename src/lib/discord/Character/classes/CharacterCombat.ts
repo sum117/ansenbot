@@ -1,25 +1,44 @@
 import { CharacterManager } from "./CharacterManager";
-import { Character } from "../../../../types/Character";
+import { Character, Status } from "../../../../types/Character";
 import { EquipmentItem, SpellItem } from "../../../../types/Item";
 import random from "lodash.random";
-import { skillsDictionary } from "../../../../data/translations";
-import { spellSchema } from "../../../../schemas/characterSchema";
+import { equipmentDictionary, skillsDictionary } from "../../../../data/translations";
+import { equipmentSchema, spellSchema } from "../../../../schemas/characterSchema";
 import { BotError } from "../../../../utils/Errors";
 
-interface BaseTurn {
-  agentItem: SpellItem | EquipmentItem;
+export type BodyPart = keyof Omit<typeof equipmentDictionary, "spells" | "amulet" | "rings">;
+
+export interface BaseTurn {
+  isSupport: boolean;
 }
 
 export interface AttackTurn extends BaseTurn {
-  targetItem: EquipmentItem;
+  bodyPart: BodyPart;
   defenseOption: "dodge" | "block" | "flee" | "counter";
   isSupport: false;
 }
 
 export interface SupportTurn extends BaseTurn {
-  agentItem: SpellItem;
+  agentItemId?: string;
   isSupport: true;
 }
+
+export type Turn = AttackTurn | SupportTurn;
+
+export interface AttackTurnResult {
+  defenseSuccess: boolean;
+  damageDealt: number;
+  isKillingBlow: boolean;
+  status?: Status;
+}
+
+export interface SupportTurnResult {
+  statusesReplenished: Array<string>;
+  amount: number;
+  status: Status;
+}
+
+export type TurnResult = AttackTurnResult | SupportTurnResult;
 
 export default class CharacterCombat {
   public agent: Character;
@@ -34,9 +53,15 @@ export default class CharacterCombat {
     this.target = target.character;
   }
 
-  public async processTurn(turn: AttackTurn | SupportTurn) {
+  public async processTurn(turn: Turn): Promise<TurnResult> {
+    const agentItem = await this.getAgentItem();
+
+    const targetItem = turn.isSupport
+      ? undefined
+      : await this.targetManager.getEquipmentItem(turn.bodyPart);
+
     if (turn.isSupport) {
-      return this.applyReplenishEffect(turn.agentItem);
+      return this.applyReplenishEffect(spellSchema.parse(agentItem));
     }
     // Verifica se a ação de defesa teve sucesso
     const defenseSuccess = this.prepareDefense(turn.defenseOption);
@@ -45,24 +70,20 @@ export default class CharacterCombat {
       // Se a defesa teve sucesso, o dano será reduzido de acordo com a opção de defesa
       switch (turn.defenseOption) {
         case "dodge":
-          // Se esquivou com sucesso, o dano é reduzido em 25%
-          turn.agentItem.quotient *= 0.75;
+          // Se esquivou com sucesso, o dano é reduzido em 75%
+          agentItem.quotient *= 0.25;
           break;
         case "block":
           // Se bloqueou com sucesso, o dano é totalmente reduzido
-          turn.agentItem.quotient = 0;
+          agentItem.quotient = 0;
           break;
         case "flee":
           // Se fugiu com sucesso, o dano é totalmente reduzido e o turno é encerrado. Os jogadores devem encerrar o combate.
-          turn.agentItem.quotient = 0;
+          agentItem.quotient = 0;
           break;
         case "counter":
           // Se o contra-ataque teve sucesso, o dano é refletido de volta ao atacante
-          const counterDamage = await this.resolveFinalDamage(
-            turn.agentItem,
-            turn.targetItem,
-            true
-          );
+          const counterDamage = await this.resolveFinalDamage(targetItem, agentItem, true);
           return {
             defenseSuccess,
             damageDealt: counterDamage.damageDealt,
@@ -76,8 +97,8 @@ export default class CharacterCombat {
 
     // Calcula e aplica o dano final ao alvo
     const { status, damageDealt, isKillingBlow } = await this.resolveFinalDamage(
-      turn.agentItem,
-      turn.targetItem
+      agentItem,
+      targetItem
     );
 
     return {
@@ -88,13 +109,28 @@ export default class CharacterCombat {
     };
   }
 
-  public async applyReplenishEffect(item: SpellItem) {
+  public async applyReplenishEffect(item: SpellItem | undefined) {
+    let statusesReplenished: Array<string> = [];
+    if (!item) {
+      // gives 1/3 of the health to the target
+      const agentHealth = this.agent.expand.status.health;
+      const targetHealth = this.target.expand.status.health;
+      const finalHealQuotient = Math.floor(agentHealth / 3);
+      const finalHealth = targetHealth + finalHealQuotient;
+      return {
+        statusesReplenished: ["health"],
+        amount: finalHealQuotient,
+        status: await this.targetManager.setStatus({
+          ...this.target.expand.status,
+          health: finalHealth,
+        }),
+      };
+    }
     if (item.isBuff) {
       const finalBuffQuotient = this.calculateMultiplier(item);
       const statusesToReplenish = item.status;
       const statuses = this.target.expand.status;
 
-      let statusesReplenished: Array<string> = [];
       for (const status of statusesToReplenish) {
         statuses[status] = statuses[status] + finalBuffQuotient;
         statusesReplenished.push(status);
@@ -107,6 +143,40 @@ export default class CharacterCombat {
     } else {
       throw new BotError("A ação não é benéfica.");
     }
+  }
+
+  private async getAgentItem(spellId?: string): Promise<EquipmentItem | SpellItem> {
+    if (spellId) {
+      const spell = this.agentManager.character.expand.body.expand?.spells?.find(
+        (spell) => spell.id === spellId
+      );
+      if (!spell) {
+        throw new BotError("O feitiço não foi encontrado.");
+      }
+      return spell;
+    }
+
+    const leftArm = await this.agentManager.getEquipmentItem("leftArm");
+    const rightArm = await this.agentManager.getEquipmentItem("rightArm");
+
+    if (!leftArm && !rightArm) {
+      throw new BotError("O personagem não possui armas equipadas para atacar.");
+    }
+
+    if (leftArm && rightArm) {
+      const equipmentLeft = equipmentSchema.parse(leftArm);
+      const equipmentRight = equipmentSchema.parse(rightArm);
+      if (equipmentLeft.isWeapon && equipmentRight.isWeapon) {
+        // Se o personagem possui duas armas equipadas, os danos são somados e o dano final é dividido por 1.25
+        const finalDamage = (equipmentLeft.quotient + equipmentRight.quotient) / 1.25;
+        return {
+          ...equipmentLeft,
+          quotient: finalDamage,
+        };
+      }
+    }
+    const equipment = equipmentSchema.parse(leftArm || rightArm);
+    return equipment;
   }
 
   private prepareDefense(defenseOption: "dodge" | "block" | "flee" | "counter"): boolean {
@@ -165,19 +235,19 @@ export default class CharacterCombat {
   }
 
   private async resolveFinalDamage(
-    attacker: SpellItem | EquipmentItem,
-    defender: SpellItem | EquipmentItem,
+    attacker: SpellItem | EquipmentItem | undefined,
+    defender: EquipmentItem | SpellItem | undefined,
     isCounter = false
   ) {
-    const attackerFinalQuotient = this.calculateMultiplier(attacker);
-    const defenderFinalQuotient = this.calculateMultiplier(defender);
+    const attackerFinalQuotient = attacker ? this.calculateMultiplier(attacker) : 0;
+    const defenderFinalQuotient = defender ? this.calculateMultiplier(defender) : 0;
 
     const targetStatus = isCounter ? this.agent.expand.status : this.target.expand.status;
     const damageDealt = Math.max(attackerFinalQuotient - defenderFinalQuotient, 0);
 
     let isKillingBlow = false;
 
-    if (attacker.expand.item.type === "spell") {
+    if (attacker?.expand.item.type === "spell") {
       const spell = spellSchema.parse(attacker);
       const statusesToDamage = spell.status;
       for (const status of statusesToDamage) {
