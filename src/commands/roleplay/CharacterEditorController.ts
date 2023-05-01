@@ -23,8 +23,8 @@ import {
   characterChoiceFromAll,
   characterChoiceFromUser,
   userChoice,
-} from "../../lib/discord/UI/characterInteractionChoices";
-import editCharacterForm from "../../lib/discord/UI/forms/editCharacterForm";
+} from "../../lib/discord/UI/character/characterInteractionChoices";
+import characterEditForm from "../../lib/discord/UI/character/characterEditForm";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import PlayerFetcher from "../../lib/pocketbase/PlayerFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
@@ -134,7 +134,7 @@ export class CharacterEditorController {
       await interaction.deferReply({
         ephemeral: false,
       });
-      const form = await editCharacterForm(interaction);
+      const form = await characterEditForm(interaction);
       assert(form, new BotError("could not find form."));
       void replyOrFollowUp(interaction, form);
     } catch (error) {

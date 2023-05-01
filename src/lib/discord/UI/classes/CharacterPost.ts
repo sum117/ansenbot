@@ -68,6 +68,11 @@ export default class CharacterPost {
           .setLabel("Inventário")
           .setEmoji("🎒")
           .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId(`character:interaction:open:null:${this.character.playerId}`)
+          .setLabel("Interagir")
+          .setEmoji("🤝")
+          .setStyle(ButtonStyle.Primary),
       ]),
     ];
 

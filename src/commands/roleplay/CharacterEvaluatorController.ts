@@ -12,7 +12,7 @@ import config from "../../../config.json" assert { type: "json" };
 import { BotError } from "../../utils/Errors";
 import assert from "assert";
 import mustache from "mustache";
-import promptBox from "../../lib/discord/UI/promptBox";
+import promptBox from "../../lib/discord/UI/helpers/promptBox";
 import replyOrFollowUp from "../../utils/replyOrFollowUp";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import handleError from "../../utils/handleError";

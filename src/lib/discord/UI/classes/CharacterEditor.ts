@@ -18,8 +18,8 @@ import handleError from "../../../../utils/handleError";
 import replyOrFollowUp from "../../../../utils/replyOrFollowUp";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import PocketBase from "../../../pocketbase/PocketBase";
-import editCharacterForm from "../forms/editCharacterForm";
-import promptBox from "../promptBox";
+import characterEditForm from "../character/characterEditForm";
+import promptBox from "../helpers/promptBox";
 import getImageBlob from "../../../../utils/getImageBlob";
 
 export class CharacterEditor {
@@ -132,7 +132,7 @@ export class CharacterEditor {
 
   private async updateForm(label: string | undefined): Promise<void> {
     const formMessage = this.getFormMessage();
-    const newForm = await editCharacterForm(this.interaction as ModalSubmitInteraction);
+    const newForm = await characterEditForm(this.interaction as ModalSubmitInteraction);
     if (!newForm) {
       throw new BotError("Não foi possível encontrar o formulário.");
     }

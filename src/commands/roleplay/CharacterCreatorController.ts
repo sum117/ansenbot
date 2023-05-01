@@ -14,26 +14,27 @@ import {
 } from "discord.js";
 import { ButtonComponent, Discord, ModalComponent, SelectMenuComponent, Slash } from "discordx";
 
-import characterCreateForm from "../../lib/discord/UI/forms/characterCreateForm";
+import characterCreateForm from "../../lib/discord/UI/character/characterCreateForm";
 import {
   characterCreateModal,
   characterCreateModalOptional,
-} from "../../lib/discord/UI/forms/characterCreateModal";
-import characterCreateTrigger from "../../lib/discord/UI/forms/characterCreateTrigger";
+} from "../../lib/discord/UI/character/characterCreateModal";
+import characterCreateTrigger from "../../lib/discord/UI/character/characterCreateTrigger";
 import PocketBase from "../../lib/pocketbase/PocketBase";
 import type { Character, CreateUpdateCharacter, Faction, Race, Spec } from "../../types/Character";
 import { BotError, PocketBaseError } from "../../utils/Errors";
 import handleError from "../../utils/handleError";
-import imageKit from "../../utils/imageKit";
 import numberInRange from "../../utils/numberInRange";
 import { createUpdateCharacterSchema } from "../../schemas/characterSchema";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import { AnsenModal } from "../../lib/discord/UI/classes/AnsenModal";
-import characterCreateModalTrigger from "../../lib/discord/UI/forms/characterCreateModalTrigger";
+import characterCreateModalTrigger from "../../lib/discord/UI/character/characterCreateModalTrigger";
 import config from "../../../config.json" assert { type: "json" };
 import CharacterPost from "../../lib/discord/UI/classes/CharacterPost";
 import mustache from "mustache";
-import characterApprovalBtnRow from "../../lib/discord/UI/characterApprovalBtnRow";
+import characterApprovalBtnRow from "../../lib/discord/UI/character/characterApprovalBtnRow";
+import getCombinedImageUrl from "../../utils/getCombinedImageUrl";
+import getPocketbaseImageUrl from "../../utils/getPocketbaseImageUrl";
 
 @Discord()
 export class CharacterCreatorController {
@@ -277,7 +278,7 @@ export class CharacterCreatorController {
     );
 
     const [firstUrl, secondUrl] = this.getFormattedImageUrls(firstEntity, secondEntity);
-    const imageUrl = this.getCombinedImageUrl(firstUrl, secondUrl);
+    const imageUrl = getCombinedImageUrl(firstUrl, secondUrl);
 
     form.prompt.setEmbedImage(imageUrl);
   }
@@ -300,47 +301,7 @@ export class CharacterCreatorController {
     firstEntity: Race | Faction | Spec,
     secondEntity: Race | Faction | Spec
   ): [string, string] {
-    return [
-      PocketBase.getImageUrl({
-        record: firstEntity,
-        fileName: firstEntity.image,
-      }),
-      PocketBase.getImageUrl({
-        record: secondEntity,
-        fileName: secondEntity.image,
-      }),
-    ].map((url) =>
-      url.replace(process.env.POCKETBASE_URL + "api/files", "").replace(/\?.*/, "")
-    ) as [string, string];
-  }
-
-  private getCombinedImageUrl(firstUrl: string, secondUrl: string): string {
-    return imageKit.url({
-      path: "white-canvas_hc5p34kAV.png",
-      transformation: [
-        {
-          width: 768,
-          height: 512,
-          aspectRatio: "1:1",
-          cropMode: "pad",
-          background: "transparent",
-        },
-        {
-          overlayImage: secondUrl,
-          overlayWidth: "384",
-          overlayHeight: "512",
-          overlayX: "0",
-          overlayY: "0",
-        },
-        {
-          overlayImage: firstUrl,
-          overlayWidth: "384",
-          overlayHeight: "512",
-          overlayX: "384",
-          overlayY: "0",
-        },
-      ],
-    });
+    return [getPocketbaseImageUrl(firstEntity), getPocketbaseImageUrl(secondEntity)];
   }
 
   private async getCreatorInstance(

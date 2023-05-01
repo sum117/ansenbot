@@ -7,7 +7,7 @@ export default function getStatusBars(skills: Skills, status: Status) {
   const healthBar =
     "❤️ " +
     progressBar
-      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.health], status.health, 10, "🟥", "🟩")
+      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.health], status.health, 7, "🟥", "🟩")
       .shift();
 
   const staminaBar =
@@ -16,7 +16,7 @@ export default function getStatusBars(skills: Skills, status: Status) {
       .filledBar(
         getMaxStatus(skills)[STATUS_SKILLS_RELATION.stamina],
         status.stamina,
-        10,
+        7,
         "🟥",
         "🟨"
       )
@@ -25,19 +25,19 @@ export default function getStatusBars(skills: Skills, status: Status) {
   const voidBar =
     "💀  " +
     progressBar
-      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.void], status.void, 10, "🟥", "🟪")
+      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.void], status.void, 7, "🟥", "🟪")
       .shift();
 
   const hungerBar =
     "🍖 " +
     progressBar
-      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.hunger], status.hunger, 10, "🟥", "🟫")
+      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.hunger], status.hunger, 7, "🟥", "🟫")
       .shift();
 
   const sleepBar =
     "💤 " +
     progressBar
-      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.sleep], status.sleep, 10, "🟥", "🟦")
+      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.sleep], status.sleep, 7, "🟥", "🟦")
       .shift();
 
   const despairBar =
@@ -46,7 +46,7 @@ export default function getStatusBars(skills: Skills, status: Status) {
       .filledBar(
         getMaxStatus(skills)[STATUS_SKILLS_RELATION.despair],
         status.despair,
-        10,
+        7,
         "🟥",
         "⬛"
       )

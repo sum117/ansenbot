@@ -8,12 +8,12 @@ import {
 } from "discord.js";
 import split from "just-split";
 
-import type { Prompt, PromptWithController } from "../../../../types/MultiForm";
+import type { Prompt } from "../../../../types/MultiForm";
 import { BotError } from "../../../../utils/Errors";
 import { BaseMessageBuilder } from "../../Builders/BaseMessageBuilder";
 
 export default class MultiForm extends BaseMessageBuilder {
-  constructor(public readonly prompt: Prompt | PromptWithController) {
+  constructor(public readonly prompt: Prompt) {
     super();
     this.setEmbeds([
       new EmbedBuilder()
@@ -31,6 +31,11 @@ export default class MultiForm extends BaseMessageBuilder {
 
   private set embed(embed: EmbedBuilder) {
     this.setEmbeds([embed]);
+  }
+
+  public addEmbedFields(fields: Array<{ name: string; value: string; inline?: boolean }>) {
+    this.embed = this.embed.addFields(fields);
+    return this;
   }
 
   public getEmbedDescription(): string {
@@ -60,7 +65,7 @@ export default class MultiForm extends BaseMessageBuilder {
   }
 
   private getControlledFields(): ActionRowBuilder<ButtonBuilder> | undefined {
-    if ("controller" in this.prompt && this.prompt.controlFields) {
+    if (this.prompt.controller) {
       return new ActionRowBuilder<ButtonBuilder>().addComponents(this.prompt.controlFields);
     }
   }
@@ -80,9 +85,9 @@ export default class MultiForm extends BaseMessageBuilder {
       return new ActionRowBuilder<ButtonBuilder>().addComponents(...row);
     });
 
-    const selectMenuRows = split(selectMenus, 5).map((row) => {
+    const selectMenuRows = selectMenus.map((row) => {
       return new ActionRowBuilder<StringSelectMenuBuilder | UserSelectMenuBuilder>().addComponents(
-        ...row
+        row
       );
     });
     const controlledFields = this.getControlledFields();

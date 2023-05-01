@@ -143,6 +143,7 @@ const spellSchema = baseSchema.extend({
   item: z.string(),
   quantity: z.number(),
   isEquipped: z.boolean(),
+  isBuff: z.boolean(),
   slot: z.literal("spells"),
   expand: z.object(
     {
