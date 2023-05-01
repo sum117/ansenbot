@@ -16,7 +16,7 @@ const INVENTORY_REGEX =
   /character:(inventory|item):(browse|use|discard|open|equip|info):(\w+):\d+(:\d+:(previous|next|null))?/;
 
 @Discord()
-export class CharacterInventoryManager {
+export class CharacterInventoryManagerController {
   private trackedInteraction = new TrackedInteraction();
 
   @ButtonComponent({ id: INVENTORY_REGEX })
@@ -64,7 +64,7 @@ export class CharacterInventoryManager {
       }
 
       const PAGE_SIZE = 5;
-
+      // TODO: refactor this into a function "makePagination" and include getPageItems from this class to it.
       const totalPages = Math.ceil(itemsArray.length / PAGE_SIZE);
       const currentPage = page ? parseInt(page) : 1;
       const previousPage = Math.max(0, currentPage - 1);

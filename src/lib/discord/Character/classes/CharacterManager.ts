@@ -9,7 +9,7 @@ import {
 } from "../../../../types/Character";
 import PocketBase from "../../../pocketbase/PocketBase";
 import { BotError } from "../../../../utils/Errors";
-import { COLLECTIONS } from "../../../../data/constants";
+import { COLLECTIONS, STATUS_SKILLS_RELATION } from "../../../../data/constants";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
 import { Properties } from "../../../../types/Utils";
@@ -24,6 +24,9 @@ import {
 import mustache from "mustache";
 import { userMention } from "discord.js";
 import { type equipmentDictionary } from "../../../../data/translations";
+import getMaxStatus from "../helpers/getMaxStatus";
+import getSafeEntries from "../../../../utils/getSafeEntries";
+import removePocketbaseConstants from "../../../../utils/removePocketbaseConstants";
 
 export class CharacterManager implements ICharacterManager {
   public constructor(public character: Character) {}
@@ -145,6 +148,19 @@ export class CharacterManager implements ICharacterManager {
   }
 
   async setStatus(status: Status): Promise<Status> {
+    const maxStatuses = getMaxStatus(this.character.expand.skills);
+    for (const [key, value] of getSafeEntries(removePocketbaseConstants(status))) {
+      if (typeof value !== "number" || key === "immune" || key === "effects" || key === "spirit") {
+        continue;
+      }
+
+      const skill = STATUS_SKILLS_RELATION[key];
+      const maxStatus = maxStatuses[skill];
+
+      if (value > maxStatus) {
+        status[key] = maxStatus;
+      }
+    }
     const updatedStatus = PocketBase.updateEntity<Status>({
       entityType: "status",
       entityData: status,
