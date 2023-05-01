@@ -319,7 +319,8 @@ export class CharacterInteractionController {
 
       let message: MultiForm | string = "";
       if (kind === "flee") {
-        message = await this.resolveTurn(agent, target, kind);
+        // When the agent tries to flee, the target is the agent itself
+        message = await this.resolveTurn(target, agent, kind);
       } else if (kind === "pass") {
         message = `${agent.character.name} passou o turno!`;
       } else {

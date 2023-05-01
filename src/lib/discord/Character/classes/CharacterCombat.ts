@@ -55,7 +55,6 @@ export default class CharacterCombat {
 
   public async processTurn(turn: Turn): Promise<TurnResult> {
     const agentItem = await this.getAgentItem();
-
     const targetItem = turn.isSupport
       ? undefined
       : await this.targetManager.getEquipmentItem(turn.bodyPart);
