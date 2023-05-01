@@ -11,11 +11,11 @@ import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On } from "discordx";
 import { Channel } from "../types/Channel";
 import config from "../../config.json" assert { type: "json" };
-import { channelPlaceHolderEmbed } from "../lib/discord/UI/channelPlaceholderEmbed";
+import { channelPlaceHolderEmbed } from "../lib/discord/UI/channel/channelPlaceholderEmbed";
 import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
 import handleError from "../utils/handleError";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
-import channelPlaceholderDismissButton from "../lib/discord/UI/channelPlaceholderDismissButton";
+import channelPlaceholderDismissButton from "../lib/discord/UI/channel/channelPlaceholderDismissButton";
 
 @Discord()
 export class OnRoleplayChannelActivity {

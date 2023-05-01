@@ -123,3 +123,8 @@ export const ITEM_ACTIONS_CUSTOM_IDS = {
 } as const;
 
 export const STATUS_GAIN_PER_LEVEL = 10 as const;
+
+export const CHARACTER_INTERACTION_ID_REGEX =
+  /character:interaction:(?<action>\w+):(?<agentId>(\d+|null)):(?<targetId>\d+)/;
+export const BATTLE_INTERACTION_ID_REGEX =
+  /battle:(?<action>\w+):(?<kind>\w+):(?<agentId>\d+):(?<targetId>\d+)/;

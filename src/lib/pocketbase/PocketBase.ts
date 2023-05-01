@@ -15,11 +15,11 @@ import { BotError } from "../../utils/Errors";
 import channelSchema from "../../schemas/channelSchema";
 import kebabCase from "lodash.kebabcase";
 import { ChannelType } from "discord.js";
-import { channelPlaceHolderEmbed } from "../discord/UI/channelPlaceholderEmbed";
+import { channelPlaceHolderEmbed } from "../discord/UI/channel/channelPlaceholderEmbed";
 import { Channel } from "../../types/Channel";
 import { bot } from "../../main";
 import config from "../../../config.json" assert { type: "json" };
-import channelPlaceholderDismissButton from "../discord/UI/channelPlaceholderDismissButton";
+import channelPlaceholderDismissButton from "../discord/UI/channel/channelPlaceholderDismissButton";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(

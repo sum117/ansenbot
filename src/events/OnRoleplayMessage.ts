@@ -17,11 +17,10 @@ import { BotError } from "../utils/Errors";
 import handleError from "../utils/handleError";
 import { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
 import mustache from "mustache";
-import { Character, CharacterBody, Effect, Skills, Status } from "../types/Character";
+import { Character, CharacterBody, Skills, Status } from "../types/Character";
 import { STATUS_SKILLS_RELATION } from "../data/constants";
 import getSafeEntries from "../utils/getSafeEntries";
 import { EffectFetcher } from "../lib/pocketbase/EffectFetcher";
-import { statesDictionary } from "../data/translations";
 import getMaxStatus from "../lib/discord/Character/helpers/getMaxStatus";
 import isStatus from "../lib/discord/Character/helpers/isStatus";
 import getStatusBars from "../lib/discord/UI/helpers/getStatusBars";
@@ -29,6 +28,7 @@ import PocketBase from "../lib/pocketbase/PocketBase";
 import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
 import getRoleplayDataFromUserId from "../lib/discord/Character/helpers/getRoleplayDataFromUserId";
 import makeEquipmentStringArray from "../lib/discord/UI/helpers/makeEquipmentStringArray";
+import getCharEffects from "../lib/discord/UI/helpers/getCharEffects";
 
 @Discord()
 export class OnRoleplayMessage {
@@ -39,7 +39,7 @@ export class OnRoleplayMessage {
         return;
       }
 
-      const roleplayData = await getRoleplayDataFromUserId(message).catch(() => null);
+      const roleplayData = await getRoleplayDataFromUserId(message.author.id).catch(() => null);
 
       if (!roleplayData) {
         return;
@@ -88,7 +88,7 @@ export class OnRoleplayMessage {
   async statusButton(interaction: ButtonInteraction): Promise<void> {
     try {
       const { currentCharacter, characterManager, view, status, skills } =
-        await getRoleplayDataFromUserId(interaction);
+        await getRoleplayDataFromUserId(interaction.customId.split(":")[4]);
       const characterPost = new CharacterPost(currentCharacter);
       const equipment = await characterManager.getEquipment();
 
@@ -123,12 +123,7 @@ export class OnRoleplayMessage {
 
   private async addEffectsToEmbed(status: Status, characterPost: CharacterPost): Promise<void> {
     if (status.effects.length) {
-      const effects: Effect[] = await Promise.all(
-        status.effects.map((effect) => EffectFetcher.getEffectById(effect))
-      );
-      const stateArray = effects.map(
-        (effect) => statesDictionary[effect.name as keyof typeof statesDictionary]
-      );
+      const stateArray = await getCharEffects(status);
       characterPost.embed.addFields({
         name: "Efeitos",
         value: stateArray.join("\n"),

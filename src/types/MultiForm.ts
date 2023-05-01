@@ -8,7 +8,7 @@ import type z from "zod";
 
 import type formSchema from "../schemas/formSchema";
 
-export interface Prompt {
+export interface BasePrompt {
   description: string;
   embedColor?: ColorResolvable;
   fields: (StringSelectMenuBuilder | UserSelectMenuBuilder | ButtonBuilder)[];
@@ -18,7 +18,11 @@ export interface Prompt {
 
 export type Form = z.infer<typeof formSchema>;
 
-export interface PromptWithController extends Prompt {
+export interface PromptWithoutController extends BasePrompt {
+  controller?: false;
+}
+
+export interface PromptWithController extends BasePrompt {
   /**
    * If true, the last row of buttons will contain a "continue", "cancel" and "back" button.
    */
@@ -28,3 +32,5 @@ export interface PromptWithController extends Prompt {
    */
   controlFields: ButtonBuilder[];
 }
+
+export type Prompt = PromptWithoutController | PromptWithController;
