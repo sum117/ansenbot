@@ -14,7 +14,7 @@ import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import PocketBase from "../../../pocketbase/PocketBase";
 import MultiForm from "../classes/MultiForm";
 
-const editCharacterForm = async (
+const characterEditForm = async (
   interaction: ChatInputCommandInteraction | ModalSubmitInteraction
 ): Promise<MultiForm | void> => {
   let charId: string | null;
@@ -91,4 +91,4 @@ const editCharacterForm = async (
     ],
   });
 };
-export default editCharacterForm;
+export default characterEditForm;

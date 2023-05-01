@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
-import { Character } from "../../../types/Character";
-import { ITEM_ACTIONS, ITEM_ACTIONS_CUSTOM_IDS, ITEM_TYPES } from "../../../data/constants";
+import { Character } from "../../../../types/Character";
+import { ITEM_ACTIONS, ITEM_ACTIONS_CUSTOM_IDS, ITEM_TYPES } from "../../../../data/constants";
 
 export interface CharacterInventoryMessageOptions {
   character: Character;

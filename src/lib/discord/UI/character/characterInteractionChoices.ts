@@ -1,11 +1,11 @@
 import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import type { SlashOptionOptions } from "discordx";
 
-import MemoryFetcher from "../../pocketbase/MemoryFetcher";
+import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
 import {
   characterAutoCompleteFromAll,
   characterAutoCompleteFromPlayer,
-} from "../Character/helpers/characterAutoComplete";
+} from "../../Character/helpers/characterAutoComplete";
 
 const characterChoiceFromUser: SlashOptionOptions<
   "personagem",
