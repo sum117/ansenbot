@@ -21,15 +21,16 @@ export default class TrackedInteraction {
       this.cache.set(interaction.user.id, interaction);
       trackedInteraction = interaction;
     }
-    this.shouldAbortInteraction(trackedInteraction, interaction);
+    this.shouldRecreate(trackedInteraction, interaction);
     return trackedInteraction;
   }
 
-  private shouldAbortInteraction(
+  private shouldRecreate(
     trackedInteraction: ButtonInteraction,
     interaction: ButtonInteraction
   ): boolean {
-    if (trackedInteraction?.id !== interaction.id) {
+    const isEqualInteraction = trackedInteraction?.id !== interaction.id;
+    if (isEqualInteraction) {
       void interaction.deferReply();
       void interaction.deleteReply();
       return true;

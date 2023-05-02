@@ -24,6 +24,15 @@ export class CharacterInventoryManagerController {
     try {
       let { itemId, page, kind, playerId } = this.getInventoryCredentialsFromCustomId(interaction);
 
+      if (this.inventoryAlreadyOpen(interaction, playerId)) {
+        return interaction
+          .reply({
+            content: "❌ Você já possui um inventário aberto.",
+            ephemeral: true,
+          })
+          .catch(() => null);
+      }
+
       let useItemAction = "";
       switch (kind) {
         case "use": {
@@ -122,6 +131,17 @@ export class CharacterInventoryManagerController {
     return feedback;
   }
 
+  private inventoryAlreadyOpen(interaction: ButtonInteraction, playerId: string) {
+    const isDifferentUser = interaction.user.id !== playerId;
+    const hasCachedInteraction = this.trackedInteraction.cache.get(interaction.user.id);
+    const shouldAbort =
+      isDifferentUser && hasCachedInteraction && !interaction.customId.includes("open");
+    if (shouldAbort) {
+      return true;
+    }
+    return false;
+  }
+
   private async equipItemInteraction(interaction: ButtonInteraction) {
     const { itemId, playerId } = this.getInventoryCredentialsFromCustomId(interaction);
     if (interaction.user.id !== playerId) {
@@ -129,10 +149,11 @@ export class CharacterInventoryManagerController {
     }
     const { characterManager } = await getRoleplayDataFromUserId(playerId);
 
+    const data = await characterManager.getInventoryItem(itemId);
     const item = equipmentSchema
       .or(spellSchema)
 
-      .parse(await characterManager.getInventoryItem(itemId));
+      .parse(data);
 
     const view = {
       author: userMention(characterManager.character.playerId),

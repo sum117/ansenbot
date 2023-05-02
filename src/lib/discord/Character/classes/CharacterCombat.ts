@@ -1,44 +1,25 @@
 import { CharacterManager } from "./CharacterManager";
-import { Character, Status } from "../../../../types/Character";
+import { Character } from "../../../../types/Character";
 import { EquipmentItem, SpellItem } from "../../../../types/Item";
 import random from "lodash.random";
-import { equipmentDictionary, skillsDictionary } from "../../../../data/translations";
+import { skillsDictionary, statusDictionary } from "../../../../data/translations";
 import { equipmentSchema, spellSchema } from "../../../../schemas/characterSchema";
 import { BotError } from "../../../../utils/Errors";
-
-export type BodyPart = keyof Omit<typeof equipmentDictionary, "spells" | "amulet" | "rings">;
-
-export interface BaseTurn {
-  isSupport: boolean;
-}
-
-export interface AttackTurn extends BaseTurn {
-  bodyPart: BodyPart;
-  defenseOption: "dodge" | "block" | "flee" | "counter";
-  isSupport: false;
-}
-
-export interface SupportTurn extends BaseTurn {
-  agentItemId?: string;
-  isSupport: true;
-}
-
-export type Turn = AttackTurn | SupportTurn;
-
-export interface AttackTurnResult {
-  defenseSuccess: boolean;
-  damageDealt: number;
-  isKillingBlow: boolean;
-  status?: Status;
-}
-
-export interface SupportTurnResult {
-  statusesReplenished: Array<string>;
-  amount: number;
-  status: Status;
-}
-
-export type TurnResult = AttackTurnResult | SupportTurnResult;
+import {
+  AttackTurnResult,
+  ButtonAttackKind,
+  ButtonDefenseKind,
+  ButtonKind,
+  ButtonSupportKind,
+  DuelTurn,
+  SelectMenuKind,
+  SelectMenuSupportKind,
+  SupportTurn,
+  SupportTurnResult,
+  Turn,
+  TurnResult,
+} from "../../../../types/Combat";
+import { ItemFetcher } from "../../../pocketbase/ItemFetcher";
 
 export default class CharacterCombat {
   public agent: Character;
@@ -53,21 +34,65 @@ export default class CharacterCombat {
     this.target = target.character;
   }
 
-  public async processTurn(turn: Turn): Promise<TurnResult> {
-    const agentItem = await this.getAgentItem();
-    const targetItem = turn.isSupport
-      ? undefined
-      : await this.targetManager.getEquipmentItem(turn.bodyPart);
+  public static isSupportTurn(turn: Turn): turn is SupportTurn {
+    return turn.action === "support";
+  }
 
-    if (turn.isSupport) {
-      return this.applyReplenishEffect(spellSchema.parse(agentItem));
+  public static isSelectSupportKind(kind: SelectMenuKind): kind is SelectMenuSupportKind {
+    return kind === "spell";
+  }
+
+  public static isDuelTurn(turn: Turn): turn is DuelTurn {
+    return turn.action === "attack" || turn.action === "defense";
+  }
+
+  public static isDefenseButtonKind(kind: ButtonKind | SelectMenuKind): kind is ButtonDefenseKind {
+    return kind === "flee" || kind === "dodge" || kind === "counter" || kind === "block";
+  }
+
+  public static isAttackButtonKind(kind: ButtonKind | SelectMenuKind): kind is ButtonAttackKind {
+    return kind === "pass" || kind === "flee" || kind == "commit";
+  }
+
+  public static isSupportButtonKind(kind: ButtonKind | SelectMenuKind): kind is ButtonSupportKind {
+    return kind === "pass" || kind === "sacrifice";
+  }
+
+  public static isButtonKind(kind: ButtonKind | SelectMenuKind): kind is ButtonKind {
+    return (
+      CharacterCombat.isDefenseButtonKind(kind) ||
+      CharacterCombat.isAttackButtonKind(kind) ||
+      CharacterCombat.isSupportButtonKind(kind)
+    );
+  }
+
+  public async processTurn(turn: DuelTurn): Promise<AttackTurnResult>;
+  public async processTurn(turn: SupportTurn): Promise<SupportTurnResult>;
+
+  public async processTurn(turn: Turn): Promise<TurnResult> {
+    const { item: agentItem, itemName } = await this.getAgentItem(turn.spellId);
+    const targetItem = CharacterCombat.isDuelTurn(turn)
+      ? await this.targetManager.getEquipmentItem(turn.bodyPart ?? "chest")
+      : undefined;
+
+    if (CharacterCombat.isSupportTurn(turn)) {
+      let spell: SpellItem | undefined;
+      if (turn.spellId) {
+        spell = await ItemFetcher.getSpell(turn.spellId);
+      }
+      return this.resolveSupport(spell);
     }
+
+    if (!CharacterCombat.isDefenseButtonKind(turn.kind)) {
+      throw new BotError("Opção de defesa inválida.");
+    }
+
     // Verifica se a ação de defesa teve sucesso
-    const defenseSuccess = this.prepareDefense(turn.defenseOption);
+    const defenseSuccess = this.prepareDefense(turn.kind);
 
     if (defenseSuccess) {
       // Se a defesa teve sucesso, o dano será reduzido de acordo com a opção de defesa
-      switch (turn.defenseOption) {
+      switch (turn.kind) {
         case "dodge":
           // Se esquivou com sucesso, o dano é reduzido em 75%
           agentItem.quotient *= 0.25;
@@ -82,7 +107,7 @@ export default class CharacterCombat {
           break;
         case "counter":
           // Se o contra-ataque teve sucesso, o dano é refletido de volta ao atacante
-          const counterDamage = await this.resolveFinalDamage(targetItem, agentItem, true);
+          const counterDamage = await this.resolveDuel(targetItem, agentItem, true);
           return {
             defenseSuccess,
             damageDealt: counterDamage.damageDealt,
@@ -95,30 +120,29 @@ export default class CharacterCombat {
     }
 
     // Calcula e aplica o dano final ao alvo
-    const { status, damageDealt, isKillingBlow } = await this.resolveFinalDamage(
-      agentItem,
-      targetItem
-    );
+    const { status, damageDealt, isKillingBlow } = await this.resolveDuel(agentItem, targetItem);
 
     return {
       defenseSuccess,
       damageDealt,
       isKillingBlow,
       status,
+      weaponUsed: itemName,
     };
   }
 
-  public async applyReplenishEffect(item: SpellItem | undefined) {
-    let statusesReplenished: Array<string> = [];
+  public async resolveSupport(item: SpellItem | undefined) {
+    let statusesReplenished: Array<keyof typeof statusDictionary> = [];
     if (!item) {
       // gives 1/3 of the health to the target
       const agentHealth = this.agent.expand.status.health;
       const targetHealth = this.target.expand.status.health;
       const finalHealQuotient = Math.floor(agentHealth / 3);
       const finalHealth = targetHealth + finalHealQuotient;
+      statusesReplenished.push("health");
       return {
-        statusesReplenished: ["health"],
-        amount: finalHealQuotient,
+        statusesReplenished,
+        amount: Math.ceil(finalHealQuotient),
         status: await this.targetManager.setStatus({
           ...this.target.expand.status,
           health: finalHealth,
@@ -136,7 +160,7 @@ export default class CharacterCombat {
       }
       return {
         statusesReplenished,
-        amount: finalBuffQuotient,
+        amount: Math.ceil(finalBuffQuotient),
         status: await this.targetManager.setStatus(statuses),
       };
     } else {
@@ -144,41 +168,7 @@ export default class CharacterCombat {
     }
   }
 
-  private async getAgentItem(spellId?: string): Promise<EquipmentItem | SpellItem> {
-    if (spellId) {
-      const spell = this.agentManager.character.expand.body.expand?.spells?.find(
-        (spell) => spell.id === spellId
-      );
-      if (!spell) {
-        throw new BotError("O feitiço não foi encontrado.");
-      }
-      return spell;
-    }
-
-    const leftArm = await this.agentManager.getEquipmentItem("leftArm");
-    const rightArm = await this.agentManager.getEquipmentItem("rightArm");
-
-    if (!leftArm && !rightArm) {
-      throw new BotError("O personagem não possui armas equipadas para atacar.");
-    }
-
-    if (leftArm && rightArm) {
-      const equipmentLeft = equipmentSchema.parse(leftArm);
-      const equipmentRight = equipmentSchema.parse(rightArm);
-      if (equipmentLeft.isWeapon && equipmentRight.isWeapon) {
-        // Se o personagem possui duas armas equipadas, os danos são somados e o dano final é dividido por 1.25
-        const finalDamage = (equipmentLeft.quotient + equipmentRight.quotient) / 1.25;
-        return {
-          ...equipmentLeft,
-          quotient: finalDamage,
-        };
-      }
-    }
-    const equipment = equipmentSchema.parse(leftArm || rightArm);
-    return equipment;
-  }
-
-  private prepareDefense(defenseOption: "dodge" | "block" | "flee" | "counter"): boolean {
+  private prepareDefense(defenseOption: ButtonDefenseKind): boolean {
     const {
       expand: { status: targetStatus, skills: targetSkills },
     } = this.target;
@@ -189,40 +179,64 @@ export default class CharacterCombat {
     agentStatus.stamina = Math.max(agentStatus.stamina, 1);
     const dodgeChance = (targetStatus.stamina / agentStatus.stamina) * targetSkills.dexterity;
     const blockChance = (targetStatus.stamina / agentStatus.stamina) * targetSkills.fortitude;
-    const fleeChance =
-      (targetStatus.stamina / agentStatus.stamina) * (targetSkills.stealth - agentSkills.discovery);
+    const fleeQuotient = (targetStatus.stamina / agentStatus.stamina) * targetSkills.stealth;
+    const discoveryQuotient = (targetStatus.stamina / agentStatus.stamina) * agentSkills.discovery;
+    const fleeChance = (fleeQuotient / (fleeQuotient + discoveryQuotient)) * 100;
     const counterChance =
       ((targetStatus.stamina / agentStatus.stamina) *
         (targetSkills.dexterity + targetSkills.strength)) /
       2;
 
+    const dodgeRandom = random(0, 100, true);
+    const blockRandom = random(0, 75, true);
+    const fleeRandom = random(0, 100, true);
+    const counterRandom = random(0, 100, true);
+
+    console.log(
+      "dodgeChance",
+      dodgeChance,
+      "dodgeRandom",
+      dodgeRandom,
+      "blockChance",
+      blockChance,
+      "blockRandom",
+      blockRandom,
+      "fleeChance",
+      fleeChance,
+      "fleeRandom",
+      fleeRandom,
+      "counterChance",
+      counterChance,
+      "counterRandom",
+      counterRandom
+    );
     let success = false;
 
     switch (defenseOption) {
       case "dodge": {
-        success = random(0, 100, true) < dodgeChance;
-        targetStatus.stamina -= success ? targetStatus.stamina * 0.25 : targetStatus.stamina * 0.5;
+        success = dodgeRandom < dodgeChance;
+        targetStatus.stamina -= success ? targetStatus.stamina * 0.05 : targetStatus.stamina * 0.1;
         break;
       }
       case "block": {
         if (!this.target.expand.body.expand?.leftArm.isWeapon) {
-          success = random(0, 75, true) < blockChance;
+          success = blockRandom < blockChance;
           targetStatus.stamina -= success
-            ? targetStatus.stamina * 0.25
-            : targetStatus.stamina * 0.5;
+            ? targetStatus.stamina * 0.1
+            : targetStatus.stamina * 0.15;
         } else {
           throw new BotError("O personagem não está utilizando um escudo.");
         }
         break;
       }
       case "flee": {
-        success = random(0, 100, true) < fleeChance;
-        targetStatus.stamina -= success ? targetStatus.stamina * 0.25 : targetStatus.stamina * 0.5;
+        success = fleeRandom < fleeChance;
+        targetStatus.stamina -= success ? targetStatus.stamina * 0.15 : targetStatus.stamina * 0.25;
         break;
       }
       case "counter": {
-        success = random(0, 100, true) < counterChance;
-        targetStatus.stamina -= success ? targetStatus.stamina * 0.3 : targetStatus.stamina * 0.6;
+        success = counterRandom < counterChance;
+        targetStatus.stamina -= success ? targetStatus.stamina * 0.1 : targetStatus.stamina * 0.2;
         break;
       }
       default: {
@@ -233,7 +247,7 @@ export default class CharacterCombat {
     return success;
   }
 
-  private async resolveFinalDamage(
+  private async resolveDuel(
     attacker: SpellItem | EquipmentItem | undefined,
     defender: EquipmentItem | SpellItem | undefined,
     isCounter = false
@@ -242,7 +256,10 @@ export default class CharacterCombat {
     const defenderFinalQuotient = defender ? this.calculateMultiplier(defender) : 0;
 
     const targetStatus = isCounter ? this.agent.expand.status : this.target.expand.status;
-    const damageDealt = Math.max(attackerFinalQuotient - defenderFinalQuotient, 0);
+    const damageDealt = Math.ceil(Math.max(attackerFinalQuotient - defenderFinalQuotient, 0));
+    console.log("attackerFinalQuotient", attackerFinalQuotient);
+    console.log("defenderFinalQuotient", defenderFinalQuotient);
+    console.log("damage dealt", damageDealt);
 
     let isKillingBlow = false;
 
@@ -272,6 +289,56 @@ export default class CharacterCombat {
     };
   }
 
+  private async getAgentItem(
+    spellId?: string
+  ): Promise<{ item: EquipmentItem | SpellItem; itemName: string }> {
+    if (spellId) {
+      const spell = this.agentManager.character.expand.body.expand?.spells?.find(
+        (spell) => spell.id === spellId
+      );
+      if (!spell) {
+        throw new BotError("O feitiço não foi encontrado.");
+      }
+      return {
+        item: spellSchema.parse(spell),
+        itemName: spell.expand.item.name,
+      };
+    }
+
+    const leftArm = await this.agentManager.getEquipmentItem("leftArm");
+    const rightArm = await this.agentManager.getEquipmentItem("rightArm");
+
+    if (!leftArm && !rightArm) {
+      throw new BotError("O personagem não possui armas equipadas para atacar.");
+    }
+
+    if (leftArm && rightArm) {
+      const equipmentLeft = equipmentSchema.parse(leftArm);
+      const equipmentRight = equipmentSchema.parse(rightArm);
+      if (equipmentLeft.isWeapon && equipmentRight.isWeapon) {
+        // Se o personagem possui duas armas equipadas, os danos são somados e o dano final é dividido por 1.25
+        const finalDamage = (equipmentLeft.quotient + equipmentRight.quotient) / 1.25;
+        return {
+          item: {
+            ...equipmentLeft,
+            quotient: finalDamage,
+          },
+          itemName: `${equipmentLeft.expand.item.name} e ${equipmentRight.expand.item.name}`,
+        };
+      }
+    }
+    const equipment = equipmentSchema.parse(leftArm || rightArm);
+    return {
+      item: equipment,
+      itemName: equipment.expand.item.name,
+    };
+  }
+
+  private getSkillLevel(type: keyof typeof skillsDictionary) {
+    const skill = this.agent.expand.skills[type];
+    return skill;
+  }
+
   private calculateMultiplier({ quotient, type, multiplier }: SpellItem | EquipmentItem) {
     const rngFactor = 0.2; // 20% de RNG
     const baseFactor = 1 - rngFactor; // 80% de base
@@ -279,8 +346,8 @@ export default class CharacterCombat {
     const skillLevel = this.getSkillLevel(type);
 
     // Ajusta o multiplicador com base no nível da habilidade
-    const adjustedMultiplier = (multiplier * skillLevel) / 99;
-
+    const adjustedMultiplier = baseFactor + (multiplier * skillLevel) / 99;
+    console.log("adjustedMultiplier", adjustedMultiplier);
     // Calcula a parte base do quociente final (80% do total)
     const baseValue = quotient * adjustedMultiplier * baseFactor;
 
@@ -288,12 +355,7 @@ export default class CharacterCombat {
     const rngValue = quotient * adjustedMultiplier * rngFactor * random(0.5, 1.5, true);
 
     const finalQuotient = baseValue + rngValue;
-
+    console.log("baseValue", baseValue, "rngValue", rngValue, "finalQuotient", finalQuotient);
     return finalQuotient;
-  }
-
-  private getSkillLevel(type: keyof typeof skillsDictionary) {
-    const skill = this.agent.expand.skills[type];
-    return skill;
   }
 }

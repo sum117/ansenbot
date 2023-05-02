@@ -18,7 +18,7 @@ import { bodySchema, effectSchema, inventory } from "../schemas/characterSchema"
 import { Properties } from "./Utils";
 import { EquipmentItem, Item, SpellItem } from "./Item";
 import { equipmentDictionary } from "../data/translations";
-import { BodyPart } from "../lib/discord/Character/classes/CharacterCombat";
+import { BodyPart } from "./Combat";
 
 export type CreateUpdateCharacter = z.infer<typeof createUpdateCharacterSchema>;
 export type Character = z.infer<typeof fullCharacterSchema>;

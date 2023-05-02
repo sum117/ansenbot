@@ -26,8 +26,8 @@ import { userMention } from "discord.js";
 import getMaxStatus from "../helpers/getMaxStatus";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import removePocketbaseConstants from "../../../../utils/removePocketbaseConstants";
-import { BodyPart } from "./CharacterCombat";
 import { equipmentDictionary } from "../../../../data/translations";
+import { BodyPart } from "../../../../types/Combat";
 
 export class CharacterManager implements ICharacterManager {
   public constructor(public character: Character) {}
@@ -150,6 +150,7 @@ export class CharacterManager implements ICharacterManager {
 
   async setStatus(status: Status): Promise<Status> {
     const maxStatuses = getMaxStatus(this.character.expand.skills);
+    console.log(maxStatuses);
     for (const [key, value] of getSafeEntries(removePocketbaseConstants(status))) {
       if (typeof value !== "number" || key === "immune" || key === "effects" || key === "spirit") {
         continue;
@@ -158,9 +159,11 @@ export class CharacterManager implements ICharacterManager {
       const skill = STATUS_SKILLS_RELATION[key];
       const maxStatus = maxStatuses[skill];
 
+      console.log("maxStatus", maxStatus, "value", value);
       if (value > maxStatus) {
         status[key] = maxStatus;
       }
+      console.log("status", status);
     }
     const updatedStatus = PocketBase.updateEntity<Status>({
       entityType: "status",
