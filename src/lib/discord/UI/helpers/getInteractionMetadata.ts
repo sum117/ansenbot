@@ -1,3 +1,4 @@
+import type { EmbedField } from "discord.js";
 import mustache from "mustache";
 
 import type { Character } from "../../../../types/Character";
@@ -6,7 +7,16 @@ import getPocketbaseImageUrl from "../../../../utils/getPocketbaseImageUrl";
 import getCharEffects from "./getCharEffects";
 import getStatusBars from "./getStatusBars";
 
-export default async function getInteractionMetadata(agent: Character, target: Character) {
+export interface InteractionMetadataResult {
+  render: (template: string) => string;
+  imageUrl: string;
+  infoFields: Array<EmbedField>;
+}
+
+export default async function getInteractionMetadata(
+  agent: Character,
+  target: Character
+): Promise<InteractionMetadataResult> {
   const view = {
     agent: agent.name,
     target: target.name,

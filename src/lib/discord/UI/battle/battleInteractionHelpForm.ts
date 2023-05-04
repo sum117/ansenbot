@@ -9,7 +9,10 @@ import type { Character } from "../../../../types/Character";
 import MultiForm from "../classes/MultiForm";
 import getInteractionMetadata from "../helpers/getInteractionMetadata";
 
-export default async function battleInteractionHelpForm(helper: Character, target: Character) {
+export default async function battleInteractionHelpForm(
+  helper: Character,
+  target: Character
+): Promise<MultiForm> {
   const { render, imageUrl, infoFields } = await getInteractionMetadata(helper, target);
   const fields: Array<StringSelectMenuBuilder | ButtonBuilder> = [];
 

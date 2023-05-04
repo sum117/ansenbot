@@ -11,7 +11,10 @@ import getSafeEntries from "../../../../utils/getSafeEntries";
 import MultiForm from "../classes/MultiForm";
 import getInteractionMetadata from "../helpers/getInteractionMetadata";
 
-export default async function battleInteractionAttackForm(agent: Character, target: Character) {
+export default async function battleInteractionAttackForm(
+  agent: Character,
+  target: Character
+): Promise<MultiForm> {
   const { render, imageUrl, infoFields } = await getInteractionMetadata(agent, target);
 
   const blackListKeys: Array<keyof typeof equipmentDictionary> = ["amulet", "rings", "spells"];

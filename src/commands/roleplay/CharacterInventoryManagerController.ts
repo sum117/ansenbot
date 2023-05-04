@@ -1,4 +1,4 @@
-import type { ButtonInteraction} from "discord.js";
+import type { ButtonInteraction } from "discord.js";
 import { userMention } from "discord.js";
 import { ButtonComponent, Discord } from "discordx";
 import mustache from "mustache";
@@ -22,9 +22,10 @@ export class CharacterInventoryManagerController {
   private trackedInteraction = new TrackedInteraction();
 
   @ButtonComponent({ id: INVENTORY_REGEX })
-  public async inventoryButton(interaction: ButtonInteraction) {
+  public async inventoryButton(interaction: ButtonInteraction): Promise<void> {
     try {
-      const { itemId, page, kind, playerId } = this.getInventoryCredentialsFromCustomId(interaction);
+      const { itemId, page, kind, playerId } =
+        this.getInventoryCredentialsFromCustomId(interaction);
 
       let useItemAction = "";
       switch (kind) {
@@ -43,7 +44,8 @@ export class CharacterInventoryManagerController {
         case "info": {
           const embed = await this.inspectItemInteraction(interaction);
           if (embed) {
-            return interaction.reply({ embeds: [embed] });
+            interaction.reply({ embeds: [embed] });
+            return;
           } else {
             useItemAction = "❌ Houve um erro ao tentar inspecionar o item.";
           }

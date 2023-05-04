@@ -5,7 +5,7 @@ import type { ConsumableItem, EquipmentItem, SpellItem } from "../../../../types
 export default function makeInventoryStringArray(
   itemsArray: Array<ConsumableItem | EquipmentItem | SpellItem>,
   id?: string
-) {
+): Array<string> {
   if (!itemsArray.length) {
     return ["Você não possui nenhum item."];
   }

@@ -16,7 +16,7 @@ import replyOrFollowUp from "../../utils/replyOrFollowUp";
 export class CharacterEvaluatorController {
   private _interaction: ButtonInteraction | null = null;
 
-  get interaction() {
+  get interaction(): ButtonInteraction {
     if (!this._interaction) {
       throw new BotError("Interaction not set");
     }
@@ -30,7 +30,7 @@ export class CharacterEvaluatorController {
   @ButtonComponent({
     id: /character:(approve|deny):\w+:\d+/,
   })
-  async evaluateCharacter(interaction: ButtonInteraction) {
+  async evaluateCharacter(interaction: ButtonInteraction): Promise<void> {
     try {
       if (
         interaction.inCachedGuild() &&
@@ -63,7 +63,7 @@ export class CharacterEvaluatorController {
   @ModalComponent({
     id: /character:deny:\w+:\d+/,
   })
-  async denyCharacter(interaction: ModalSubmitInteraction) {
+  async denyCharacter(interaction: ModalSubmitInteraction): Promise<void> {
     try {
       await interaction.deferReply({ ephemeral: true });
       const [_, _action, characterId, characterPlayerId] = interaction.customId.split(":") as [

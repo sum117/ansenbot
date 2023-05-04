@@ -9,7 +9,7 @@ import type { Character, Faction, Race, Spec } from "../types/Character";
 export default function getPocketbaseImageUrl(
   entity: Faction | Character | Race | Spec,
   thumb = false
-) {
+): string {
   return PocketBase.getImageUrl({
     record: entity,
     fileName: entity.image,

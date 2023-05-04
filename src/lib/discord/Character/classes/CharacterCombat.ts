@@ -2,7 +2,7 @@ import random from "lodash.random";
 
 import type { skillsDictionary } from "../../../../data/translations";
 import { spellSchema } from "../../../../schemas/characterSchema";
-import type { Character } from "../../../../types/Character";
+import type { Character, Status } from "../../../../types/Character";
 import type { EquipmentItem, SpellItem } from "../../../../types/Item";
 import { BotError } from "../../../../utils/Errors";
 import type { CharacterManager } from "./CharacterManager";
@@ -22,6 +22,18 @@ export interface SupportTurn extends BaseTurn {
   isSupport: true;
 }
 
+export interface ProcessTurnResult {
+  defenseSuccess: boolean;
+  damageDealt: number;
+  isKillingBlow: boolean;
+}
+
+export interface ReplenishEffectResult {
+  statusesReplenished: string[];
+  amount: number;
+  status: Status;
+}
+
 export default class CharacterCombat {
   public agent: Character;
   public target: Character;
@@ -35,7 +47,9 @@ export default class CharacterCombat {
     this.target = target.character;
   }
 
-  public async processTurn(turn: AttackTurn | SupportTurn) {
+  public async processTurn(
+    turn: AttackTurn | SupportTurn
+  ): Promise<ProcessTurnResult | ReplenishEffectResult> {
     if (turn.isSupport) {
       return this.applyReplenishEffect(turn.agentItem);
     }
@@ -89,7 +103,7 @@ export default class CharacterCombat {
     };
   }
 
-  public async applyReplenishEffect(item: SpellItem) {
+  public async applyReplenishEffect(item: SpellItem): Promise<ReplenishEffectResult> {
     if (item.isBuff) {
       const finalBuffQuotient = this.calculateMultiplier(item);
       const statusesToReplenish = item.status;

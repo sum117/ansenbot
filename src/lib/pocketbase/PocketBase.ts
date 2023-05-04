@@ -144,7 +144,9 @@ export default class PocketBase {
   }
 }
 
-export async function channelSubscriptionCallback(change: RecordSubscription<Channel>) {
+export async function channelSubscriptionCallback(
+  change: RecordSubscription<Channel>
+): Promise<void> {
   try {
     const record = channelSchema.parse(change.record);
     const ansenfall = bot.guilds.cache.get(config.guilds.ansenfall);

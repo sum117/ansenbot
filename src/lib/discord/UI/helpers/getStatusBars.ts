@@ -4,7 +4,7 @@ import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
 import type { Skills, Status } from "../../../../types/Character";
 import getMaxStatus from "../../Character/helpers/getMaxStatus";
 
-export default function getStatusBars(skills: Skills, status: Status) {
+export default function getStatusBars(skills: Skills, status: Status): Array<string> {
   const healthBar =
     "❤️ " +
     progressBar

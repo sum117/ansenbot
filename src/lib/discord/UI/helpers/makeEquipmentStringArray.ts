@@ -3,7 +3,9 @@ import type { CharacterBody } from "../../../../types/Character";
 import type { EquipmentItem, SpellItem } from "../../../../types/Item";
 import isInventoryItem from "../../Character/helpers/isInventoryItem";
 
-export default async function makeEquipmentStringArray(body: CharacterBody) {
+export default async function makeEquipmentStringArray(
+  body: CharacterBody
+): Promise<Array<string>> {
   const orderedKeys: (keyof typeof equipmentDictionary)[] = [
     "head",
     "face",

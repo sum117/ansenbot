@@ -33,7 +33,9 @@ export default class MultiForm extends BaseMessageBuilder {
     this.setEmbeds([embed]);
   }
 
-  public addEmbedFields(fields: Array<{ name: string; value: string; inline?: boolean }>) {
+  public addEmbedFields(
+    fields: Array<{ name: string; value: string; inline?: boolean }>
+  ): MultiForm {
     this.embed = this.embed.addFields(fields);
     return this;
   }

@@ -4,7 +4,10 @@ import type { Character } from "../../../../types/Character";
 import MultiForm from "../classes/MultiForm";
 import getInteractionMetadata from "../helpers/getInteractionMetadata";
 
-export default async function characterInteractionForm(agent: Character, target: Character) {
+export default async function characterInteractionForm(
+  agent: Character,
+  target: Character
+): Promise<MultiForm> {
   const { render, imageUrl } = await getInteractionMetadata(agent, target);
 
   const buttons: Array<ButtonBuilder> = [

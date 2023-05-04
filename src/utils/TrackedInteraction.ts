@@ -3,7 +3,9 @@ import type { ButtonInteraction, Snowflake } from "discord.js";
 export default class TrackedInteraction {
   public cache = new Map<Snowflake, ButtonInteraction>();
 
-  public async getOrCreateTrackedInteraction(interaction: ButtonInteraction) {
+  public async getOrCreateTrackedInteraction(
+    interaction: ButtonInteraction
+  ): Promise<ButtonInteraction> {
     let trackedInteraction = this.cache.get(interaction.user.id);
 
     if (interaction.customId.includes("inventory:open") && trackedInteraction) {

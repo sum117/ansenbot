@@ -1,3 +1,4 @@
+import type { BaseMessageOptions } from "discord.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
 
 import type { ITEM_TYPES } from "../../../../data/constants";
@@ -32,7 +33,7 @@ export default function characterInventoryMessageOptions({
   nextItemId,
   currentPage,
   selectedItemId,
-}: CharacterInventoryMessageOptions) {
+}: CharacterInventoryMessageOptions): BaseMessageOptions {
   const embed = new EmbedBuilder()
     .setTitle(`Inventário de ${character.name}`)
     .setDescription(itemsString)
