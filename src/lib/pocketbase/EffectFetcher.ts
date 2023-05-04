@@ -2,7 +2,7 @@ import type { Effect } from "../../types/Character";
 import PocketBase from "./PocketBase";
 
 export class EffectFetcher {
-  public static async getEffectById(effectId: string): Promise<Effect> {
+  public static getEffectById(effectId: string): Promise<Effect> {
     return PocketBase.getEntityById<Effect>({ entityType: "effects", id: effectId });
   }
 

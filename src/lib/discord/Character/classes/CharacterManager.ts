@@ -125,7 +125,7 @@ export class CharacterManager implements ICharacterManager {
     await this.setStatus(characterStatus);
   }
 
-  async addMemory(memoryId: string): Promise<void> {
+  addMemory(memoryId: string): void {
     this.character.memory = memoryId;
     void CharacterFetcher.updateCharacter(this.character);
   }
@@ -138,7 +138,7 @@ export class CharacterManager implements ICharacterManager {
     return;
   }
 
-  async getMemory(): Promise<Memory> {
+  getMemory(): Promise<Memory> {
     if (!this.character.memory) {
       throw new BotError("Personagem não possui memória no momento.");
     }
@@ -171,7 +171,7 @@ export class CharacterManager implements ICharacterManager {
     return updatedStatus;
   }
 
-  async getStatuses(statusId: Status["id"]): Promise<Status> {
+  getStatuses(statusId: Status["id"]): Promise<Status> {
     return PocketBase.getEntityById<Status>({
       entityType: "status",
       id: statusId,
@@ -179,7 +179,7 @@ export class CharacterManager implements ICharacterManager {
     });
   }
 
-  async getStatus(statusKey: keyof Status): Promise<Properties<Status>> {
+  getStatus(statusKey: keyof Status): Promise<Properties<Status>> {
     return this.getStatuses(this.character.status).then((status) => status[statusKey]);
   }
 

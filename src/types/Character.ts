@@ -58,7 +58,7 @@ export interface ICharacterManager {
   getStatuses: (statusId: Status["id"]) => Promise<Status>;
   getStatus: (statusKey: keyof Status) => Promise<Properties<Status>>;
 
-  addMemory: (memoryId: Memory["id"]) => Promise<void>;
+  addMemory: (memoryId: Memory["id"]) => void;
   removeMemory: (memoryId: Memory["id"]) => Promise<void>;
   getMemory: () => Promise<Memory>;
   // setBeast: (beast: Beast) => Promise<Beast>;

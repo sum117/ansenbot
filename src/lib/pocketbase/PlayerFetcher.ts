@@ -4,7 +4,7 @@ import type { Player } from "../../types/Character";
 import PocketBase from "./PocketBase";
 
 export default class PlayerFetcher {
-  public static async getPlayerById(playerId: Player["discordId"]): Promise<Player> {
+  public static getPlayerById(playerId: Player["discordId"]): Promise<Player> {
     try {
       return this.findPlayer(playerId);
     } catch (error) {

@@ -110,7 +110,7 @@ export default class CharacterFetcher {
     }
   }
 
-  public static async updateCharacter(character: Character): Promise<Character> {
+  public static updateCharacter(character: Character): Promise<Character> {
     return PocketBase.updateEntity<Character>({
       entityType: "characters",
       entityData: character,

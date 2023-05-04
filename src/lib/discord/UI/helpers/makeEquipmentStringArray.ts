@@ -21,7 +21,7 @@ export default async function makeEquipmentStringArray(
     "spells",
   ];
 
-  const descriptionsPromises = orderedKeys.map(async (key) => {
+  const descriptionsPromises = orderedKeys.map((key) => {
     const itemSlot = equipmentDictionary[key];
     const isRingOrSpell = (equipment: unknown): equipment is EquipmentItem[] | SpellItem[] =>
       Array.isArray(equipment) && equipment.every(isInventoryItem);
