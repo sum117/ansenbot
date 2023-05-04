@@ -18,17 +18,17 @@ export interface CharacterInventoryMessageOptions extends BasePaginationOptions 
 }
 
 export default function characterInventoryMessageOptions({
-                                                           character,
-                                                           itemsString,
-                                                           counters,
-                                                           previousPage,
-                                                           nextPage,
-                                                           kind,
-                                                           previousItemId,
-                                                           nextItemId,
-                                                           currentPage,
-                                                           selectedItemId
-                                                         }: CharacterInventoryMessageOptions): BaseMessageOptions {
+  character,
+  itemsString,
+  counters,
+  previousPage,
+  nextPage,
+  kind,
+  previousItemId,
+  nextItemId,
+  currentPage,
+  selectedItemId,
+}: CharacterInventoryMessageOptions): BaseMessageOptions {
   const embed = new EmbedBuilder()
     .setTitle(`Inventário de ${character.name}`)
     .setDescription(itemsString)
@@ -68,7 +68,7 @@ export default function characterInventoryMessageOptions({
       .setEmoji("⬇️")
       .setLabel("Próximo Item")
       .setCustomId(`character:item:browse:${nextItemId}:${character.playerId}:${currentPage}:next`)
-      .setStyle(ButtonStyle.Primary)
+      .setStyle(ButtonStyle.Primary),
   ]);
   const pageButtons = new ActionRowBuilder<ButtonBuilder>().setComponents([
     new ButtonBuilder()
@@ -82,7 +82,7 @@ export default function characterInventoryMessageOptions({
         `character:inventory:browse:${selectedItemId}:${character.playerId}:${nextPage}:next`
       )
       .setLabel("Próxima Página")
-      .setStyle(ButtonStyle.Secondary)
+      .setStyle(ButtonStyle.Secondary),
   ]);
 
   return { embeds: [embed], components: [itemControls, pageButtons] };
