@@ -1,14 +1,6 @@
 import assert from "assert";
-import type {
-  ButtonInteraction,
-  ModalSubmitInteraction,
-  TextChannel} from "discord.js";
-import {
-  EmbedBuilder,
-  PermissionsBitField,
-  TextInputStyle,
-  userMention,
-} from "discord.js";
+import type { ButtonInteraction, ModalSubmitInteraction, TextChannel } from "discord.js";
+import { EmbedBuilder, PermissionsBitField, TextInputStyle, userMention } from "discord.js";
 import { ButtonComponent, Discord, ModalComponent } from "discordx";
 import mustache from "mustache";
 

@@ -137,10 +137,7 @@ export default class CharacterFetcher {
     }
   }
 
-  public static async createCharacter(
-    char: CreateData<Character>,
-    playerId: Snowflake
-  ): Promise<Character | void> {
+  public static async createCharacter(char: CreateData<Character>): Promise<Character | void> {
     try {
       const specOne = char.specs[0];
       const specTwo = char.specs[1] ?? specOne;
@@ -164,7 +161,7 @@ export default class CharacterFetcher {
         startingSkills.items[1]
       );
 
-      const [baseSkills, baseStatus, body, inventory] = await Promise.all([
+      const [baseSkills, baseStatus, body] = await Promise.all([
         PocketBase.createEntity<Skills>({
           entityData: skills,
           entityType: "skills",

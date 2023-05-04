@@ -81,7 +81,7 @@ export class OnRoleplayMessage {
   @ButtonComponent({ id: /character:status:open:\w+:\d+/ })
   async statusButton(interaction: ButtonInteraction): Promise<void> {
     try {
-      const { currentCharacter, characterManager, view, status, skills } =
+      const { currentCharacter, characterManager, status, skills } =
         await getRoleplayDataFromUserId(interaction.customId.split(":")[4]);
       const characterPost = new CharacterPost(currentCharacter);
       const equipment = await characterManager.getEquipment();
@@ -254,7 +254,7 @@ export class OnRoleplayMessage {
     const effects = await EffectFetcher.getBaseEffects();
 
     const warningMessageArray: string[] = [];
-    for (const [stat, amount] of getSafeEntries(status)) {
+    for (const [stat] of getSafeEntries(status)) {
       if (!isStatus(stat)) {
         continue;
       }

@@ -1,7 +1,7 @@
 import { userMention } from "discord.js";
 import mustache from "mustache";
 
-import type { COLLECTIONS} from "../../../../data/constants";
+import type { COLLECTIONS } from "../../../../data/constants";
 import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
 import { type equipmentDictionary } from "../../../../data/translations";
 import {
@@ -130,7 +130,7 @@ export class CharacterManager implements ICharacterManager {
     void CharacterFetcher.updateCharacter(this.character);
   }
 
-  async removeMemory(memoryId: string): Promise<void> {
+  async removeMemory(): Promise<void> {
     this.character.memory = "";
 
     await CharacterFetcher.updateCharacter(this.character);

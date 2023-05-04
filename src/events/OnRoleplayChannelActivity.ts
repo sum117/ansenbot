@@ -7,7 +7,7 @@ import type {
   Snowflake,
   TextChannel,
 } from "discord.js";
-import { AuditLogEvent, ButtonStyle, ChannelType } from "discord.js";
+import { ChannelType } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On } from "discordx";
 

@@ -330,7 +330,7 @@ export class CharacterCreatorController {
   }
 
   private showCharacterModal(interaction: ButtonInteraction) {
-    const [_, state, requiredOrOptional] = interaction.customId.split(":");
+    const [_, _state, requiredOrOptional] = interaction.customId.split(":");
     const modal = this.modals[requiredOrOptional as "required" | "optional"];
     void interaction.showModal(modal);
   }
@@ -355,6 +355,6 @@ export class CharacterCreatorController {
     form.body = "";
 
     const character = createUpdateCharacterSchema.parse(form);
-    return CharacterFetcher.createCharacter(character, instance.interaction.user.id);
+    return CharacterFetcher.createCharacter(character);
   }
 }

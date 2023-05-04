@@ -1,6 +1,7 @@
 import { ChannelType } from "discord.js";
 import kebabCase from "lodash.kebabcase";
-import PB, type { RecordSubscription , type ListResult, type Record as DBRecord } from "pocketbase";
+import type { ListResult, Record as DBRecord, RecordSubscription } from "pocketbase";
+import PB from "pocketbase";
 
 import config from "../../../config.json" assert { type: "json" };
 import { COLLECTIONS, RELATION_FIELD_NAMES } from "../../data/constants";
