@@ -53,7 +53,9 @@ export class OnRoleplayChannelActivity {
       } catch (error) {
         console.error(error);
       }
-      await new Promise((resolve) => setTimeout(resolve, this.LoopInterval));
+      await new Promise((resolve) => {
+        setTimeout(resolve, this.LoopInterval);
+      });
     }
   }
 
@@ -188,6 +190,8 @@ export class OnRoleplayChannelActivity {
           discordId: channel.id,
           description: "Atualize a descrição no banco de dados.",
           image: "",
+          // ! Not advised bunt but we know this will always be here!
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           categoryId: channel.parentId!,
           hasSleep: false,
           hasSpirit: false,

@@ -16,18 +16,24 @@ export class CharacterInteractionController {
     id: CHARACTER_INTERACTION_ID_REGEX,
   })
   async characterInteractionButton(interaction: ButtonInteraction): Promise<void> {
-    let { action, agentId, targetId } = this.getInteractionCredentials(interaction);
+    const interactionCredentials = this.getInteractionCredentials(interaction);
+    const { action, targetId } = interactionCredentials;
 
-    if (agentId === "null") {
-      agentId = interaction.user.id;
+    if (interactionCredentials.agentId === "null") {
+      interactionCredentials.agentId = interaction.user.id;
     }
 
-    if (interaction.user.id !== targetId && interaction.user.id !== agentId) {
+    if (
+      interaction.user.id !== targetId &&
+      interaction.user.id !== interactionCredentials.agentId
+    ) {
       interaction.reply("❌ Você não está participando dessa interação.");
       return;
     }
 
-    const { currentCharacter: agent } = await getRoleplayDataFromUserId(agentId);
+    const { currentCharacter: agent } = await getRoleplayDataFromUserId(
+      interactionCredentials.agentId
+    );
     const { currentCharacter: target } = await getRoleplayDataFromUserId(targetId);
 
     switch (action) {

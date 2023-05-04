@@ -217,7 +217,9 @@ export class CharacterInventoryManagerController {
         ),
       });
       // delay for 5 seconds before deleting the message
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 5000);
+      });
       void trackedInteraction.deleteReply();
       this.trackedInteraction.cache.delete(trackedInteraction.user.id);
       return true;
