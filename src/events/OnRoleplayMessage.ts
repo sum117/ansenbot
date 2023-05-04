@@ -1,34 +1,28 @@
-import {
-  AttachmentBuilder,
-  BaseMessageOptions,
-  ButtonInteraction,
-  ChannelType,
-  EmbedBuilder,
-  Message,
-} from "discord.js";
+import type { BaseMessageOptions, ButtonInteraction, Message } from "discord.js";
+import { AttachmentBuilder, ChannelType, EmbedBuilder } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On } from "discordx";
+import mustache from "mustache";
 
+import { STATUS_SKILLS_RELATION } from "../data/constants";
+import type { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
+import getMaxStatus from "../lib/discord/Character/helpers/getMaxStatus";
+import getRoleplayDataFromUserId from "../lib/discord/Character/helpers/getRoleplayDataFromUserId";
+import isStatus from "../lib/discord/Character/helpers/isStatus";
 import CharacterPost from "../lib/discord/UI/classes/CharacterPost";
+import getCharEffects from "../lib/discord/UI/helpers/getCharEffects";
+import getStatusBars from "../lib/discord/UI/helpers/getStatusBars";
+import makeEquipmentStringArray from "../lib/discord/UI/helpers/makeEquipmentStringArray";
+import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
+import { EffectFetcher } from "../lib/pocketbase/EffectFetcher";
+import PocketBase from "../lib/pocketbase/PocketBase";
 import PostFetcher from "../lib/pocketbase/PostFetcher";
+import type { Character, CharacterBody, Skills, Status } from "../types/Character";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import equalityPercentage from "../utils/equalityPercentage";
 import { BotError } from "../utils/Errors";
-import handleError from "../utils/handleError";
-import { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
-import mustache from "mustache";
-import { Character, CharacterBody, Skills, Status } from "../types/Character";
-import { STATUS_SKILLS_RELATION } from "../data/constants";
 import getSafeEntries from "../utils/getSafeEntries";
-import { EffectFetcher } from "../lib/pocketbase/EffectFetcher";
-import getMaxStatus from "../lib/discord/Character/helpers/getMaxStatus";
-import isStatus from "../lib/discord/Character/helpers/isStatus";
-import getStatusBars from "../lib/discord/UI/helpers/getStatusBars";
-import PocketBase from "../lib/pocketbase/PocketBase";
-import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
-import getRoleplayDataFromUserId from "../lib/discord/Character/helpers/getRoleplayDataFromUserId";
-import makeEquipmentStringArray from "../lib/discord/UI/helpers/makeEquipmentStringArray";
-import getCharEffects from "../lib/discord/UI/helpers/getCharEffects";
+import handleError from "../utils/handleError";
 
 @Discord()
 export class OnRoleplayMessage {

@@ -1,6 +1,12 @@
-import PB, { type ListResult, type Record as DBRecord, RecordSubscription } from "pocketbase";
+import { ChannelType } from "discord.js";
+import kebabCase from "lodash.kebabcase";
+import PB, type { RecordSubscription , type ListResult, type Record as DBRecord } from "pocketbase";
 
+import config from "../../../config.json" assert { type: "json" };
 import { COLLECTIONS, RELATION_FIELD_NAMES } from "../../data/constants";
+import { bot } from "../../main";
+import channelSchema from "../../schemas/channelSchema";
+import type { Channel } from "../../types/Channel";
 import type { Collection } from "../../types/Collection";
 import type {
   CreateEntityParams,
@@ -12,14 +18,8 @@ import type {
   UpdateEntityParams,
 } from "../../types/PocketBaseCRUD";
 import { BotError } from "../../utils/Errors";
-import channelSchema from "../../schemas/channelSchema";
-import kebabCase from "lodash.kebabcase";
-import { ChannelType } from "discord.js";
-import { channelPlaceHolderEmbed } from "../discord/UI/channel/channelPlaceholderEmbed";
-import { Channel } from "../../types/Channel";
-import { bot } from "../../main";
-import config from "../../../config.json" assert { type: "json" };
 import channelPlaceholderDismissButton from "../discord/UI/channel/channelPlaceholderDismissButton";
+import { channelPlaceHolderEmbed } from "../discord/UI/channel/channelPlaceholderEmbed";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(

@@ -1,6 +1,7 @@
-import MultiForm from "../classes/MultiForm";
-import { Character } from "../../../../types/Character";
 import { ButtonBuilder, ButtonStyle } from "discord.js";
+
+import type { Character } from "../../../../types/Character";
+import MultiForm from "../classes/MultiForm";
 import getInteractionMetadata from "../helpers/getInteractionMetadata";
 
 export default async function characterInteractionForm(agent: Character, target: Character) {

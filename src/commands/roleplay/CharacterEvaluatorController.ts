@@ -1,22 +1,24 @@
-import { ButtonComponent, Discord, ModalComponent } from "discordx";
-import {
+import assert from "assert";
+import type {
   ButtonInteraction,
-  EmbedBuilder,
   ModalSubmitInteraction,
+  TextChannel} from "discord.js";
+import {
+  EmbedBuilder,
   PermissionsBitField,
-  TextChannel,
   TextInputStyle,
   userMention,
 } from "discord.js";
-import config from "../../../config.json" assert { type: "json" };
-import { BotError } from "../../utils/Errors";
-import assert from "assert";
+import { ButtonComponent, Discord, ModalComponent } from "discordx";
 import mustache from "mustache";
+
+import config from "../../../config.json" assert { type: "json" };
 import promptBox from "../../lib/discord/UI/helpers/promptBox";
-import replyOrFollowUp from "../../utils/replyOrFollowUp";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
-import handleError from "../../utils/handleError";
 import deleteDiscordMessage from "../../utils/deleteDiscordMessage";
+import { BotError } from "../../utils/Errors";
+import handleError from "../../utils/handleError";
+import replyOrFollowUp from "../../utils/replyOrFollowUp";
 
 @Discord()
 export class CharacterEvaluatorController {

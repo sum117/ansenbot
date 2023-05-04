@@ -1,5 +1,5 @@
-import { Character, Skills } from "../../../../types/Character";
-import { PocketBaseConstants } from "../../../../types/PocketBaseCRUD";
+import type { Character, Skills } from "../../../../types/Character";
+import type { PocketBaseConstants } from "../../../../types/PocketBaseCRUD";
 
 export type TCharacterLeveling = {
   level?: number;

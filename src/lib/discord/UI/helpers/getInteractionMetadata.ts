@@ -1,7 +1,8 @@
-import { Character } from "../../../../types/Character";
 import mustache from "mustache";
-import getPocketbaseImageUrl from "../../../../utils/getPocketbaseImageUrl";
+
+import type { Character } from "../../../../types/Character";
 import getCombinedImageUrl from "../../../../utils/getCombinedImageUrl";
+import getPocketbaseImageUrl from "../../../../utils/getPocketbaseImageUrl";
 import getCharEffects from "./getCharEffects";
 import getStatusBars from "./getStatusBars";
 

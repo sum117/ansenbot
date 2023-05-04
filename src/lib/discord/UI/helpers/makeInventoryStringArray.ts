@@ -1,6 +1,6 @@
-import { equipmentSchema, spellSchema } from "../../../../schemas/characterSchema";
 import { ITEM_TYPES_EMOJIS } from "../../../../data/constants";
-import { ConsumableItem, EquipmentItem, SpellItem } from "../../../../types/Item";
+import { equipmentSchema, spellSchema } from "../../../../schemas/characterSchema";
+import type { ConsumableItem, EquipmentItem, SpellItem } from "../../../../types/Item";
 
 export default function makeInventoryStringArray(
   itemsArray: Array<ConsumableItem | EquipmentItem | SpellItem>,
@@ -10,7 +10,7 @@ export default function makeInventoryStringArray(
     return ["Você não possui nenhum item."];
   }
 
-  let itemToHighlight = itemsArray.find((item) => item.id === id);
+  const itemToHighlight = itemsArray.find((item) => item.id === id);
   const inventoryStringArray = itemsArray.map((data) => {
     const equipment = equipmentSchema.or(spellSchema).safeParse(data);
     const itemString: string[] = [];

@@ -1,7 +1,7 @@
 import { equipmentDictionary } from "../../../../data/translations";
+import type { CharacterBody } from "../../../../types/Character";
+import type { EquipmentItem, SpellItem } from "../../../../types/Item";
 import isInventoryItem from "../../Character/helpers/isInventoryItem";
-import { CharacterBody } from "../../../../types/Character";
-import { EquipmentItem, SpellItem } from "../../../../types/Item";
 
 export default async function makeEquipmentStringArray(body: CharacterBody) {
   const orderedKeys: (keyof typeof equipmentDictionary)[] = [

@@ -13,6 +13,7 @@ import type { ZodOptional, ZodString } from "zod";
 import { createUpdateCharacterSchema } from "../../../../schemas/characterSchema";
 import type { Character, CredentialsArray } from "../../../../types/Character";
 import { BotError, PocketBaseError } from "../../../../utils/Errors";
+import getImageBlob from "../../../../utils/getImageBlob";
 import getZodStringLength from "../../../../utils/getZodStringLength";
 import handleError from "../../../../utils/handleError";
 import replyOrFollowUp from "../../../../utils/replyOrFollowUp";
@@ -20,7 +21,6 @@ import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import PocketBase from "../../../pocketbase/PocketBase";
 import characterEditForm from "../character/characterEditForm";
 import promptBox from "../helpers/promptBox";
-import getImageBlob from "../../../../utils/getImageBlob";
 
 export class CharacterEditor {
   private readonly interaction:

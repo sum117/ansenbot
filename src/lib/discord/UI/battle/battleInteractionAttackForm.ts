@@ -1,13 +1,14 @@
-import MultiForm from "../classes/MultiForm";
-import { Character } from "../../../../types/Character";
 import {
   ButtonBuilder,
   ButtonStyle,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
 } from "discord.js";
+
 import { equipmentDictionary } from "../../../../data/translations";
+import type { Character } from "../../../../types/Character";
 import getSafeEntries from "../../../../utils/getSafeEntries";
+import MultiForm from "../classes/MultiForm";
 import getInteractionMetadata from "../helpers/getInteractionMetadata";
 
 export default async function battleInteractionAttackForm(agent: Character, target: Character) {

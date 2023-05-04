@@ -1,4 +1,4 @@
-import { Skills } from "../../types/Character";
+import type { Skills } from "../../types/Character";
 import PocketBase from "./PocketBase";
 
 export class SkillsFetcher {

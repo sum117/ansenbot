@@ -1,5 +1,5 @@
+import type { Effect } from "../../types/Character";
 import PocketBase from "./PocketBase";
-import { Effect } from "../../types/Character";
 
 export class EffectFetcher {
   public static async getEffectById(effectId: string): Promise<Effect> {

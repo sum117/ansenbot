@@ -1,6 +1,6 @@
-import { Effect, Status } from "../../../../types/Character";
-import { EffectFetcher } from "../../../pocketbase/EffectFetcher";
 import { statesDictionary } from "../../../../data/translations";
+import type { Effect, Status } from "../../../../types/Character";
+import { EffectFetcher } from "../../../pocketbase/EffectFetcher";
 
 export default async function getCharEffects(status: Status) {
   const effects: Effect[] = (

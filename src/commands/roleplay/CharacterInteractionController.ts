@@ -1,11 +1,12 @@
+import type { ButtonInteraction } from "discord.js";
 import { ButtonComponent, Discord } from "discordx";
-import characterInteractionForm from "../../lib/discord/UI/character/characterInteractionForm";
-import { ButtonInteraction } from "discord.js";
-import getRoleplayDataFromUserId from "../../lib/discord/Character/helpers/getRoleplayDataFromUserId";
-import TrackedInteraction from "../../utils/TrackedInteraction";
-import battleInteractionAttackForm from "../../lib/discord/UI/battle/battleInteractionAttackForm";
+
 import { BATTLE_INTERACTION_ID_REGEX, CHARACTER_INTERACTION_ID_REGEX } from "../../data/constants";
+import getRoleplayDataFromUserId from "../../lib/discord/Character/helpers/getRoleplayDataFromUserId";
+import battleInteractionAttackForm from "../../lib/discord/UI/battle/battleInteractionAttackForm";
 import battleInteractionHelpForm from "../../lib/discord/UI/battle/battleInteractionHelpForm";
+import characterInteractionForm from "../../lib/discord/UI/character/characterInteractionForm";
+import TrackedInteraction from "../../utils/TrackedInteraction";
 
 @Discord()
 export class CharacterInteractionController {

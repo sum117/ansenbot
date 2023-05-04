@@ -1,5 +1,5 @@
+import type { BaseItem, Item, ItemWithRole } from "../../types/Item";
 import PocketBase from "./PocketBase";
-import { BaseItem, Item, ItemWithRole } from "../../types/Item";
 
 export class ItemFetcher {
   public static async getItemById<T extends BaseItem>(id: Item["id"]): Promise<T> {

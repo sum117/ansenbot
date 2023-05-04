@@ -1,7 +1,8 @@
-import { Skills, Status } from "../../../../types/Character";
 import progressBar from "string-progressbar";
-import getMaxStatus from "../../Character/helpers/getMaxStatus";
+
 import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
+import type { Skills, Status } from "../../../../types/Character";
+import getMaxStatus from "../../Character/helpers/getMaxStatus";
 
 export default function getStatusBars(skills: Skills, status: Status) {
   const healthBar =

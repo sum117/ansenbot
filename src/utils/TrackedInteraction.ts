@@ -1,4 +1,4 @@
-import { ButtonInteraction, Snowflake } from "discord.js";
+import type { ButtonInteraction, Snowflake } from "discord.js";
 
 export default class TrackedInteraction {
   public cache = new Map<Snowflake, ButtonInteraction>();

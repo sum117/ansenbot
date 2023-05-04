@@ -1,5 +1,6 @@
-import baseSchema from "./baseSchema";
 import { z } from "zod";
+
+import baseSchema from "./baseSchema";
 
 const channelSchema = baseSchema.extend({
   image: z.string(),

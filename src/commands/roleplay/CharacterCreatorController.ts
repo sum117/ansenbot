@@ -13,28 +13,28 @@ import {
   userMention,
 } from "discord.js";
 import { ButtonComponent, Discord, ModalComponent, SelectMenuComponent, Slash } from "discordx";
+import mustache from "mustache";
 
+import config from "../../../config.json" assert { type: "json" };
+import characterApprovalBtnRow from "../../lib/discord/UI/character/characterApprovalBtnRow";
 import characterCreateForm from "../../lib/discord/UI/character/characterCreateForm";
 import {
   characterCreateModal,
   characterCreateModalOptional,
 } from "../../lib/discord/UI/character/characterCreateModal";
+import characterCreateModalTrigger from "../../lib/discord/UI/character/characterCreateModalTrigger";
 import characterCreateTrigger from "../../lib/discord/UI/character/characterCreateTrigger";
+import type { AnsenModal } from "../../lib/discord/UI/classes/AnsenModal";
+import CharacterPost from "../../lib/discord/UI/classes/CharacterPost";
+import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
+import { createUpdateCharacterSchema } from "../../schemas/characterSchema";
 import type { Character, CreateUpdateCharacter, Faction, Race, Spec } from "../../types/Character";
 import { BotError, PocketBaseError } from "../../utils/Errors";
-import handleError from "../../utils/handleError";
-import numberInRange from "../../utils/numberInRange";
-import { createUpdateCharacterSchema } from "../../schemas/characterSchema";
-import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
-import { AnsenModal } from "../../lib/discord/UI/classes/AnsenModal";
-import characterCreateModalTrigger from "../../lib/discord/UI/character/characterCreateModalTrigger";
-import config from "../../../config.json" assert { type: "json" };
-import CharacterPost from "../../lib/discord/UI/classes/CharacterPost";
-import mustache from "mustache";
-import characterApprovalBtnRow from "../../lib/discord/UI/character/characterApprovalBtnRow";
 import getCombinedImageUrl from "../../utils/getCombinedImageUrl";
 import getPocketbaseImageUrl from "../../utils/getPocketbaseImageUrl";
+import handleError from "../../utils/handleError";
+import numberInRange from "../../utils/numberInRange";
 
 @Discord()
 export class CharacterCreatorController {

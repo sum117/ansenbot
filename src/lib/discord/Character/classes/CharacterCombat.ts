@@ -1,10 +1,11 @@
-import { CharacterManager } from "./CharacterManager";
-import { Character } from "../../../../types/Character";
-import { EquipmentItem, SpellItem } from "../../../../types/Item";
 import random from "lodash.random";
-import { skillsDictionary } from "../../../../data/translations";
+
+import type { skillsDictionary } from "../../../../data/translations";
 import { spellSchema } from "../../../../schemas/characterSchema";
+import type { Character } from "../../../../types/Character";
+import type { EquipmentItem, SpellItem } from "../../../../types/Item";
 import { BotError } from "../../../../utils/Errors";
+import type { CharacterManager } from "./CharacterManager";
 
 interface BaseTurn {
   agentItem: SpellItem | EquipmentItem;
@@ -94,7 +95,7 @@ export default class CharacterCombat {
       const statusesToReplenish = item.status;
       const statuses = this.target.expand.status;
 
-      let statusesReplenished: Array<string> = [];
+      const statusesReplenished: Array<string> = [];
       for (const status of statusesToReplenish) {
         statuses[status] = statuses[status] + finalBuffQuotient;
         statusesReplenished.push(status);

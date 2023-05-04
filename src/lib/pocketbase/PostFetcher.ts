@@ -1,10 +1,10 @@
 import type { Message } from "discord.js";
 
 import type { Character, Player, Post } from "../../types/Character";
+import { BotError } from "../../utils/Errors";
 import CharacterFetcher from "./CharacterFetcher";
 import PlayerFetcher from "./PlayerFetcher";
 import PocketBase from "./PocketBase";
-import { BotError } from "../../utils/Errors";
 
 export default class PostFetcher {
   public static getPostByMessageId(messageId: string): Promise<Post> {

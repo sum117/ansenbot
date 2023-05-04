@@ -1,8 +1,9 @@
 import { userMention } from "discord.js";
-import PlayerFetcher from "../../../pocketbase/PlayerFetcher";
+
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
-import { CharacterManager } from "../classes/CharacterManager";
+import PlayerFetcher from "../../../pocketbase/PlayerFetcher";
 import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
+import { CharacterManager } from "../classes/CharacterManager";
 
 export default async function getRoleplayDataFromUserId(userId: string) {
   const player = await PlayerFetcher.getPlayerById(userId);

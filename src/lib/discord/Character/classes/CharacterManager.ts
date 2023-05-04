@@ -1,4 +1,15 @@
+import { userMention } from "discord.js";
+import mustache from "mustache";
+
+import type { COLLECTIONS} from "../../../../data/constants";
+import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
+import { type equipmentDictionary } from "../../../../data/translations";
 import {
+  consumableSchema,
+  equipmentSchema,
+  spellSchema,
+} from "../../../../schemas/characterSchema";
+import type {
   Character,
   CharacterBody,
   Effect,
@@ -7,26 +18,17 @@ import {
   Memory,
   Status,
 } from "../../../../types/Character";
-import PocketBase from "../../../pocketbase/PocketBase";
+import type { EquipmentItem, Item, SpellItem } from "../../../../types/Item";
+import type { Properties } from "../../../../types/Utils";
 import { BotError } from "../../../../utils/Errors";
-import { COLLECTIONS, STATUS_SKILLS_RELATION } from "../../../../data/constants";
-import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
-import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
-import { Properties } from "../../../../types/Utils";
-import AnsenfallLeveling from "../helpers/ansenfallLeveling";
-import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
-import { EquipmentItem, Item, SpellItem } from "../../../../types/Item";
-import {
-  consumableSchema,
-  equipmentSchema,
-  spellSchema,
-} from "../../../../schemas/characterSchema";
-import mustache from "mustache";
-import { userMention } from "discord.js";
-import { type equipmentDictionary } from "../../../../data/translations";
-import getMaxStatus from "../helpers/getMaxStatus";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import removePocketbaseConstants from "../../../../utils/removePocketbaseConstants";
+import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
+import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
+import PocketBase from "../../../pocketbase/PocketBase";
+import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
+import AnsenfallLeveling from "../helpers/ansenfallLeveling";
+import getMaxStatus from "../helpers/getMaxStatus";
 
 export class CharacterManager implements ICharacterManager {
   public constructor(public character: Character) {}

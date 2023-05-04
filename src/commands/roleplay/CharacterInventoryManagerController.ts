@@ -1,14 +1,16 @@
+import type { ButtonInteraction} from "discord.js";
+import { ButtonStyle, userMention } from "discord.js";
 import { ButtonComponent, Discord } from "discordx";
-import { ButtonInteraction, ButtonStyle, userMention } from "discord.js";
-import handleError from "../../utils/handleError";
-import { equipmentSchema, spellSchema } from "../../schemas/characterSchema";
 import mustache from "mustache";
+
 import getRoleplayDataFromUserId from "../../lib/discord/Character/helpers/getRoleplayDataFromUserId";
-import { Character } from "../../types/Character";
 import characterInventoryMessageOptions from "../../lib/discord/UI/character/characterInventoryMessageOptions";
+import getItemInfoEmbed from "../../lib/discord/UI/helpers/getItemInfoEmbed";
 import makeInventoryStringArray from "../../lib/discord/UI/helpers/makeInventoryStringArray";
 import { ItemFetcher } from "../../lib/pocketbase/ItemFetcher";
-import getItemInfoEmbed from "../../lib/discord/UI/helpers/getItemInfoEmbed";
+import { equipmentSchema, spellSchema } from "../../schemas/characterSchema";
+import type { Character } from "../../types/Character";
+import handleError from "../../utils/handleError";
 import TrackedInteraction from "../../utils/TrackedInteraction";
 
 // placeholder:action:kind:itemId:playerId:page:(previous|next)
@@ -22,7 +24,7 @@ export class CharacterInventoryManagerController {
   @ButtonComponent({ id: INVENTORY_REGEX })
   public async inventoryButton(interaction: ButtonInteraction) {
     try {
-      let { itemId, page, kind, playerId } = this.getInventoryCredentialsFromCustomId(interaction);
+      const { itemId, page, kind, playerId } = this.getInventoryCredentialsFromCustomId(interaction);
 
       let useItemAction = "";
       switch (kind) {

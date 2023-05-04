@@ -1,7 +1,7 @@
-import { Skills } from "../../../../types/Character";
 import { STATUS_GAIN_PER_LEVEL } from "../../../../data/constants";
+import type { skillsDictionary } from "../../../../data/translations";
+import type { Skills } from "../../../../types/Character";
 import getSafeEntries from "../../../../utils/getSafeEntries";
-import { skillsDictionary } from "../../../../data/translations";
 
 export default function getMaxStatus(skills: Skills) {
   const maxStatus: Record<string, number> = {};

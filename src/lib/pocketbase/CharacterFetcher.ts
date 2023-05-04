@@ -1,15 +1,16 @@
 import assert from "assert";
 import type { Snowflake } from "discord.js";
 import type { ListResult, RecordFullListQueryParams } from "pocketbase";
-import type { Character, CharacterBody, Inventory, Skills, Status } from "../../types/Character";
+import { inspect } from "util";
+
 import { RELATION_FIELD_NAMES, STATUS_GAIN_PER_LEVEL } from "../../data/constants";
+import type { Character, CharacterBody, Inventory, Skills, Status } from "../../types/Character";
 import type { CreateData, PocketBaseConstants } from "../../types/PocketBaseCRUD";
 import { BotError, PocketBaseError } from "../../utils/Errors";
-import getSafeKeys from "../../utils/getSafeKeys";
-import PocketBase from "./PocketBase";
-import jsonToFormData from "../../utils/jsonToFormData";
 import getImageBlob from "../../utils/getImageBlob";
-import { inspect } from "util";
+import getSafeKeys from "../../utils/getSafeKeys";
+import jsonToFormData from "../../utils/jsonToFormData";
+import PocketBase from "./PocketBase";
 
 export default class CharacterFetcher {
   public static async getFirstCharacterCreateDate(): Promise<Date> {

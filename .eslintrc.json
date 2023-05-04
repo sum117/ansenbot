@@ -1,18 +1,12 @@
 {
   "root": true,
   "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint",
-    "simple-import-sort",
-    "import"
-  ],
+  "plugins": ["@typescript-eslint", "simple-import-sort", "import"],
   "extends": [
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
   ],
-  "ignorePatterns": [
-    "**/*.js"
-  ],
+  "ignorePatterns": ["**/*.js"],
   "rules": {
     // simple-import-sort
     "simple-import-sort/imports": "error",

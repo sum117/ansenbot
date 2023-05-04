@@ -1,6 +1,7 @@
 import { EmbedBuilder } from "discord.js";
+
+import type { Channel } from "../../../../types/Channel";
 import PocketBase from "../../../pocketbase/PocketBase";
-import { Channel } from "../../../../types/Channel";
 
 export const channelPlaceHolderEmbed = (record: Channel) => {
   const embed = new EmbedBuilder()
