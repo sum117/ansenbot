@@ -1,19 +1,20 @@
+import type { ButtonInteraction } from "discord.js";
+import { ButtonStyle, userMention } from "discord.js";
 import { ButtonComponent, Discord } from "discordx";
-import { ButtonInteraction, ButtonStyle, userMention } from "discord.js";
-import handleError from "../../utils/handleError";
-import { equipmentSchema, spellSchema } from "../../schemas/characterSchema";
 import mustache from "mustache";
+
 import getRoleplayDataFromUserId from "../../lib/discord/Character/helpers/getRoleplayDataFromUserId";
-import { Character } from "../../types/Character";
 import characterInventoryMessageOptions from "../../lib/discord/UI/character/characterInventoryMessageOptions";
+import getItemInfoEmbed from "../../lib/discord/UI/helpers/getItemInfoEmbed";
 import makeInventoryStringArray from "../../lib/discord/UI/helpers/makeInventoryStringArray";
 import { ItemFetcher } from "../../lib/pocketbase/ItemFetcher";
-import getItemInfoEmbed from "../../lib/discord/UI/helpers/getItemInfoEmbed";
+import { equipmentSchema, spellSchema } from "../../schemas/characterSchema";
+import type { Character } from "../../types/Character";
+import handleError from "../../utils/handleError";
+import makeXYPagination from "../../utils/makeXandYPagination";
 import TrackedInteraction from "../../utils/TrackedInteraction";
 
 // placeholder:action:kind:itemId:playerId:page:(previous|next)
-const INVENTORY_REGEX =
-  /character:(inventory|item):(browse|use|discard|open|equip|info):(\w+):\d+(:\d+:(previous|next|null))?/;
 
 @Discord()
 export class CharacterInventoryManagerController {
@@ -22,13 +23,14 @@ export class CharacterInventoryManagerController {
   @ButtonComponent({ id: INVENTORY_REGEX })
   public async inventoryButton(interaction: ButtonInteraction) {
     try {
-      let { itemId, page, kind, playerId } = this.getInventoryCredentialsFromCustomId(interaction);
+      const { itemId, page, kind, playerId } =
+        this.getInventoryCredentialsFromCustomId(interaction);
 
       if (this.inventoryAlreadyOpen(interaction, playerId)) {
         return interaction
           .reply({
             content: "❌ Você já possui um inventário aberto.",
-            ephemeral: true,
+            ephemeral: true
           })
           .catch(() => null);
       }
@@ -62,7 +64,7 @@ export class CharacterInventoryManagerController {
       const itemsArray = [
         ...(currentCharacter.expand.inventory.expand.consumables ?? []),
         ...(currentCharacter.expand.inventory.expand.equipments ?? []),
-        ...(currentCharacter.expand.inventory.expand.spells ?? []),
+        ...(currentCharacter.expand.inventory.expand.spells ?? [])
       ];
 
       const trackedInteraction = await this.trackedInteraction.getOrCreateTrackedInteraction(
@@ -74,22 +76,21 @@ export class CharacterInventoryManagerController {
       }
 
       const PAGE_SIZE = 5;
-      // TODO: refactor this into a function "makePagination" and include getPageItems from this class to it.
-      const totalPages = Math.ceil(itemsArray.length / PAGE_SIZE);
-      const currentPage = page ? parseInt(page) : 1;
-      const previousPage = Math.max(0, currentPage - 1);
-      const nextPage = Math.min(totalPages, currentPage + 1);
-      const pageItems = this.getPageItems(itemsArray, currentPage, PAGE_SIZE);
-
-      const foundItem = pageItems.find((item) => item.id === itemId) ?? pageItems[0];
-      const selectedItemId = foundItem.id;
-      const itemIndex = pageItems.findIndex((item) => item.id === foundItem.id);
-      const previousItemId = pageItems.at(itemIndex - 1)?.id ?? pageItems.at(-1)?.id;
-      const nextItemId = pageItems.at(itemIndex + 1)?.id ?? pageItems.at(0)?.id;
-
-      if (!previousItemId || !nextItemId) {
-        return;
-      }
+      const {
+        pageItems,
+        nextPage,
+        selectedItemId,
+        previousItemId,
+        previousPage,
+        nextItemId,
+        currentPage,
+        currentlySelectedItem
+      } = makeXYPagination({
+        pageSize: PAGE_SIZE,
+        itemsArray,
+        pageFromCustomId: page,
+        itemIdFromCustomId: itemId
+      });
 
       const inventoryString = makeInventoryStringArray(pageItems, selectedItemId);
       const options: Parameters<typeof characterInventoryMessageOptions>[0] = {
@@ -97,23 +98,23 @@ export class CharacterInventoryManagerController {
         previousItemId,
         nextItemId,
         selectedItemId,
-        kind: foundItem.expand.item.type,
+        kind: currentlySelectedItem.expand.item.type,
         nextPage,
         currentPage,
         previousPage,
         counters: {
           consumable: currentCharacter.expand.inventory.consumables.length,
           equipment: currentCharacter.expand.inventory.equipments.length,
-          spell: currentCharacter.expand.inventory.spells.length,
+          spell: currentCharacter.expand.inventory.spells.length
         },
-        itemsString: inventoryString.join("\n"),
+        itemsString: inventoryString.join("\n")
       };
 
       const messageOptions = characterInventoryMessageOptions(options);
 
       await trackedInteraction.editReply({
         content: useItemAction,
-        ...messageOptions,
+        ...messageOptions
       });
     } catch (error) {
       handleError(interaction, error);
@@ -150,14 +151,11 @@ export class CharacterInventoryManagerController {
     const { characterManager } = await getRoleplayDataFromUserId(playerId);
 
     const data = await characterManager.getInventoryItem(itemId);
-    const item = equipmentSchema
-      .or(spellSchema)
-
-      .parse(data);
+    const item = equipmentSchema.or(spellSchema).parse(data);
 
     const view = {
       author: userMention(characterManager.character.playerId),
-      item: item.expand.item.name,
+      item: item.expand.item.name
     };
     await characterManager.setEquipment(item);
     const equipment = await characterManager.getEquipmentItem(item.slot);
@@ -180,7 +178,7 @@ export class CharacterInventoryManagerController {
     const itemsArray = [
       ...(currentCharacter.expand.inventory.expand.consumables ?? []),
       ...(currentCharacter.expand.inventory.expand.equipments ?? []),
-      ...(currentCharacter.expand.inventory.expand.spells ?? []),
+      ...(currentCharacter.expand.inventory.expand.spells ?? [])
     ];
 
     const itemsTableId = itemsArray.find(({ id }) => itemId === id)?.item;
@@ -204,20 +202,6 @@ export class CharacterInventoryManagerController {
     return feedback;
   }
 
-  private getPageItems<T extends Array<any>>(
-    itemsArray: T,
-    currentPage: number,
-    PAGE_SIZE: number
-  ): T[number][] {
-    const startIndex = (currentPage - 1) * PAGE_SIZE;
-    const endIndex = startIndex + PAGE_SIZE;
-    let pageItems = itemsArray.slice(startIndex, endIndex).filter((item) => Boolean(item));
-    if (!pageItems.length) {
-      pageItems = itemsArray.slice(0, PAGE_SIZE).filter((item) => Boolean(item));
-    }
-    return pageItems;
-  }
-
   private async handleEmptyInventory(
     currentCharacter: Character,
     trackedInteraction: ButtonInteraction,
@@ -232,7 +216,7 @@ export class CharacterInventoryManagerController {
         content: mustache.render(
           "{{{author}}}, o personagem **{{{character}}}** não possui itens no inventário.",
           view
-        ),
+        )
       });
       // delay for 5 seconds before deleting the message
       await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -246,11 +230,11 @@ export class CharacterInventoryManagerController {
   private getInventoryCredentialsFromCustomId(interaction: ButtonInteraction) {
     const [_, action, kind, itemId, playerId, page] = interaction.customId.split(":") as [
       "character",
-      "inventory" | "item",
-      "browse" | "use" | "discard" | "open" | "equip" | "info",
+        "inventory" | "item",
+        "browse" | "use" | "discard" | "open" | "equip" | "info",
       string,
       string,
-      string | undefined
+        string | undefined
     ];
     return { itemId, page, action, kind, playerId };
   }

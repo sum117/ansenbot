@@ -4,16 +4,17 @@
   "plugins": [
     "@typescript-eslint",
     "simple-import-sort",
-    "import"
+    "import",
+    "prettier"
   ],
   "extends": [
-    "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
   ],
   "ignorePatterns": [
     "**/*.js"
   ],
   "rules": {
+    "prettier/prettier": 2,
     // simple-import-sort
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",

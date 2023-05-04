@@ -1,8 +1,12 @@
+import type { BaseMessageOptions } from "discord.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
-import { Character } from "../../../../types/Character";
-import { ITEM_ACTIONS, ITEM_ACTIONS_CUSTOM_IDS, ITEM_TYPES } from "../../../../data/constants";
 
-export interface CharacterInventoryMessageOptions {
+import type { ITEM_TYPES } from "../../../../data/constants";
+import { ITEM_ACTIONS, ITEM_ACTIONS_CUSTOM_IDS } from "../../../../data/constants";
+import type { Character } from "../../../../types/Character";
+import type { BasePaginationOptions } from "../../../../types/XYPagination";
+
+export interface CharacterInventoryMessageOptions extends BasePaginationOptions {
   character: Character;
   itemsString: string;
   counters: {
@@ -10,27 +14,21 @@ export interface CharacterInventoryMessageOptions {
     equipment: number;
     spell: number;
   };
-  currentPage: number;
   kind: keyof typeof ITEM_TYPES;
-  previousItemId: string;
-  selectedItemId: string;
-  nextItemId: string;
-  previousPage: number;
-  nextPage: number;
 }
 
 export default function characterInventoryMessageOptions({
-  character,
-  itemsString,
-  counters,
-  previousPage,
-  nextPage,
-  kind,
-  previousItemId,
-  nextItemId,
-  currentPage,
-  selectedItemId,
-}: CharacterInventoryMessageOptions) {
+                                                           character,
+                                                           itemsString,
+                                                           counters,
+                                                           previousPage,
+                                                           nextPage,
+                                                           kind,
+                                                           previousItemId,
+                                                           nextItemId,
+                                                           currentPage,
+                                                           selectedItemId
+                                                         }: CharacterInventoryMessageOptions): BaseMessageOptions {
   const embed = new EmbedBuilder()
     .setTitle(`Inventário de ${character.name}`)
     .setDescription(itemsString)
@@ -70,7 +68,7 @@ export default function characterInventoryMessageOptions({
       .setEmoji("⬇️")
       .setLabel("Próximo Item")
       .setCustomId(`character:item:browse:${nextItemId}:${character.playerId}:${currentPage}:next`)
-      .setStyle(ButtonStyle.Primary),
+      .setStyle(ButtonStyle.Primary)
   ]);
   const pageButtons = new ActionRowBuilder<ButtonBuilder>().setComponents([
     new ButtonBuilder()
@@ -84,7 +82,7 @@ export default function characterInventoryMessageOptions({
         `character:inventory:browse:${selectedItemId}:${character.playerId}:${nextPage}:next`
       )
       .setLabel("Próxima Página")
-      .setStyle(ButtonStyle.Secondary),
+      .setStyle(ButtonStyle.Secondary)
   ]);
 
   return { embeds: [embed], components: [itemControls, pageButtons] };

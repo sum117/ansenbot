@@ -19,7 +19,7 @@ export const COLLECTIONS = {
   forms: "forms",
   effects: "effects",
   channels: "channels",
-  body: "body",
+  body: "body"
 } as const;
 export const RELATION_FIELD_NAMES = {
   factions: "faction",
@@ -35,7 +35,7 @@ export const RELATION_FIELD_NAMES = {
   inventory: [
     "inventory.consumables.item",
     "inventory.spells.item",
-    "inventory.equipments.item",
+    "inventory.equipments.item"
   ].join(","),
   item: ["item", "consumables(item)", "equipments(item)", "spells(item)"].join(","),
   body: [
@@ -50,7 +50,7 @@ export const RELATION_FIELD_NAMES = {
     "body.leftArm.item",
     "body.rightArm.item",
     "body.rings.item",
-    "body.spells.item",
+    "body.spells.item"
   ].join(","),
   head: "head.item",
   face: "face.item",
@@ -63,7 +63,7 @@ export const RELATION_FIELD_NAMES = {
   leftArm: "leftArm.item",
   rightArm: "rightArm.item",
   rings: "rings.item",
-  spells: "spells.item",
+  spells: "spells.item"
 } as const;
 export const MAX_FILE_SIZE = 15_000_000;
 export const ACCEPTED_IMAGE_TYPES = ["jpeg", "jpg", "png", "webp"];
@@ -78,13 +78,13 @@ export const JOIN_FORM_VALUES = {
   page: "page",
   paragraph: "paragraph",
   teen: "teen",
-  wantsMentor: "true",
+  wantsMentor: "true"
 } as const;
 
 export const ITEM_TYPES = {
   consumable: "consumable",
   equipment: "equipment",
-  spell: "spell",
+  spell: "spell"
 } as const;
 
 export const STATUS_SKILLS_RELATION = {
@@ -94,7 +94,7 @@ export const STATUS_SKILLS_RELATION = {
   hunger: "fortitude",
   void: "darkness",
   stamina: "fortitude",
-  despair: "darkness",
+  despair: "darkness"
 } as const;
 
 export const STATUS_NAMES = {
@@ -103,24 +103,24 @@ export const STATUS_NAMES = {
   hunger: "Fome",
   void: "Vazio",
   stamina: "Energia",
-  despair: "Desespero",
+  despair: "Desespero"
 } as const;
 
 export const ITEM_TYPES_EMOJIS = {
   consumable: "🍔",
   equipment: "🛡️",
-  spell: "🔮",
+  spell: "🔮"
 } as const;
 
 export const ITEM_ACTIONS = {
   equipment: "Equipar",
   spell: "Memorizar Feitiço",
-  consumable: "Usar",
+  consumable: "Usar"
 } as const;
 export const ITEM_ACTIONS_CUSTOM_IDS = {
   equipment: "equip",
   spell: "equip",
-  consumable: "use",
+  consumable: "use"
 } as const;
 
 export const STATUS_GAIN_PER_LEVEL = 10 as const;
@@ -129,3 +129,6 @@ export const CHARACTER_INTERACTION_ID_REGEX =
   /character:interaction:(?<action>\w+):(?<agentId>(\d+|null)):(?<targetId>\d+)/;
 export const BATTLE_INTERACTION_ID_REGEX =
   /battle:(?<action>\w+):(?<kind>\w+):(?<agentId>\d+):(?<targetId>\d+)/;
+
+export const INVENTORY_REGEX =
+  /character:(inventory|item):(browse|use|discard|open|equip|info):(\w+):\d+(:\d+:(previous|next|null))?/;
