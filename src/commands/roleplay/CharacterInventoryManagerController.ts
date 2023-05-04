@@ -1,5 +1,5 @@
 import type { ButtonInteraction} from "discord.js";
-import { ButtonStyle, userMention } from "discord.js";
+import { userMention } from "discord.js";
 import { ButtonComponent, Discord } from "discordx";
 import mustache from "mustache";
 
