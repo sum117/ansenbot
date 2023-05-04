@@ -126,11 +126,7 @@ export class OnRoleplayMessage {
     }
   }
 
-  private async addStatusBarsToEmbed(
-    skills: Skills,
-    status: Status,
-    characterPost: CharacterPost
-  ): Promise<void> {
+  private addStatusBarsToEmbed(skills: Skills, status: Status, characterPost: CharacterPost): void {
     const statusBars: string[] = getStatusBars(skills, status);
     characterPost.embed.addFields({
       name: "Status",
@@ -222,11 +218,11 @@ export class OnRoleplayMessage {
     }
   }
 
-  private async handleSimilarMessage(
+  private handleSimilarMessage(
     similarMessage: Message,
     message: Message,
     messageOptions: BaseMessageOptions
-  ): Promise<void> {
+  ): void {
     const attachmentUrl = similarMessage.embeds[0]?.image?.url;
     if (attachmentUrl && !message.attachments.first()?.url) {
       const attachmentName = attachmentUrl?.split("/").pop();
