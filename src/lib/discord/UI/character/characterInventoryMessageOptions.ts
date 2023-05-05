@@ -1,8 +1,12 @@
+import type { BaseMessageOptions } from "discord.js";
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle, EmbedBuilder } from "discord.js";
-import { Character } from "../../../../types/Character";
-import { ITEM_ACTIONS, ITEM_ACTIONS_CUSTOM_IDS, ITEM_TYPES } from "../../../../data/constants";
 
-export interface CharacterInventoryMessageOptions {
+import type { ITEM_TYPES } from "../../../../data/constants";
+import { ITEM_ACTIONS, ITEM_ACTIONS_CUSTOM_IDS } from "../../../../data/constants";
+import type { Character } from "../../../../types/Character";
+import type { BasePaginationOptions } from "../../../../types/XYPagination";
+
+export interface CharacterInventoryMessageOptions extends BasePaginationOptions {
   character: Character;
   itemsString: string;
   counters: {
@@ -10,13 +14,7 @@ export interface CharacterInventoryMessageOptions {
     equipment: number;
     spell: number;
   };
-  currentPage: number;
   kind: keyof typeof ITEM_TYPES;
-  previousItemId: string;
-  selectedItemId: string;
-  nextItemId: string;
-  previousPage: number;
-  nextPage: number;
 }
 
 export default function characterInventoryMessageOptions({
@@ -30,7 +28,7 @@ export default function characterInventoryMessageOptions({
   nextItemId,
   currentPage,
   selectedItemId,
-}: CharacterInventoryMessageOptions) {
+}: CharacterInventoryMessageOptions): BaseMessageOptions {
   const embed = new EmbedBuilder()
     .setTitle(`Inventário de ${character.name}`)
     .setDescription(itemsString)

@@ -18,6 +18,7 @@ import { bodySchema, effectSchema, inventory } from "../schemas/characterSchema"
 import { Properties } from "./Utils";
 import { EquipmentItem, Item, SpellItem } from "./Item";
 import { equipmentDictionary } from "../data/translations";
+import { BodyPart } from "./Combat";
 
 export type CreateUpdateCharacter = z.infer<typeof createUpdateCharacterSchema>;
 export type Character = z.infer<typeof fullCharacterSchema>;
@@ -67,7 +68,8 @@ export interface ICharacterManager {
 
   setEquipment: (equipment: Item) => Promise<CharacterBody>;
   getEquipment: () => Promise<CharacterBody>;
+
   getEquipmentItem: (
-    slot: keyof typeof equipmentDictionary
+    slot: keyof typeof equipmentDictionary | BodyPart
   ) => Promise<EquipmentItem | EquipmentItem[] | SpellItem[] | undefined>;
 }
