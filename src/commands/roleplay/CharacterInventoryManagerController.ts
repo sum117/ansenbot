@@ -3,6 +3,7 @@ import { ButtonStyle, userMention } from "discord.js";
 import { ButtonComponent, Discord } from "discordx";
 import mustache from "mustache";
 
+import { INVENTORY_REGEX } from "../../data/constants";
 import getRoleplayDataFromUserId from "../../lib/discord/Character/helpers/getRoleplayDataFromUserId";
 import characterInventoryMessageOptions from "../../lib/discord/UI/character/characterInventoryMessageOptions";
 import getItemInfoEmbed from "../../lib/discord/UI/helpers/getItemInfoEmbed";
@@ -30,7 +31,7 @@ export class CharacterInventoryManagerController {
         return interaction
           .reply({
             content: "❌ Você já possui um inventário aberto.",
-            ephemeral: true
+            ephemeral: true,
           })
           .catch(() => null);
       }
@@ -64,7 +65,7 @@ export class CharacterInventoryManagerController {
       const itemsArray = [
         ...(currentCharacter.expand.inventory.expand.consumables ?? []),
         ...(currentCharacter.expand.inventory.expand.equipments ?? []),
-        ...(currentCharacter.expand.inventory.expand.spells ?? [])
+        ...(currentCharacter.expand.inventory.expand.spells ?? [],
       ];
 
       const trackedInteraction = await this.trackedInteraction.getOrCreateTrackedInteraction(
