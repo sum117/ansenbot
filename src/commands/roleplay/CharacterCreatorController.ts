@@ -219,22 +219,55 @@ export class CharacterCreatorController {
     if (variant === "createCharChoice") {
       const entities = await this.fetchEntities(interaction, form, itemId);
 
-      const sanitizedFieldName =
-        form.step.collection === "races" ||
-        form.step.collection === "factions" ||
-        form.step.collection === "destinyMaidens"
-          ? form.step.collection.replace(/s$/, "")
-          : form.step.collection;
-      const isArrayInBackend = form.step.collection === "races" || form.step.collection === "specs";
+      // Define a list of collections that should be sanitized
+      const sanitizeCollections = ["races", "factions", "destinyMaidens"];
 
+      // Define a list of collections that have an array in the backend
+      const arrayInBackendCollections = ["races", "specs"];
+
+      /**
+       * Get the sanitized field name for the form.
+       * @param collection The collection name.
+       * @returns The sanitized field name.
+       */
+      function getSanitizedFieldName(collection: string): string {
+        if (sanitizeCollections.includes(collection)) {
+          return collection.replace(/s$/, "");
+        }
+        return collection;
+      }
+
+      /**
+       * Get the value for the form field based on entities and the backend structure.
+       * @param entities The entities list.
+       * @param isArrayInBackend Indicates if the collection has an array in the backend.
+       * @returns The value for the form field.
+       */
+      function getFormFieldValue(
+        entities: (Race | Faction | Spec)[],
+        isArrayInBackend: boolean
+      ): string | string[] {
+        if (entities.length > 1) {
+          return entities.map((entity) => entity.id);
+        }
+
+        if (isArrayInBackend) {
+          return [entities[0].id];
+        }
+
+        return entities[0].id;
+      }
+
+      // Obtain the sanitized field name
+      const sanitizedFieldName = getSanitizedFieldName(form.step.collection);
+
+      // Determine if the collection has an array in the backend
+      const isArrayInBackend = arrayInBackendCollections.includes(form.step.collection);
+
+      // Update the main instance form
       mainInstance.form = {
         ...mainInstance.form,
-        [sanitizedFieldName]:
-          entities.length > 1
-            ? entities.map((entity) => entity.id)
-            : isArrayInBackend
-            ? [entities[0].id]
-            : entities[0].id,
+        [sanitizedFieldName]: getFormFieldValue(entities, isArrayInBackend),
       };
 
       this.characterCreatorInstances.set(interaction.user.id, mainInstance);
