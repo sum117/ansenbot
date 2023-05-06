@@ -1,5 +1,5 @@
 import type { BaseMessageOptions, ButtonInteraction, Message } from "discord.js";
-import { AttachmentBuilder, ChannelType, EmbedBuilder } from "discord.js";
+import { AttachmentBuilder, ChannelType, EmbedBuilder, userMention } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On } from "discordx";
 import mustache from "mustache";
@@ -54,14 +54,19 @@ export class OnRoleplayMessage {
       ]);
 
       const characterPost = new CharacterPost(currentCharacter);
+      const messageMentions = message.mentions.users;
+      const sanitizedContent = message.content.replace(/<@!?\d+>/g, "").trim();
 
       const messageOptions = await characterPost.createMessageOptions({
         to: "message",
-        embedContent: message.content,
+        embedContent: sanitizedContent,
         attachmentUrl: message.attachments.first()?.url,
       });
 
-      void deleteDiscordMessage(message, 1000);
+      if (messageMentions.size > 0) {
+        messageOptions.content = messageMentions.map((user) => userMention(user.id)).join(" ");
+      }
+      deleteDiscordMessage(message, 1000);
 
       const similarMessage = await this.checkSimilarityFromPreviousMessages(message);
       if (similarMessage) {
