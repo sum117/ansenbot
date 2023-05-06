@@ -87,7 +87,7 @@ export class CharacterInventoryManagerController {
         previousPage,
         nextItemId,
         currentPage,
-        currentlySelectedIte,
+        currentlySelectedItem,
       } = makeXYPagination({
         pageSize: PAGE_SIZE,
         itemsArray,
@@ -108,16 +108,16 @@ export class CharacterInventoryManagerController {
         counters: {
           consumable: currentCharacter.expand.inventory.consumables.length,
           equipment: currentCharacter.expand.inventory.equipments.length,
-          spell: currentCharacter.expand.inventory.spells.lengt,
+          spell: currentCharacter.expand.inventory.spells.length,
         },
-        itemsString: inventoryString.join("\n",
+        itemsString: inventoryString.join("\n"),
       };
 
       const messageOptions = characterInventoryMessageOptions(options);
 
       await trackedInteraction.editReply({
         content: useItemAction,
-        ...messageOptions
+        ...messageOptions,
       });
     } catch (error) {
       handleError(interaction, error);
@@ -136,9 +136,14 @@ export class CharacterInventoryManagerController {
 
   private inventoryAlreadyOpen(interaction: ButtonInteraction, playerId: string) {
     const isDifferentUser = interaction.user.id !== playerId;
-    const hasCachedInteraction = this.trackedInteraction.cache.get(interaction.user.id);
+    const cachedInteraction = this.trackedInteraction.cache.get(interaction.user.id);
+    const isSameTargetPlayer = cachedInteraction?.customId.includes(playerId);
+
     return Boolean(
-      isDifferentUser && hasCachedInteraction && !interaction.customId.includes("open")
+      isDifferentUser &&
+        cachedInteraction &&
+        !interaction.customId.includes("open") &&
+        !isSameTargetPlayer
     );
   }
 
@@ -154,7 +159,7 @@ export class CharacterInventoryManagerController {
 
     const view = {
       author: userMention(characterManager.character.playerId),
-      item: item.expand.item.name
+      item: item.expand.item.name,
     };
     await characterManager.setEquipment(item);
     const equipment = await characterManager.getEquipmentItem(item.slot);
@@ -172,12 +177,12 @@ export class CharacterInventoryManagerController {
 
   private async inspectItemInteraction(interaction: ButtonInteraction) {
     const { itemId, playerId } = this.getInventoryCredentialsFromCustomId(interaction);
-    const { currentCharacter } = await getRoleplayDataFromUserId(playerId);
+    const { currentCharacter, characterManager } = await getRoleplayDataFromUserId(playerId);
 
     const itemsArray = [
       ...(currentCharacter.expand.inventory.expand.consumables ?? []),
       ...(currentCharacter.expand.inventory.expand.equipments ?? []),
-      ...(currentCharacter.expand.inventory.expand.spells ?? [])
+      ...(currentCharacter.expand.inventory.expand.spells ?? []),
     ];
 
     const itemsTableId = itemsArray.find(({ id }) => itemId === id)?.item;
@@ -187,7 +192,7 @@ export class CharacterInventoryManagerController {
     }
 
     const item = await ItemFetcher.getItemWithRole(itemsTableId);
-    return getItemInfoEmbed(item, currentCharacter.name);
+    return getItemInfoEmbed(item, characterManager);
   }
 
   private async discardItemInteraction(interaction: ButtonInteraction) {
@@ -213,7 +218,7 @@ export class CharacterInventoryManagerController {
         content: mustache.render(
           "{{{author}}}, o personagem **{{{character}}}** não possui itens no inventário.",
           view
-        )
+        ),
       });
       // delay for 5 seconds before deleting the message
       await new Promise((resolve) => {

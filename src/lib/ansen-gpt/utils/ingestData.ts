@@ -38,6 +38,12 @@ export const run = async (): Promise<void> => {
 
     console.log("creating vector store...");
     const embeddings = new OpenAIEmbeddings();
+
+    if (!pineconeClient) {
+      console.error("pinecone client not initialized");
+      return;
+    }
+
     const index = pineconeClient.Index(PINECONE_INDEX_NAME);
 
     await PineconeStore.fromDocuments(docs, embeddings, {

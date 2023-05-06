@@ -10,20 +10,28 @@ import {
 import type { ItemWithRole } from "../../../../types/Item";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import removePocketbaseConstants from "../../../../utils/removePocketbaseConstants";
+import type { CharacterManager } from "../../Character/classes/CharacterManager";
 
-export default function getItemInfoEmbed(item: ItemWithRole, ownerName?: string): EmbedBuilder {
+export default function getItemInfoEmbed(
+  item: ItemWithRole,
+  characterManager: CharacterManager
+): EmbedBuilder {
   const fields: Array<{ name: string; value: string; inline: boolean }> = [];
   fields.push({ name: "Tipo", value: itemTypesDictionary[item.type], inline: true });
-  if (ownerName) {
-    fields.push({ name: "Dono(a)", value: ownerName, inline: true });
-  }
+  fields.push({ name: "Dono(a)", value: characterManager.character.name, inline: true });
 
   if (item.expand) {
     const expanded =
       item.expand["consumables(item)"] ??
       item.expand["equipments(item)"] ??
       item.expand["spells(item)"];
-
+    const charInventory = characterManager.getInventory();
+    const itemsList = [
+      ...charInventory.consumables,
+      ...charInventory.equipments,
+      ...charInventory.spells,
+    ];
+    const filteredExpanded = expanded.find((item) => itemsList.includes(item.id));
     const fieldInfo: Array<string> = [];
     const keysBlacklist = ["item", "expand", "isCooked", "isPoisoned", "quantity", "isEquipped"];
     const isBlacklisted = (key: string): key is (typeof keysBlacklist)[number] =>
@@ -35,7 +43,7 @@ export default function getItemInfoEmbed(item: ItemWithRole, ownerName?: string)
           .omit({
             expand: true,
           })
-          .parse(expanded[0]);
+          .parse(filteredExpanded);
         for (const [key, value] of getSafeEntries(removePocketbaseConstants(consumable))) {
           if (isBlacklisted(key)) {
             continue;

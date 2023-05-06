@@ -34,7 +34,7 @@ export class CharacterEvaluatorController {
     try {
       if (
         interaction.inCachedGuild() &&
-        interaction.member?.permissions.has(PermissionsBitField.Flags.ManageGuild)
+        !interaction.member?.permissions.has(PermissionsBitField.Flags.ManageGuild)
       ) {
         void replyOrFollowUp(
           interaction,

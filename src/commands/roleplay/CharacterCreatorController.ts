@@ -165,15 +165,22 @@ export class CharacterCreatorController {
     const mainInstance = await this.getCreatorInstance(interaction);
     assert(mainInstance, new BotError("Could not find creator instance."));
     const userInputs = customIds.map((id) => interaction.fields.getTextInputValue(id));
-    const getCollectionName = (id: string) => id.split(":")[2];
+    const getFieldName = (id: string) => id.split(":")[2];
 
     for (const [index, id] of customIds.entries()) {
-      const collectionName = getCollectionName(id);
+      const fieldName = getFieldName(id);
       const userInput = userInputs[index];
+      const getValidAge = (age: string) => {
+        const parsedAge = Number(age);
+        const isValidAge = !isNaN(parsedAge);
+        if (isValidAge) {
+          return parsedAge;
+        }
+        return numberInRange(18, 24);
+      };
       mainInstance.form = {
         ...mainInstance.form,
-        [collectionName]: userInput,
-        age: numberInRange(18, 24),
+        [fieldName]: fieldName === "age" ? getValidAge(userInput) : userInput,
       };
     }
     const requiredFieldsSchema = createUpdateCharacterSchema.pick({

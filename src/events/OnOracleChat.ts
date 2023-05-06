@@ -36,7 +36,11 @@ export class OnOracleChat {
       }
 
       if (!this.vectorStore) {
-        const index = pineconeClient.Index(PINECONE_INDEX_NAME);
+        const index = pineconeClient?.Index(PINECONE_INDEX_NAME);
+        if (!index) {
+          console.error("Pinecone Client not initialized");
+          return;
+        }
         this.vectorStore = await PineconeStore.fromExistingIndex(new OpenAIEmbeddings({}), {
           namespace: PINECONE_NAME_SPACE,
           pineconeIndex: index,

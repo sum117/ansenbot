@@ -1,10 +1,12 @@
 import { z } from "zod";
 
+import { defaultZodString } from "./utiltitySchemas";
+
 const baseSchema = z.object({
-  id: z.string(),
-  collectionId: z.string(),
-  collectionName: z.string(),
-  created: z.string(),
-  updated: z.string(),
+  id: defaultZodString,
+  collectionId: defaultZodString,
+  collectionName: defaultZodString,
+  created: defaultZodString,
+  updated: defaultZodString,
 });
 export default baseSchema;

@@ -58,7 +58,7 @@ export class CharacterEditor {
   }
 
   async handleEditCharacterSelect(): Promise<void> {
-    if (!this.interaction.isSelectMenu()) {
+    if (!this.interaction.isStringSelectMenu()) {
       throw new BotError("Ocorreu um erro ao tentar editar o personagem.");
     }
     try {
@@ -177,11 +177,7 @@ export class CharacterEditor {
   }
 
   private checkOwnership(character: Character): boolean {
-    if (!CharacterFetcher.isOwner(this.interaction.user.id, character.playerId)) {
-      void replyOrFollowUp(this.interaction, "Você não é o dono desse personagem.");
-      return false;
-    }
-    return true;
+    return CharacterFetcher.isOwner(this.interaction.user.id, character.playerId);
   }
 
   private async updateFaction(characterId: string, newFactionId: string): Promise<void> {
