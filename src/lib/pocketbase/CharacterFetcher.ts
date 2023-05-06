@@ -5,7 +5,7 @@ import type { ListResult, RecordFullListQueryParams } from "pocketbase";
 import { RELATION_FIELD_NAMES, STATUS_GAIN_PER_LEVEL } from "../../data/constants";
 import type { Character, CharacterBody, Inventory, Skills, Status } from "../../types/Character";
 import type { CreateData, PocketBaseConstants } from "../../types/PocketBaseCRUD";
-import { BotError } from "../../utils/Errors";
+import { PocketBaseError } from "../../utils/Errors";
 import getImageBlob from "../../utils/getImageBlob";
 import getSafeKeys from "../../utils/getSafeKeys";
 import jsonToFormData from "../../utils/jsonToFormData";
@@ -127,7 +127,10 @@ export default class CharacterFetcher {
       ],
     });
 
-    assert(startingSkills.items[0], "starting skills for spec not found");
+    assert(
+      startingSkills.items[0],
+      new PocketBaseError("Não consegui encontrar as skills iniciais da classe.")
+    );
 
     const sanitizedStartingSkillsOne = this.sanitizeStartingSkills(startingSkills.items[0]);
 
@@ -230,7 +233,6 @@ export default class CharacterFetcher {
       };
 
       getSafeKeys(mergedSkills).forEach((key) => {
-        assert(mergedSkills, new BotError("Skills should be defined here"));
         const value = mergedSkills[key] ?? 0;
         mergedSkills[key] = Math.floor(value / 2);
       });

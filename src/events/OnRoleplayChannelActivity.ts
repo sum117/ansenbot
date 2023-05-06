@@ -33,7 +33,7 @@ export class OnRoleplayChannelActivity {
           .get(config.guilds.ansenfall)
           ?.channels.cache.filter(this.isRoleplayingCategory);
         if (!roleplayingCategories) {
-          console.log("Nenhuma categoria de Roleplay foi encontrada no servidor.");
+          console.error("Nenhuma categoria de Roleplay foi encontrada no servidor.");
           continue;
         }
         const roleplayingChannels = this.getRoleplayingChannels(roleplayingCategories);
@@ -153,7 +153,7 @@ export class OnRoleplayChannelActivity {
       }
       return presentationMessage;
     } catch (error) {
-      console.log("Incapaz de carregar as mensagens do canal de RP " + channel.id + ": " + error);
+      console.error("Incapaz de carregar as mensagens do canal de RP " + channel.id + ": " + error);
       return null;
     }
   }

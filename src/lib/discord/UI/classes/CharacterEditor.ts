@@ -40,12 +40,22 @@ export class CharacterEditor {
     }
     try {
       const field = this.interaction.component.label;
-      assert(field, new BotError("Could not find trigger message button label to edit character."));
+      assert(
+        field,
+        new BotError(
+          "Não foi possível encontrar o botão para editar o seu personagem. Entre em contato com um administrador."
+        )
+      );
 
       const [_, action, characterId] = this.getInteractionCredentials();
       const character = await CharacterFetcher.getCharacterById(characterId);
       const isOwner = this.checkOwnership(character);
-      assert(isOwner, new PocketBaseError("You do not own this character."));
+      assert(
+        isOwner,
+        new PocketBaseError(
+          "Você não é o dono desse personagem. Se acha que isso é um engano, entre em contato com um administrador."
+        )
+      );
 
       const length = this.getLengths(action);
       const value = this.getCharacterUpdateValue(character, action);

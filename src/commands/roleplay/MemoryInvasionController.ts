@@ -27,11 +27,14 @@ export class MemoryInvasionController {
     interaction: ChatInputCommandInteraction
   ): Promise<void> {
     try {
-      assert(interaction.inCachedGuild(), new BotError("interaction sent outside of guild"));
+      assert(
+        interaction.inCachedGuild(),
+        new BotError("Você não pode utilizar os comandos do bot fora de Ansenfall.")
+      );
 
       const memoryData = await MemoryFetcher.getAllMemories();
       const chosenMemory = memoryData.items.find((memory) => memory.title === memoryTitle);
-      assert(chosenMemory, new BotError("memory not found"));
+      assert(chosenMemory, new BotError("Não foi possível encontrar a memória selecionada."));
 
       const view = {
         memory: userMention(interaction.user.id),

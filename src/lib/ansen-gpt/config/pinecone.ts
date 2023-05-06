@@ -1,7 +1,7 @@
 import { BotError } from "../../../utils/Errors";
 
 if (!process.env.PINECONE_INDEX_NAME) {
-  throw new BotError("Missing Pinecone index name in .env file");
+  throw new BotError("Não consegui encontrar o nome do índice do Pinecone para executar a query.");
 }
 
 const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME ?? "";

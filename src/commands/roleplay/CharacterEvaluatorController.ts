@@ -18,7 +18,9 @@ export class CharacterEvaluatorController {
 
   get interaction(): ButtonInteraction {
     if (!this._interaction) {
-      throw new BotError("Interaction not set");
+      throw new BotError(
+        "A interação do bot não foi definida ainda. Por favor entre em contato com um administrador."
+      );
     }
     return this._interaction;
   }
@@ -75,7 +77,10 @@ export class CharacterEvaluatorController {
       const denyChannel = (await interaction.client.channels.cache.get(
         config.channels.createCharacterDenied
       )) as TextChannel;
-      assert(denyChannel, new BotError("Can't find the deny character channel"));
+      assert(
+        denyChannel,
+        new BotError("Não foi possível encontrar o canal de reprovação de personagens.")
+      );
 
       const denyReason = interaction.fields.getTextInputValue(
         `character:deny:${characterId}:${characterPlayerId}`
@@ -106,11 +111,19 @@ export class CharacterEvaluatorController {
     const approvedCharacterChannel = (await this.interaction.client.channels.cache.get(
       config.channels.createCharacterApproved
     )) as TextChannel;
-    assert(approvedCharacterChannel, new BotError("Can't find the approve character channel"));
+    assert(
+      approvedCharacterChannel,
+      new BotError("Não consegui achar o canal de personagens aprovados.")
+    );
 
     const approvedCharacterEmbed = EmbedBuilder.from(this.interaction.message.embeds[0]);
     const embedFields = approvedCharacterEmbed.data.fields;
-    assert(embedFields, new BotError("Can't find the embed fields"));
+    assert(
+      embedFields,
+      new BotError(
+        "Houve um erro ao gerar o embed do personagem aprovado. Por favor entre em contato com um administrador."
+      )
+    );
 
     const view = {
       staff: userMention(this.interaction.user.id),

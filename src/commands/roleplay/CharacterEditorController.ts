@@ -135,7 +135,12 @@ export class CharacterEditorController {
         ephemeral: false,
       });
       const form = await characterEditForm(interaction);
-      assert(form, new BotError("could not find form."));
+      assert(
+        form,
+        new BotError(
+          "Não consegui criar o formulário de edição. Por favor entre em contato com o suporte."
+        )
+      );
       void replyOrFollowUp(interaction, form);
     } catch (error) {
       handleError(interaction, error);

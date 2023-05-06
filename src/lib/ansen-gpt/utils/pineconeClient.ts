@@ -3,7 +3,7 @@ import { PineconeClient } from "@pinecone-database/pinecone";
 import { BotError } from "../../../utils/Errors";
 
 if (!process.env.PINECONE_ENVIRONMENT || !process.env.PINECONE_API_KEY) {
-  throw new BotError("Pinecone environment or api key vars missing");
+  throw new BotError("As variáveis de ambiente do Pinecone não foram encontradas.");
 }
 
 async function initPinecone() {

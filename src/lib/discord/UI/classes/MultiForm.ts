@@ -42,7 +42,7 @@ export default class MultiForm extends BaseMessageBuilder {
 
   public getEmbedDescription(): string {
     const embed = this.embeds?.[0];
-    assert(embed, new BotError("No embed found"));
+    assert(embed, new BotError("Não foi possível encontrar um embed."));
     return EmbedBuilder.from(embed).data.description ?? "";
   }
 

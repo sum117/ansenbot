@@ -20,7 +20,7 @@ export class OnImageGenerationRequest {
 
   get message(): Message {
     if (!this._message) {
-      throw new BotError("Message not set for image generation");
+      throw new BotError("Não foi possível achar a mensagem com inforação do seu pedido.");
     }
     return this._message;
   }

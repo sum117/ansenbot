@@ -49,7 +49,7 @@ export const novelRequestImageGen = async (input: string): Promise<Buffer> => {
   const zipFileContent = await zipFile.file("image_0.png")?.async("nodebuffer");
 
   if (!zipFileContent) {
-    throw new BotError("Error while extracting zip file.");
+    throw new BotError("Ocorreu um erro ao extrair o aquiro zip da imagem.");
   }
   return zipFileContent;
 };

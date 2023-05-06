@@ -197,25 +197,6 @@ export default class CharacterCombat {
     const blockRandom = random(0, 75, true);
     const fleeRandom = random(0, 100, true);
     const counterRandom = random(0, 100, true);
-
-    console.log(
-      "dodgeChance",
-      dodgeChance,
-      "dodgeRandom",
-      dodgeRandom,
-      "blockChance",
-      blockChance,
-      "blockRandom",
-      blockRandom,
-      "fleeChance",
-      fleeChance,
-      "fleeRandom",
-      fleeRandom,
-      "counterChance",
-      counterChance,
-      "counterRandom",
-      counterRandom
-    );
     let success = false;
 
     switch (defenseOption) {
@@ -263,9 +244,6 @@ export default class CharacterCombat {
 
     const targetStatus = isCounter ? this.agent.expand.status : this.target.expand.status;
     const damageDealt = Math.ceil(Math.max(attackerFinalQuotient - defenderFinalQuotient, 0));
-    console.log("attackerFinalQuotient", attackerFinalQuotient);
-    console.log("defenderFinalQuotient", defenderFinalQuotient);
-    console.log("damage dealt", damageDealt);
 
     let isKillingBlow = false;
 
@@ -351,7 +329,6 @@ export default class CharacterCombat {
 
     // Ajusta o multiplicador com base no nível da habilidade
     const adjustedMultiplier = baseFactor + (multiplier * skillLevel) / 99;
-    console.log("adjustedMultiplier", adjustedMultiplier);
     // Calcula a parte base do quociente final (80% do total)
     const baseValue = quotient * adjustedMultiplier * baseFactor;
 
@@ -359,7 +336,6 @@ export default class CharacterCombat {
     const rngValue = quotient * adjustedMultiplier * rngFactor * random(0.5, 1.5, true);
 
     const finalQuotient = baseValue + rngValue;
-    console.log("baseValue", baseValue, "rngValue", rngValue, "finalQuotient", finalQuotient);
     return finalQuotient;
   }
 }

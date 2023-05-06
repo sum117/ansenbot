@@ -19,7 +19,9 @@ export class OnOracleChat {
 
   get chain(): ChatVectorDBQAChain {
     if (!this._chain) {
-      throw new BotError("Chain not initialized");
+      throw new BotError(
+        "A corrente de conversa com o Oráculo não foi inicializada ainda. Entre em contato com um administrador."
+      );
     }
     return this._chain;
   }

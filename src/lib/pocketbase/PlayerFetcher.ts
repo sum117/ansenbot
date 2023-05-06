@@ -4,11 +4,13 @@ import type { Player } from "../../types/Character";
 import PocketBase from "./PocketBase";
 
 export default class PlayerFetcher {
-  public static getPlayerById(playerId: Player["discordId"]): Promise<Player> {
+  public static async getPlayerById(playerId: Player["discordId"]): Promise<Player> {
     try {
-      return this.findPlayer(playerId);
+      const foundPlayer = await this.findPlayer(playerId);
+      return foundPlayer;
     } catch (error) {
-      return this.createPlayer(playerId);
+      const createdPlayer = await this.createPlayer(playerId);
+      return createdPlayer;
     }
   }
 

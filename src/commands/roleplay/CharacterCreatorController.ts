@@ -120,10 +120,20 @@ export class CharacterCreatorController {
 
   private async handleDoneStep(interaction: ButtonInteraction): Promise<void> {
     const userInstance = this.characterCreatorInstances.get(interaction.user.id);
-    assert(userInstance, new BotError("Could not find creator instance."));
+    assert(
+      userInstance,
+      new BotError(
+        'Não foi possível criar a instância do criador de personagens. O bot foi provavelmente reiniciado recentemente. Clique em "Criar Ficha" mais uma vez.'
+      )
+    );
 
     const character = await this.sendCreateRequest(userInstance);
-    assert(character, new PocketBaseError("Could not create character."));
+    assert(
+      character,
+      new PocketBaseError(
+        "Não foi possível criar o personagem. Por favor entre em contato com um administrador e tente novamente."
+      )
+    );
 
     await userInstance.interaction.editReply({
       content: "Personagem criado com sucesso!",
@@ -134,7 +144,7 @@ export class CharacterCreatorController {
     const queueChannel = interaction.guild?.channels.cache.get(
       config.channels.createCharacterQueue
     ) as TextChannel;
-    assert(queueChannel, new BotError("Could not find queue channel."));
+    assert(queueChannel, new BotError("Não consegui achar o canal da fila de personagens."));
 
     await this.sendCharacterProfile(queueChannel, character);
     this.characterCreatorInstances.delete(interaction.user.id);
@@ -163,7 +173,12 @@ export class CharacterCreatorController {
   private async handleModalSteps(modal: AnsenModal, interaction: ModalSubmitInteraction) {
     const customIds = modal.getFieldCustomIds();
     const mainInstance = await this.getCreatorInstance(interaction);
-    assert(mainInstance, new BotError("Could not find creator instance."));
+    assert(
+      mainInstance,
+      new BotError(
+        'Não foi possível criar a instância do criador de personagens. O bot foi provavelmente reiniciado recentemente. Clique em "Criar Ficha" mais uma vez.'
+      )
+    );
     const userInputs = customIds.map((id) => interaction.fields.getTextInputValue(id));
     const getFieldName = (id: string) => id.split(":")[2];
 
@@ -212,7 +227,12 @@ export class CharacterCreatorController {
       return;
     }
 
-    assert(mainInstance, new BotError("Could not find creator instance."));
+    assert(
+      mainInstance,
+      new BotError(
+        'Não foi possível criar a instância do criador de personagens. O bot foi provavelmente reiniciado recentemente. Clique em "Criar Ficha" mais uma vez.'
+      )
+    );
 
     if (Number(step) > form.totalSteps && interaction instanceof ButtonInteraction) {
       void mainInstance.interaction.editReply(
@@ -390,7 +410,12 @@ export class CharacterCreatorController {
     instance: NonNullable<Awaited<ReturnType<typeof this.getCreatorInstance>>>
   ) {
     const { form } = instance;
-    assert(form, new BotError("Could not find form data."));
+    assert(
+      form,
+      new BotError(
+        "Não foi possível encontrar o formulário. O bot foi muito provavelmente reiniciado. Tente novamente."
+      )
+    );
 
     // Initialize default form values
     const defaultFormData = {

@@ -281,7 +281,7 @@ export class OnRoleplayMessage {
 
   private async checkSimilarityFromPreviousMessages(message: Message) {
     if (!message.inGuild()) {
-      throw new BotError("Message is not in guild");
+      throw new BotError("A mensagem não está dentro de Ansenfall.");
     }
     const lastMessages = await message.channel.messages.fetch({ limit: 10 });
     return lastMessages.find((lastMessage) => {
