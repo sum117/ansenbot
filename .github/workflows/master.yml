@@ -5,11 +5,7 @@ concurrency:
   group: ${{ github.ref }}
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - src/**
+  push: {}
 
 jobs:
   eslint:
