@@ -218,12 +218,56 @@ export class CharacterCreatorController {
 
     if (variant === "createCharChoice") {
       const entities = await this.fetchEntities(interaction, form, itemId);
-      const sanitizedFieldName = form.step.collection.replace(/s$/, "");
 
+      // Define a list of collections that should be sanitized
+      const sanitizeCollections = ["races", "factions", "destinyMaidens"];
+
+      // Define a list of collections that have an array in the backend
+      const arrayInBackendCollections = ["races", "specs"];
+
+      /**
+       * Get the sanitized field name for the form.
+       * @param collection The collection name.
+       * @returns The sanitized field name.
+       */
+      function getSanitizedFieldName(collection: string): string {
+        if (sanitizeCollections.includes(collection)) {
+          return collection.replace(/s$/, "");
+        }
+        return collection;
+      }
+
+      /**
+       * Get the value for the form field based on entities and the backend structure.
+       * @param entities The entities list.
+       * @param isArrayInBackend Indicates if the collection has an array in the backend.
+       * @returns The value for the form field.
+       */
+      function getFormFieldValue(
+        entities: (Race | Faction | Spec)[],
+        isArrayInBackend: boolean
+      ): string | string[] {
+        if (entities.length > 1) {
+          return entities.map((entity) => entity.id);
+        }
+
+        if (isArrayInBackend) {
+          return [entities[0].id];
+        }
+
+        return entities[0].id;
+      }
+
+      // Obtain the sanitized field name
+      const sanitizedFieldName = getSanitizedFieldName(form.step.collection);
+
+      // Determine if the collection has an array in the backend
+      const isArrayInBackend = arrayInBackendCollections.includes(form.step.collection);
+
+      // Update the main instance form
       mainInstance.form = {
         ...mainInstance.form,
-        [sanitizedFieldName]:
-          entities.length > 1 ? entities.map((entity) => entity.id) : entities[0].id,
+        [sanitizedFieldName]: getFormFieldValue(entities, isArrayInBackend),
       };
 
       this.characterCreatorInstances.set(interaction.user.id, mainInstance);
@@ -330,7 +374,7 @@ export class CharacterCreatorController {
   }
 
   private showCharacterModal(interaction: ButtonInteraction) {
-    const [_, _state, requiredOrOptional] = interaction.customId.split(":");
+    const [_, state, requiredOrOptional] = interaction.customId.split(":");
     const modal = this.modals[requiredOrOptional as "required" | "optional"];
     void interaction.showModal(modal);
   }
@@ -340,21 +384,26 @@ export class CharacterCreatorController {
   ) {
     const { form } = instance;
     assert(form, new BotError("Could not find form data."));
-    form.level = 4;
-    form.reputation = 0;
-    form.skills = "";
-    form.status = "";
-    form.memory = "";
-    form.playerId = instance.interaction.user.id;
-    form.player = "";
-    form.posts = [""];
-    form.xp = 0;
-    form.skillPoints = 0;
-    form.ascendedSkills = [];
-    form.skillTraits = [];
-    form.body = "";
 
-    const character = createUpdateCharacterSchema.parse(form);
-    return CharacterFetcher.createCharacter(character);
+    // Initialize default form values
+    const defaultFormData = {
+      level: 4,
+      reputation: 0,
+      skills: "",
+      status: "",
+      memory: "",
+      playerId: instance.interaction.user.id,
+      player: "",
+      posts: [""],
+      xp: 0,
+      skillPoints: 0,
+      ascendedSkills: [],
+      skillTraits: [],
+      body: "",
+      inventory: "",
+    };
+    const updatedForm = { ...defaultFormData, ...form };
+    const character = createUpdateCharacterSchema.parse(updatedForm);
+    return CharacterFetcher.createCharacter(character, instance.interaction.user.id);
   }
 }

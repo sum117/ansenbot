@@ -1,3 +1,6 @@
+import { Character } from "../../../../types/Character";
+import getInteractionMetadata from "../helpers/getInteractionMetadata";
+import MultiForm from "../classes/MultiForm";
 import {
   ButtonBuilder,
   ButtonStyle,
@@ -5,14 +8,7 @@ import {
   StringSelectMenuOptionBuilder,
 } from "discord.js";
 
-import type { Character } from "../../../../types/Character";
-import MultiForm from "../classes/MultiForm";
-import getInteractionMetadata from "../helpers/getInteractionMetadata";
-
-export default async function battleInteractionHelpForm(
-  helper: Character,
-  target: Character
-): Promise<MultiForm> {
+export default async function battleInteractionSupportForm(helper: Character, target: Character) {
   const { render, imageUrl, infoFields } = await getInteractionMetadata(helper, target);
   const fields: Array<StringSelectMenuBuilder | ButtonBuilder> = [];
 
@@ -27,14 +23,14 @@ export default async function battleInteractionHelpForm(
     fields.push(
       new StringSelectMenuBuilder()
         .setPlaceholder("Feitiço (Opcional)")
-        .setCustomId(`battle:help:spell:${helper.playerId}:${target.playerId}`)
+        .setCustomId(`battle:support:spell:${helper.playerId}:${target.playerId}`)
         .setOptions(spellsOptions)
     );
   }
 
   fields.push(
     new ButtonBuilder()
-      .setCustomId(`battle:help:sacrifice:${helper.playerId}:${target.playerId}`)
+      .setCustomId(`battle:support:sacrifice:${helper.playerId}:${target.playerId}`)
       .setLabel("Sacrificar")
       .setStyle(ButtonStyle.Danger)
       .setEmoji("🔥")
@@ -42,7 +38,7 @@ export default async function battleInteractionHelpForm(
 
   fields.push(
     new ButtonBuilder()
-      .setCustomId(`battle:help:pass:${helper.playerId}:${target.playerId}`)
+      .setCustomId(`battle:support:pass:${helper.playerId}:${target.playerId}`)
       .setLabel("Passar Turno")
       .setEmoji("⏭️")
       .setStyle(ButtonStyle.Primary)

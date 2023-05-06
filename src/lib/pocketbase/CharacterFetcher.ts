@@ -147,7 +147,7 @@ export default class CharacterFetcher {
           1,
           2,
           {
-            filter: `spec="${specOne} || spec="${specTwo}"`,
+            filter: `spec="${specOne}" || spec="${specTwo}"`,
           },
         ],
       });
@@ -215,6 +215,7 @@ export default class CharacterFetcher {
         skills: baseSkills.id,
         status: baseStatus.id,
         body: body.id,
+        inventory: inventory.d,
       });
       formData.set("image", blob, fileName);
       const response = await PocketBase.createEntityWithFormData<Character>("characters", formData);

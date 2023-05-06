@@ -18,7 +18,7 @@ export default async function characterInteractionForm(
       .setEmoji("⚔️"),
 
     new ButtonBuilder()
-      .setCustomId(`character:interaction:help:${agent.playerId}:${target.playerId}`)
+      .setCustomId(`character:interaction:support:${agent.playerId}:${target.playerId}`)
       .setLabel("Ajudar")
       .setStyle(ButtonStyle.Success)
       .setEmoji("🤝"),
