@@ -19,7 +19,7 @@ export function characterAutoCompleteFromPlayer(
         value: character.id,
       }));
 
-    void interaction.respond(choices);
+    interaction.respond(choices).catch(console.error);
   });
 }
 
@@ -32,14 +32,14 @@ export function characterAutoCompleteFromAll(interaction: AutocompleteInteractio
         value: character.id,
       }));
 
-      void interaction.respond(choices);
+      interaction.respond(choices).catch(console.error);
     });
 
   if (!userInput) {
-    void respond();
+    respond();
     return;
   }
-  void respond({
+  respond({
     query: {
       filter: `name~"${userInput}"`,
     },

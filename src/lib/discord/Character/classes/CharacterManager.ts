@@ -13,7 +13,6 @@ import type {
   Character,
   CharacterBody,
   Effect,
-  ICharacterManager,
   Inventory,
   Memory,
   Status,
@@ -31,7 +30,7 @@ import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
 import AnsenfallLeveling from "../helpers/ansenfallLeveling";
 import getMaxStatus from "../helpers/getMaxStatus";
 
-export class CharacterManager implements ICharacterManager {
+export class CharacterManager {
   public constructor(public character: Character) {}
 
   async use(consumableId: Item["id"]): Promise<string> {
@@ -126,14 +125,15 @@ export class CharacterManager implements ICharacterManager {
     await this.setStatus(characterStatus);
   }
 
-  addMemory(memoryId: string): void {
+  async addMemory(memoryId: string): Promise<void> {
     this.character.memory = memoryId;
-    void CharacterFetcher.updateCharacter(this.character);
+    await CharacterFetcher.updateCharacter(this.character);
   }
 
-  removeMemory(): void {
+  async removeMemory(): Promise<void> {
     this.character.memory = "";
-    void CharacterFetcher.updateCharacter(this.character);
+    await CharacterFetcher.updateCharacter(this.character);
+    return;
   }
 
   getMemory(): Promise<Memory> {
@@ -149,7 +149,6 @@ export class CharacterManager implements ICharacterManager {
 
   async setStatus(status: Status): Promise<Status> {
     const maxStatuses = getMaxStatus(this.character.expand.skills);
-    console.log(maxStatuses);
     for (const [key, value] of getSafeEntries(removePocketbaseConstants(status))) {
       if (typeof value !== "number" || key === "immune" || key === "effects" || key === "spirit") {
         continue;
@@ -158,11 +157,9 @@ export class CharacterManager implements ICharacterManager {
       const skill = STATUS_SKILLS_RELATION[key];
       const maxStatus = maxStatuses[skill];
 
-      console.log("maxStatus", maxStatus, "value", value);
       if (value > maxStatus) {
         status[key] = maxStatus;
       }
-      console.log("status", status);
     }
     const updatedStatus = PocketBase.updateEntity<Status>({
       entityType: "status",

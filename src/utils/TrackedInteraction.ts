@@ -25,14 +25,14 @@ export default class TrackedInteraction {
     return trackedInteraction;
   }
 
-  private shouldRecreate(
+  private async shouldRecreate(
     trackedInteraction: ButtonInteraction,
     interaction: ButtonInteraction
-  ): boolean {
+  ): Promise<boolean> {
     const isEqualInteraction = trackedInteraction?.id !== interaction.id;
     if (isEqualInteraction) {
-      void interaction.deferReply();
-      void interaction.deleteReply();
+      await interaction.deferReply();
+      await interaction.deleteReply().catch(() => null);
       return true;
     }
 

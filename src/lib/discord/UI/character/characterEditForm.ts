@@ -25,13 +25,15 @@ const characterEditForm = async (
   }
 
   if (!interaction.inCachedGuild() || !charId) {
-    throw new BotError("Cannot manage user with invalid interaction");
+    throw new BotError(
+      "Não é possível gerenciar usuário com interação inválida. Entre em contato com um administrador."
+    );
   }
 
   const character = await CharacterFetcher.getCharacterById(charId);
 
   if (!CharacterFetcher.isOwner(interaction.user.id, character.playerId)) {
-    void replyOrFollowUp(interaction, {
+    await replyOrFollowUp(interaction, {
       content: "Você não é o dono desse personagem.",
     });
     return;

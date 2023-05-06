@@ -1,29 +1,26 @@
 // noinspection ES6MissingAwait
 
 import type { Player } from "../../types/Character";
-import { BotError } from "../../utils/Errors";
 import PocketBase from "./PocketBase";
 
 export default class PlayerFetcher {
-  public static getPlayerById(playerId: Player["discordId"]): Promise<Player> {
+  public static async getPlayerById(playerId: Player["discordId"]): Promise<Player> {
     try {
-      return this.findPlayer(playerId);
+      const foundPlayer = await this.findPlayer(playerId);
+      return foundPlayer;
     } catch (error) {
-      return this.createPlayer(playerId);
+      const createdPlayer = await this.createPlayer(playerId);
+      return createdPlayer;
     }
   }
 
   public static async setCurrentCharacter(playerId: string, characterId: string): Promise<Player> {
-    try {
-      const player = await this.getPlayerById(playerId);
-      player.currentCharacterId = characterId;
-      return PocketBase.updateEntity<Player>({
-        entityData: player,
-        entityType: "players",
-      });
-    } catch (error) {
-      throw new BotError("Could not set current character.");
-    }
+    const player = await this.getPlayerById(playerId);
+    player.currentCharacterId = characterId;
+    return PocketBase.updateEntity<Player>({
+      entityData: player,
+      entityType: "players",
+    });
   }
 
   private static findPlayer(playerId: Player["discordId"]): Promise<Player> {

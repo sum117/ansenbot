@@ -39,7 +39,7 @@ export default function makeXYPagination<T extends { id: string }>({
   const nextItemId = pageItems.at(itemIndex + 1)?.id ?? pageItems.at(0)?.id;
 
   if (!previousItemId || !nextItemId) {
-    throw new Error("Could not find previous or next item id");
+    throw new Error("Não foi possível encontrar o ID do item anterior ou seguinte.");
   }
 
   return {

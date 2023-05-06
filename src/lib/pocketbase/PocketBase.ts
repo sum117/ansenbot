@@ -154,7 +154,7 @@ export async function channelSubscriptionCallback(
       return;
     }
     if (change.action === "delete") {
-      void ansenfall.channels.cache.get(record.discordId)?.delete();
+      await ansenfall.channels.cache.get(record.discordId)?.delete();
     }
     let channel = await ansenfall.channels.cache.get(record.discordId);
 

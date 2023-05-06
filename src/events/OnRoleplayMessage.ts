@@ -17,7 +17,7 @@ import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
 import { EffectFetcher } from "../lib/pocketbase/EffectFetcher";
 import PocketBase from "../lib/pocketbase/PocketBase";
 import PostFetcher from "../lib/pocketbase/PostFetcher";
-import type { Character, CharacterBody, Skills, Status } from "../types/Character";
+import type { CharacterBody, Skills, Status } from "../types/Character";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import equalityPercentage from "../utils/equalityPercentage";
 import { BotError } from "../utils/Errors";
@@ -32,6 +32,7 @@ export class OnRoleplayMessage {
   async main([message]: ArgsOf<"messageCreate">): Promise<void> {
     try {
       if (!this.isValidRoleplayMessage(message)) {
+        await deleteDiscordMessage(message, 1000 * 60);
         return;
       }
 
@@ -44,22 +45,15 @@ export class OnRoleplayMessage {
       const { currentCharacter, characterManager, view, status, skills } = roleplayData;
 
       await Promise.all([
-        this.processExperienceGain(view, message, currentCharacter, characterManager),
-        this.applyPassiveStatusLoss(
-          view,
-          message,
-          currentCharacter,
-          characterManager,
-          status,
-          skills
-        ),
+        this.processExperienceGain(view, message, characterManager),
+        this.applyPassiveStatusLoss(view, message, characterManager, status, skills),
       ]);
 
       const characterPost = new CharacterPost(currentCharacter);
       const messageMentions = message.mentions.users;
       const sanitizedContent = message.content.replace(/<@!?\d+>/g, "").trim();
 
-      const messageOptions = await characterPost.createMessageOptions({
+      const messageOptions = characterPost.createMessageOptions({
         to: "message",
         embedContent: sanitizedContent,
         attachmentUrl: message.attachments.first()?.url,
@@ -155,12 +149,11 @@ export class OnRoleplayMessage {
   private async processExperienceGain(
     view: Record<string, string | number>,
     message: Message,
-    currentCharacter: Character,
     characterManager: CharacterManager
   ): Promise<void> {
-    const latestPost = await PostFetcher.getLatestPostByCharacterId(currentCharacter.id).catch(
-      () => null
-    );
+    const latestPost = await PostFetcher.getLatestPostByCharacterId(
+      characterManager.character.id
+    ).catch(() => null);
 
     let created: string;
     if (!latestPost) {
@@ -175,9 +168,9 @@ export class OnRoleplayMessage {
         Math.random() * (message.content.length - message.content.length / 2 + 1) +
           message.content.length / 2
       );
-      const didLevel = await characterManager.addXp(amount);
-
-      if (didLevel > 0) {
+      const newCharLevel = await characterManager.addXp(amount);
+      view.level = newCharLevel;
+      if (newCharLevel > 0) {
         await message.channel.send(
           mustache.render(
             "💎 O personagem {{{character}}} de {{{author}}} subiu de nível para {{{level}}}, parabéns!",
@@ -191,7 +184,6 @@ export class OnRoleplayMessage {
   private async applyPassiveStatusLoss(
     view: Record<string, string | number>,
     message: Message,
-    currentCharacter: Character,
     characterManager: CharacterManager,
     status: Status,
     skills: Skills
@@ -225,16 +217,16 @@ export class OnRoleplayMessage {
     }
   }
 
-  private handleSimilarMessage(
+  private async handleSimilarMessage(
     similarMessage: Message,
     message: Message,
     messageOptions: BaseMessageOptions
-  ): void {
+  ): Promise<void> {
     const attachmentUrl = similarMessage.embeds[0]?.image?.url;
     if (attachmentUrl && !message.attachments.first()?.url) {
       const attachmentName = attachmentUrl?.split("/").pop();
       if (!attachmentName) {
-        void similarMessage.edit(messageOptions);
+        await similarMessage.edit(messageOptions);
         return;
       }
       const attachment = new AttachmentBuilder(attachmentUrl).setName(attachmentName);
@@ -244,7 +236,7 @@ export class OnRoleplayMessage {
       messageOptions.embeds = [embed];
     }
 
-    void similarMessage.edit(messageOptions);
+    await similarMessage.edit(messageOptions);
   }
 
   private async getStatusWarning(
@@ -288,7 +280,7 @@ export class OnRoleplayMessage {
 
   private async checkSimilarityFromPreviousMessages(message: Message) {
     if (!message.inGuild()) {
-      throw new BotError("Message is not in guild");
+      throw new BotError("A mensagem não está dentro de Ansenfall.");
     }
     const lastMessages = await message.channel.messages.fetch({ limit: 10 });
     return lastMessages.find((lastMessage) => {
@@ -315,12 +307,6 @@ export class OnRoleplayMessage {
       message.content.startsWith("((") ||
       message.content.startsWith("[[") ||
       message.content.startsWith("))");
-
-    if (isOffTopic) {
-      this.deleteMessageQueue.enqueue(async () => {
-        await deleteDiscordMessage(message, 5000 * 60);
-      });
-    }
 
     return (
       message.channel.type === ChannelType.GuildText &&

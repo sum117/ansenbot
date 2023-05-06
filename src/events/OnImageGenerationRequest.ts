@@ -20,7 +20,7 @@ export class OnImageGenerationRequest {
 
   get message(): Message {
     if (!this._message) {
-      throw new BotError("Message not set for image generation");
+      throw new BotError("Não foi possível achar a mensagem com inforação do seu pedido.");
     }
     return this._message;
   }
@@ -30,7 +30,7 @@ export class OnImageGenerationRequest {
   }
 
   @On()
-  messageCreate([message]: ArgsOf<"messageCreate">, _client: Client): void {
+  async messageCreate([message]: ArgsOf<"messageCreate">, _client: Client): Promise<void> {
     try {
       const canExecute =
         message.channel.type === ChannelType.GuildText &&
@@ -43,12 +43,12 @@ export class OnImageGenerationRequest {
       }
 
       if (this.pendingUserImageRequests.get(message.author.id)?.isPending) {
-        void message.reply("❌ Você já tem uma imagem sendo gerada.");
+        await message.reply("❌ Você já tem uma imagem sendo gerada.");
         return;
       }
 
       if (this.pendingUserImageRequests.size > 0) {
-        void message.reply(
+        await message.reply(
           `⚠️ Sua imagem está na fila de espera, ${userMention(
             message.author.id
           )}. Não tente gerar outra imagem.`
@@ -59,11 +59,12 @@ export class OnImageGenerationRequest {
         isPending: true,
         message: null,
       });
-      void this.imageGenerationQueue.enqueue(async () => {
+      await this.imageGenerationQueue.enqueue(async () => {
         await this.generateAnimeImage();
       });
     } catch (error) {
       console.error("Error while generating image", error);
+      this.pendingUserImageRequests.delete(message.author.id);
     }
   }
 
@@ -89,18 +90,6 @@ export class OnImageGenerationRequest {
       }
     }
 
-    /* 
-    ----------------- Local Image Generation -----------------
-    const { stream } = await localRequestImageGen(currentMessage.content);
-    const onProgress = async (step: number, totalSteps: number) => {
-      const [bar, calculated] = progressBar.filledBar(totalSteps, step, 10, "▬", "🟩");
-      const message: string[] = [];
-      message.push(`✅ ${userMention(currentMessage.author.id)} Sua imagem começou a ser gerada.`);
-      message.push(`⏳ ${bar} ${calculated}%`);
-
-    }; 
-    */
-
     const sanitizedMessage = currentMessage.content
       .trim()
       .replaceAll("```", "")
@@ -120,7 +109,7 @@ export class OnImageGenerationRequest {
     }
 
     this.pendingUserImageRequests.delete(currentMessage.author.id);
-    void currentMessage.channel.send({
+    await currentMessage.channel.send({
       content: `✅ ${userMention(currentMessage.author.id)} Sua imagem foi gerada com sucesso!`,
       files: [attachment],
     });

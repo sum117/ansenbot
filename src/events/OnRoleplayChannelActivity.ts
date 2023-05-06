@@ -33,7 +33,7 @@ export class OnRoleplayChannelActivity {
           .get(config.guilds.ansenfall)
           ?.channels.cache.filter(this.isRoleplayingCategory);
         if (!roleplayingCategories) {
-          console.log("Nenhuma categoria de Roleplay foi encontrada no servidor.");
+          console.error("Nenhuma categoria de Roleplay foi encontrada no servidor.");
           continue;
         }
         const roleplayingChannels = this.getRoleplayingChannels(roleplayingCategories);
@@ -92,12 +92,13 @@ export class OnRoleplayChannelActivity {
       }
       const presentationMessage = this._presentationMessages.get(channel.id);
       if (!presentationMessage) {
-        return interaction.deleteReply();
+        await interaction.deleteReply().catch(() => null);
+        return;
       }
       presentationMessage.updated = new Date().toISOString();
       this._presentationMessages.set(channel.id, presentationMessage);
-      void interaction.message.delete();
-      void interaction.deleteReply();
+      await interaction.message.delete().catch(() => null);
+      await interaction.deleteReply().catch(() => null);
     } catch (error) {
       handleError(interaction, error);
     }
@@ -127,7 +128,7 @@ export class OnRoleplayChannelActivity {
             .fetch(presentationMessage.placeholderMessageId)
             .catch(() => null);
           if (oldMessage) {
-            void deleteDiscordMessage(oldMessage, 0);
+            deleteDiscordMessage(oldMessage, 0);
           }
           await ChannelFetcher.updateChannelById({
             ...presentationMessage,
@@ -153,7 +154,7 @@ export class OnRoleplayChannelActivity {
       }
       return presentationMessage;
     } catch (error) {
-      console.log("Incapaz de carregar as mensagens do canal de RP " + channel.id + ": " + error);
+      console.error("Incapaz de carregar as mensagens do canal de RP " + channel.id + ": " + error);
       return null;
     }
   }

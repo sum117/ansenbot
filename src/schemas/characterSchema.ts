@@ -2,6 +2,7 @@ import type { HexColorString } from "discord.js";
 import { z } from "zod";
 
 import baseSchema from "./baseSchema";
+import { defaultZodString } from "./utiltitySchemas";
 
 const createUpdateCharacterSchema = z.object(
   {
@@ -29,14 +30,13 @@ const createUpdateCharacterSchema = z.object(
     level: z.number({
       required_error: "Você deve incluir o nível do personagem.",
     }),
-    specs: z.array(z.string(), {
+    specs: z.array(defaultZodString, {
       required_error: "Você deve incluir as classes do personagem.",
     }),
     reputation: z.number({
       required_error: "Você deve incluir a reputação do personagem.",
     }),
-    profession: z
-      .string()
+    profession: defaultZodString
       .max(128, { message: "A profissão do personagem deve ter no máximo 128 caracteres." })
       .optional(),
     title: z
@@ -67,21 +67,21 @@ const createUpdateCharacterSchema = z.object(
       required_error: "Houve um erro ao criar as skills do personagem.",
     }),
     status: z.string({
-      required_error: "Houe um erro ao criar o status do personagem.",
+      required_error: "Houve um erro ao criar o status do personagem.",
     }),
-    race: z.array(z.string(), {
+    race: z.array(defaultZodString, {
       required_error: "Você deve incluir as raças do personagem.",
     }),
-    faction: z.string().optional(),
-    memory: z.string().optional(),
-    playerId: z.string(),
+    faction: defaultZodString.optional(),
+    memory: defaultZodString.optional(),
+    playerId: defaultZodString,
     destinyMaiden: z.string({
       required_error: "Houve um erro ao escolher a Donzela do Destino do personagem.",
     }),
     player: z.string({
       required_error: "Houve um erro ao escolher o jogador do personagem.",
     }),
-    posts: z.array(z.string(), {
+    posts: z.array(defaultZodString, {
       required_error: "Houve um erro ao criar os posts do personagem.",
     }),
     inventory: z.string({
@@ -93,8 +93,8 @@ const createUpdateCharacterSchema = z.object(
     skillPoints: z.number({
       required_error: "Houve um erro ao criar os pontos de habilidade do personagem.",
     }),
-    ascendedSkills: z.array(z.string(), {
-      required_error: "Houve um erro ao criar as habilidades ascendentes do personagem.",
+    ascendedSkills: z.array(defaultZodString, {
+      required_error: "Houve um erro ao criar as habilidades ascendentes do persongem.",
     }),
     skillTraits: z.array(
       z.string({
@@ -116,13 +116,13 @@ const baseCharacterSchema = baseSchema.extend({
 });
 
 const itemSchema = baseSchema.extend({
-  name: z.string(),
-  description: z.string(),
+  name: defaultZodString,
+  description: defaultZodString,
   type: z.enum(["consumable", "spell", "equipment"]),
 });
 
 const consumableSchema = baseSchema.extend({
-  item: z.string(),
+  item: defaultZodString,
   quantity: z.number(),
   hunger: z.number(),
   health: z.number(),
@@ -164,7 +164,7 @@ const statusNameSchema = z.enum([
 ]);
 
 const spellSchema = baseSchema.extend({
-  item: z.string(),
+  item: defaultZodString,
   quantity: z.number(),
   isEquipped: z.boolean(),
   isBuff: z.boolean(),
@@ -186,7 +186,7 @@ const spellSchema = baseSchema.extend({
   ),
 });
 const equipmentSchema = baseSchema.extend({
-  item: z.string(),
+  item: defaultZodString,
   quantity: z.number(),
   slot: z.enum([
     "head",
@@ -219,9 +219,9 @@ const equipmentSchema = baseSchema.extend({
 });
 
 const inventory = baseSchema.extend({
-  consumables: z.array(z.string()),
-  spells: z.array(z.string()),
-  equipments: z.array(z.string()),
+  consumables: z.array(defaultZodString),
+  spells: z.array(defaultZodString),
+  equipments: z.array(defaultZodString),
   expand: z.object({
     consumables: z.array(consumableSchema).optional(),
     spells: z.array(spellSchema).optional(),
@@ -230,32 +230,32 @@ const inventory = baseSchema.extend({
 });
 
 const bodySchema = baseSchema.extend({
-  head: z.string(),
-  face: z.string(),
-  shoulders: z.string(),
-  amulet: z.string(),
-  chest: z.string(),
-  back: z.string(),
-  legs: z.string(),
-  feet: z.string(),
-  leftArm: z.string(),
-  rightArm: z.string(),
-  rings: z.array(z.string()),
-  spells: z.array(z.string()),
-  character: z.string(),
+  head: defaultZodString,
+  face: defaultZodString,
+  shoulders: defaultZodString,
+  amulet: defaultZodString,
+  chest: defaultZodString,
+  back: defaultZodString,
+  legs: defaultZodString,
+  feet: defaultZodString,
+  leftArm: defaultZodString,
+  rightArm: defaultZodString,
+  rings: z.array(defaultZodString),
+  spells: z.array(defaultZodString),
+  character: defaultZodString,
   expand: z
     .object({
       character: baseCharacterSchema,
-      head: equipmentSchema,
-      face: equipmentSchema,
-      shoulders: equipmentSchema,
-      amulet: equipmentSchema,
-      chest: equipmentSchema,
-      back: equipmentSchema,
-      legs: equipmentSchema,
-      feet: equipmentSchema,
-      leftArm: equipmentSchema,
-      rightArm: equipmentSchema,
+      head: equipmentSchema.optional(),
+      face: equipmentSchema.optional(),
+      shoulders: equipmentSchema.optional(),
+      amulet: equipmentSchema.optional(),
+      chest: equipmentSchema.optional(),
+      back: equipmentSchema.optional(),
+      legs: equipmentSchema.optional(),
+      feet: equipmentSchema.optional(),
+      leftArm: equipmentSchema.optional(),
+      rightArm: equipmentSchema.optional(),
       rings: z.array(equipmentSchema),
       spells: z.array(spellSchema),
     })
@@ -263,26 +263,26 @@ const bodySchema = baseSchema.extend({
 });
 
 const factionSchema = baseSchema.extend({
-  name: z.string(),
-  image: z.string(),
-  description: z.string(),
+  name: defaultZodString,
+  image: defaultZodString,
+  description: defaultZodString,
 });
 
 const memorySchema = baseSchema.extend({
-  icon: z.string(),
-  title: z.string(),
-  phrase: z.string(),
+  icon: defaultZodString,
+  title: defaultZodString,
+  phrase: defaultZodString,
   isActive: z.boolean(),
 });
 const postSchema = baseSchema.extend({
-  content: z.string(),
-  messageId: z.string(),
+  content: defaultZodString,
+  messageId: defaultZodString,
 });
 
 const playerSchema = baseSchema.extend({
-  discordId: z.string(),
-  currentCharacterId: z.string(),
-  posts: z.array(z.string()),
+  discordId: defaultZodString,
+  currentCharacterId: defaultZodString,
+  posts: z.array(defaultZodString),
   expand: z
     .object({
       posts: z.array(postSchema),
@@ -291,19 +291,20 @@ const playerSchema = baseSchema.extend({
 });
 
 const raceSchema = baseSchema.extend({
-  name: z.string(),
-  color: z.string().regex(/^#[0-9A-F]{6}$/i) as z.ZodType<HexColorString>,
-  image: z.string(),
-  description: z.string(),
+  name: defaultZodString,
+  color: defaultZodString.regex(/^#[0-9A-F]{6}$/i) as z.ZodType<HexColorString>,
+  image: defaultZodString,
+  description: defaultZodString,
 });
 
 const effectSchema = baseSchema.extend({
-  name: z.string(),
-  description: z.string(),
-  type: z.string(),
+  name: defaultZodString,
+  description: defaultZodString,
+  type: defaultZodString,
   duration: z.number(),
   amount: z.number(),
 });
+
 const skillsSchema = baseSchema.extend({
   vigor: z.number(),
   strength: z.number(),
@@ -319,9 +320,9 @@ const skillsSchema = baseSchema.extend({
 });
 
 const specSchema = baseSchema.extend({
-  name: z.string(),
-  description: z.string(),
-  image: z.string(),
+  name: defaultZodString,
+  description: defaultZodString,
+  image: defaultZodString,
 });
 const statusSchema = baseSchema.extend({
   health: z.number(),
@@ -332,32 +333,32 @@ const statusSchema = baseSchema.extend({
   sleep: z.number(),
   void: z.number(),
   despair: z.number(),
-  immune: z.array(z.string()),
-  effects: z.array(z.string()),
+  immune: z.array(defaultZodString),
+  effects: z.array(defaultZodString),
 });
 
 const destinyMaidenSchema = baseSchema.extend({
-  name: z.string(),
-  image: z.string(),
-  description: z.string(),
-  characters: z.array(z.string()),
+  name: defaultZodString,
+  image: defaultZodString,
+  description: defaultZodString,
+  characters: z.array(defaultZodString),
   expand: z.object({
     characters: z.array(baseCharacterSchema),
   }),
 });
 
 const beastsSchema = baseSchema.extend({
-  name: z.string(),
-  image: z.string(),
-  description: z.string(),
+  name: defaultZodString,
+  image: defaultZodString,
+  description: defaultZodString,
   health: z.number(),
   stamina: z.number(),
   domesticable: z.boolean(),
   weight: z.number(),
   height: z.number(),
   dangerLevel: z.number(),
-  biome: z.string(),
-  damageType: z.array(z.string()),
+  biome: defaultZodString,
+  damageType: z.array(defaultZodString),
 });
 const fullCharacterSchema = baseCharacterSchema.extend({
   expand: z.object({

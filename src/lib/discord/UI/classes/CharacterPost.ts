@@ -38,12 +38,12 @@ export default class CharacterPost {
 
     if (to === "profile") {
       if (embedContent) {
-        throw new BotError("You can't provide content to a profile!");
+        throw new BotError("Você não consegue enviar conteúdos para esse perfil!");
       }
       embed = this.getProfileEmbed();
     } else {
       if (!embedContent) {
-        throw new BotError("You must provide content to post!");
+        throw new BotError("Você deve fornecer um conteúdo para o embed.");
       }
       embed = this.getPostEmbed({ attachmentUrl, content: embedContent });
     }
@@ -91,7 +91,9 @@ export default class CharacterPost {
 
   private getProfileEmbed(): EmbedBuilder {
     if (!this.character.expand) {
-      throw new BotError("Character must have expand data to create a profile!");
+      throw new BotError(
+        "Não consegui encontrar as informações adicionais para criar o perfil do personagem."
+      );
     }
     const fields = new Collection<string, string>();
     fields.set("Dono", userMention(this.character.playerId));
@@ -124,8 +126,11 @@ export default class CharacterPost {
 
   private formatCharacterSkills({ expand }: Character) {
     if (!expand) {
-      throw new BotError("Character must have expand data to create a profile!");
+      throw new BotError(
+        "Não consegui encontrar as informações adicionais para criar o perfil do personagem."
+      );
     }
+
     const { skills } = expand;
     const {
       collectionId: _collectionId,

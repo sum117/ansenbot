@@ -55,7 +55,7 @@ export class CharacterInteractionController {
       );
 
       if (interaction.user.id !== targetId && interaction.user.id !== agentId) {
-        void trackedInteraction.editReply("❌ Você não está participando dessa interação.");
+        await trackedInteraction.editReply("❌ Você não está participando dessa interação.");
         return;
       }
 
@@ -458,13 +458,13 @@ function DeleteAfter({ deleteAgentPanel }: { deleteAgentPanel?: boolean } = {}) 
         const controller = this as CharacterInteractionController;
         const agentPanel = controller.trackedInteraction.cache.get(interaction.user.id);
         if (agentPanel) {
-          void agentPanel.deleteReply().catch(() => null);
+          await agentPanel.deleteReply().catch(() => null);
           controller.trackedInteraction.cache.delete(interaction.user.id);
         }
       }
       await originalMethod.call(this, interaction, args);
-      void deleteDiscordMessage(interaction.message, 0);
-      void interaction.deleteReply().catch(() => null);
+      deleteDiscordMessage(interaction.message, 0);
+      await interaction.deleteReply().catch(() => null);
     };
 
     return descriptor;

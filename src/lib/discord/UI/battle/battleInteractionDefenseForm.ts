@@ -16,7 +16,7 @@ export default async function battleInteractionDefenseForm(
       .setLabel("Bloquear")
       .setStyle(ButtonStyle.Primary)
       .setEmoji("🛡️")
-      .setDisabled(agent.expand.body.expand?.leftArm.isWeapon),
+      .setDisabled(agent.expand.body.expand?.leftArm?.isWeapon ?? true),
     new ButtonBuilder()
       .setCustomId(`battle:defense:dodge:${agent.playerId}:${target.playerId}`)
       .setLabel("Esquivar")

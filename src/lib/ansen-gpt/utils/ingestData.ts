@@ -18,8 +18,6 @@ const dirPath = path.join(
   "docs"
 );
 
-console.log("filePath", dirPath);
-
 export const run = async (): Promise<void> => {
   try {
     const directoryLoader = new DirectoryLoader(dirPath, {
@@ -38,6 +36,12 @@ export const run = async (): Promise<void> => {
 
     console.log("creating vector store...");
     const embeddings = new OpenAIEmbeddings();
+
+    if (!pineconeClient) {
+      console.error("O cliente do pinecone não foi inicializado.");
+      return;
+    }
+
     const index = pineconeClient.Index(PINECONE_INDEX_NAME);
 
     await PineconeStore.fromDocuments(docs, embeddings, {
@@ -47,7 +51,9 @@ export const run = async (): Promise<void> => {
     });
   } catch (error) {
     console.error("Error ingesting data", error);
-    throw new BotError("Failed to ingest your data");
+    throw new BotError(
+      "Houve um erro ao tentar inserir os dados no Pinecone. Por favor, entre em contato com um administrad"
+    );
   }
 };
 

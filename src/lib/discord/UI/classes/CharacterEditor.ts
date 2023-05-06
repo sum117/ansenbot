@@ -40,25 +40,35 @@ export class CharacterEditor {
     }
     try {
       const field = this.interaction.component.label;
-      assert(field, new BotError("Could not find trigger message button label to edit character."));
+      assert(
+        field,
+        new BotError(
+          "Não foi possível encontrar o botão para editar o seu personagem. Entre em contato com um administrador."
+        )
+      );
 
       const [_, action, characterId] = this.getInteractionCredentials();
       const character = await CharacterFetcher.getCharacterById(characterId);
       const isOwner = this.checkOwnership(character);
-      assert(isOwner, new PocketBaseError("You do not own this character."));
+      assert(
+        isOwner,
+        new PocketBaseError(
+          "Você não é o dono desse personagem. Se acha que isso é um engano, entre em contato com um administrador."
+        )
+      );
 
       const length = this.getLengths(action);
       const value = this.getCharacterUpdateValue(character, action);
 
       const modal = this.createModal(action, characterId, character.name, field, length, value);
-      void this.interaction.showModal(modal);
+      await this.interaction.showModal(modal);
     } catch (error) {
       handleError(this.interaction, error);
     }
   }
 
   async handleEditCharacterSelect(): Promise<void> {
-    if (!this.interaction.isSelectMenu()) {
+    if (!this.interaction.isStringSelectMenu()) {
       throw new BotError("Ocorreu um erro ao tentar editar o personagem.");
     }
     try {
@@ -67,7 +77,7 @@ export class CharacterEditor {
       const newFactionId = this.interaction.values[0];
       await this.updateFaction(characterId, newFactionId);
       await this.updateForm("Facção");
-      void this.interaction.deleteReply();
+      await this.interaction.deleteReply().catch(() => null);
     } catch (error) {
       handleError(this.interaction, error);
     }
@@ -91,7 +101,7 @@ export class CharacterEditor {
         await this.validateAndUpdateCharacter(character);
       }
       await this.updateForm(label);
-      void this.interaction.deleteReply();
+      await this.interaction.deleteReply().catch(() => null);
     } catch (error) {
       handleError(this.interaction, error);
     }
@@ -136,7 +146,7 @@ export class CharacterEditor {
     if (!newForm) {
       throw new BotError("Não foi possível encontrar o formulário.");
     }
-    void formMessage.edit(newForm.setMessageContent(`✅ Última edição: ${label}`));
+    await formMessage.edit(newForm.setMessageContent(`✅ Última edição: ${label}`));
   }
 
   private createModal(
@@ -177,17 +187,13 @@ export class CharacterEditor {
   }
 
   private checkOwnership(character: Character): boolean {
-    if (!CharacterFetcher.isOwner(this.interaction.user.id, character.playerId)) {
-      void replyOrFollowUp(this.interaction, "Você não é o dono desse personagem.");
-      return false;
-    }
-    return true;
+    return CharacterFetcher.isOwner(this.interaction.user.id, character.playerId);
   }
 
   private async updateFaction(characterId: string, newFactionId: string): Promise<void> {
     const character = await CharacterFetcher.getCharacterById(characterId);
     if (!this.checkOwnership(character)) {
-      void replyOrFollowUp(this.interaction, "Você não é o dono desse personagem.");
+      await replyOrFollowUp(this.interaction, "Você não é o dono desse personagem.");
       return;
     }
     await this.validateAndUpdateCharacter({ ...character, faction: newFactionId });

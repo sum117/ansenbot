@@ -19,7 +19,9 @@ export class OnOracleChat {
 
   get chain(): ChatVectorDBQAChain {
     if (!this._chain) {
-      throw new BotError("Chain not initialized");
+      throw new BotError(
+        "A corrente de conversa com o Oráculo não foi inicializada ainda. Entre em contato com um administrador."
+      );
     }
     return this._chain;
   }
@@ -36,7 +38,11 @@ export class OnOracleChat {
       }
 
       if (!this.vectorStore) {
-        const index = pineconeClient.Index(PINECONE_INDEX_NAME);
+        const index = pineconeClient?.Index(PINECONE_INDEX_NAME);
+        if (!index) {
+          console.error("Pinecone Client not initialized");
+          return;
+        }
         this.vectorStore = await PineconeStore.fromExistingIndex(new OpenAIEmbeddings({}), {
           namespace: PINECONE_NAME_SPACE,
           pineconeIndex: index,
@@ -64,9 +70,11 @@ export class OnOracleChat {
       this.history.push([sanitizedMessage, ""]);
     } catch (error) {
       console.error("Error on oracle chat", error);
-      void message.reply(
-        "Me desculpe... estou com problemas internos no momento, tente novamente mais tarde."
-      );
+      await message
+        .reply(
+          "Me desculpe... estou com problemas internos no momento, tente novamente mais tarde."
+        )
+        .catch(() => null);
     }
   }
 }

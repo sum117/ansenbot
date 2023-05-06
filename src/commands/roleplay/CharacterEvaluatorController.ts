@@ -18,7 +18,9 @@ export class CharacterEvaluatorController {
 
   get interaction(): ButtonInteraction {
     if (!this._interaction) {
-      throw new BotError("Interaction not set");
+      throw new BotError(
+        "A interação do bot não foi definida ainda. Por favor entre em contato com um administrador."
+      );
     }
     return this._interaction;
   }
@@ -34,9 +36,9 @@ export class CharacterEvaluatorController {
     try {
       if (
         interaction.inCachedGuild() &&
-        interaction.member?.permissions.has(PermissionsBitField.Flags.ManageGuild)
+        !interaction.member?.permissions.has(PermissionsBitField.Flags.ManageGuild)
       ) {
-        void replyOrFollowUp(
+        await replyOrFollowUp(
           interaction,
           "Você não tem permissão para aprovar ou reprovar personagens"
         );
@@ -75,7 +77,10 @@ export class CharacterEvaluatorController {
       const denyChannel = (await interaction.client.channels.cache.get(
         config.channels.createCharacterDenied
       )) as TextChannel;
-      assert(denyChannel, new BotError("Can't find the deny character channel"));
+      assert(
+        denyChannel,
+        new BotError("Não foi possível encontrar o canal de reprovação de personagens.")
+      );
 
       const denyReason = interaction.fields.getTextInputValue(
         `character:deny:${characterId}:${characterPlayerId}`
@@ -94,8 +99,8 @@ export class CharacterEvaluatorController {
           view
         ),
       });
-      void interaction.deleteReply();
-      void deleteDiscordMessage(this.interaction.message, 0);
+      await interaction.deleteReply().catch(() => null);
+      deleteDiscordMessage(this.interaction.message, 0);
     } catch (error) {
       handleError(interaction, error);
     }
@@ -106,11 +111,19 @@ export class CharacterEvaluatorController {
     const approvedCharacterChannel = (await this.interaction.client.channels.cache.get(
       config.channels.createCharacterApproved
     )) as TextChannel;
-    assert(approvedCharacterChannel, new BotError("Can't find the approve character channel"));
+    assert(
+      approvedCharacterChannel,
+      new BotError("Não consegui achar o canal de personagens aprovados.")
+    );
 
     const approvedCharacterEmbed = EmbedBuilder.from(this.interaction.message.embeds[0]);
     const embedFields = approvedCharacterEmbed.data.fields;
-    assert(embedFields, new BotError("Can't find the embed fields"));
+    assert(
+      embedFields,
+      new BotError(
+        "Houve um erro ao gerar o embed do personagem aprovado. Por favor entre em contato com um administrador."
+      )
+    );
 
     const view = {
       staff: userMention(this.interaction.user.id),
@@ -122,9 +135,9 @@ export class CharacterEvaluatorController {
     approvedCharacterEmbed.setDescription(
       mustache.render("Personagem de {{{owner}}} aprovado por {{{staff}}}", view)
     );
-    await this.interaction.deleteReply();
-    void deleteDiscordMessage(this.interaction.message, 0);
-    void approvedCharacterChannel.send({
+    await this.interaction.deleteReply().catch(() => null);
+    deleteDiscordMessage(this.interaction.message, 0);
+    await approvedCharacterChannel.send({
       content: mustache.render("||{{{owner}}} {{{staff}}}||", view),
       embeds: [approvedCharacterEmbed],
     });

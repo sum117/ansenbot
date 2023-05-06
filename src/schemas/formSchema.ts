@@ -2,13 +2,14 @@ import { z } from "zod";
 
 import type { COLLECTIONS } from "../data/constants";
 import baseSchema from "./baseSchema";
+import { defaultZodString } from "./utiltitySchemas";
 
 const formSchema = baseSchema.extend({
-  description: z.string(),
-  image: z.string(),
-  collection: z.string() as z.ZodType<keyof typeof COLLECTIONS>,
+  description: defaultZodString,
+  image: defaultZodString,
+  collection: defaultZodString as z.ZodType<keyof typeof COLLECTIONS>,
   step: z.number(),
-  title: z.string(),
+  title: defaultZodString,
   isSelectMenu: z.boolean(),
 });
 

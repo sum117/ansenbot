@@ -7,7 +7,7 @@ if (
   !process.env.IMAGEKIT_PRIVATE_KEY ||
   !process.env.IMAGEKIT_URL_ENDPOINT
 ) {
-  throw new BotError("Missing ImageKit credentials");
+  throw new BotError("Credenciais do ImageKit ausentes.");
 }
 
 const imageKit = new ImageKit({

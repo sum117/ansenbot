@@ -13,7 +13,7 @@ export class OnReadyGameTimeManager {
 
   get clock(): GameClock {
     if (!this._clock) {
-      throw new BotError("Clock not set");
+      throw new BotError("O relógio do RPG não está calibrado.");
     }
     return this._clock;
   }
@@ -26,7 +26,7 @@ export class OnReadyGameTimeManager {
 
   get channel(): TextChannel {
     if (!this._channel) {
-      throw new BotError("Channel not set");
+      throw new BotError("O canal do relógio do RPG não foi escolhido.");
     }
     return this._channel;
   }

@@ -12,7 +12,8 @@
     "start": "node --experimental-specifier-resolution=node build/src/main.js",
     "watch": "nodemon --exec ts-node-esm --experimental-specifier-resolution=node src/main.ts",
     "lint": "eslint --ext .ts src --fix",
-    "ingest": "tsx -r dotenv/config src/lib/ansen-gpt/utils/ingestData.ts"
+    "ingest": "tsx -r dotenv/config src/lib/ansen-gpt/utils/ingestData.ts",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@discordx/importer": "^1.2.2",
