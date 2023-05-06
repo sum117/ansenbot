@@ -1,6 +1,4 @@
-import type {
-  BaseMessageOptions,
-  ColorResolvable} from "discord.js";
+import type { BaseMessageOptions, ColorResolvable } from "discord.js";
 import {
   ActionRowBuilder,
   ButtonBuilder,

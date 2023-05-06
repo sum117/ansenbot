@@ -18,7 +18,6 @@ import type {
   GetFirstEntityByFilterParams,
   UpdateEntityParams,
 } from "../../types/PocketBaseCRUD";
-import { BotError } from "../../utils/Errors";
 import channelPlaceholderDismissButton from "../discord/UI/channel/channelPlaceholderDismissButton";
 import { channelPlaceHolderEmbed } from "../discord/UI/channel/channelPlaceholderEmbed";
 
@@ -152,7 +151,7 @@ export async function channelSubscriptionCallback(
     const ansenfall = bot.guilds.cache.get(config.guilds.ansenfall);
 
     if (!ansenfall) {
-      throw new BotError("Could not find Ansenfall guild");
+      return;
     }
     if (change.action === "delete") {
       void ansenfall.channels.cache.get(record.discordId)?.delete();
@@ -168,7 +167,7 @@ export async function channelSubscriptionCallback(
     }
 
     if (!channel.isTextBased()) {
-      throw new BotError("Channel created by Pocketbase is not text based, this should not happen");
+      return;
     }
 
     const placeholderEmbed = channelPlaceHolderEmbed(record);

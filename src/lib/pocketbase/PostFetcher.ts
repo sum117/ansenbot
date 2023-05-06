@@ -24,11 +24,10 @@ export default class PostFetcher {
       throw new BotError("Esse personagem não tem posts!");
     }
 
-    const latestPost = await PocketBase.getEntityById<Post>({
+    return PocketBase.getEntityById<Post>({
       entityType: "posts",
       id: character.posts[character.posts.length - 1],
     });
-    return latestPost;
   }
 
   public static async createPost<T extends Message>(message: T): Promise<Post | void> {

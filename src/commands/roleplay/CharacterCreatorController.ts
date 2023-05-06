@@ -152,11 +152,11 @@ export class CharacterCreatorController {
     const characterProfile = new CharacterPost(character).createMessageOptions({
       to: "profile",
     });
-    (characterProfile.content = mustache.render(
+    characterProfile.content = mustache.render(
       "Um novo personagem de {{{owner}}} foi criado e está aguardando aprovação, {{{mentions}}}!",
       view
-    )),
-      (characterProfile.components = [characterApprovalBtnRow(character)]);
+    );
+    characterProfile.components = [characterApprovalBtnRow(character)];
     await queueChannel.send(characterProfile);
   }
 
@@ -374,7 +374,7 @@ export class CharacterCreatorController {
   }
 
   private showCharacterModal(interaction: ButtonInteraction) {
-    const [_, state, requiredOrOptional] = interaction.customId.split(":");
+    const [_, _state, requiredOrOptional] = interaction.customId.split(":");
     const modal = this.modals[requiredOrOptional as "required" | "optional"];
     void interaction.showModal(modal);
   }
@@ -404,6 +404,6 @@ export class CharacterCreatorController {
     };
     const updatedForm = { ...defaultFormData, ...form };
     const character = createUpdateCharacterSchema.parse(updatedForm);
-    return CharacterFetcher.createCharacter(character, instance.interaction.user.id);
+    return CharacterFetcher.createCharacter(character);
   }
 }

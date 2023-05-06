@@ -1,11 +1,15 @@
 import type { z } from "zod";
 
+import type { equipmentDictionary } from "../data/translations";
 import type {
   beastsSchema,
+  bodySchema,
   createUpdateCharacterSchema,
   destinyMaidenSchema,
+  effectSchema,
   factionSchema,
   fullCharacterSchema,
+  inventory,
   memorySchema,
   playerSchema,
   postSchema,
@@ -14,11 +18,9 @@ import type {
   specSchema,
   statusSchema,
 } from "../schemas/characterSchema";
-import { bodySchema, effectSchema, inventory } from "../schemas/characterSchema";
-import { Properties } from "./Utils";
-import { EquipmentItem, Item, SpellItem } from "./Item";
-import { equipmentDictionary } from "../data/translations";
-import { BodyPart } from "./Combat";
+import type { BodyPart } from "./Combat";
+import type { EquipmentItem, Item, SpellItem } from "./Item";
+import type { Properties } from "./Utils";
 
 export type CreateUpdateCharacter = z.infer<typeof createUpdateCharacterSchema>;
 export type Character = z.infer<typeof fullCharacterSchema>;
@@ -57,8 +59,8 @@ export interface ICharacterManager {
   getStatuses: (statusId: Status["id"]) => Promise<Status>;
   getStatus: (statusKey: keyof Status) => Promise<Properties<Status>>;
 
-  addMemory: (memoryId: Memory["id"]) => Promise<void>;
-  removeMemory: (memoryId: Memory["id"]) => Promise<void>;
+  addMemory: (memoryId: Memory["id"]) => void;
+  removeMemory: () => void;
   getMemory: () => Promise<Memory>;
   // setBeast: (beast: Beast) => Promise<Beast>;
   // getBeast: () => Promise<Beast>;

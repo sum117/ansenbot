@@ -1,7 +1,8 @@
-import { ButtonInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js";
-import { Character, Status } from "./Character";
-import { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
-import { equipmentDictionary, statusDictionary } from "../data/translations";
+import type { ButtonInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js";
+
+import type { equipmentDictionary, statusDictionary } from "../data/translations";
+import type { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
+import type { Character, Status } from "./Character";
 
 export type SelectMenuAttackKind = "spell" | "body";
 export type SelectMenuSupportKind = "spell";

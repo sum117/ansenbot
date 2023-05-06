@@ -19,7 +19,7 @@ export const COLLECTIONS = {
   forms: "forms",
   effects: "effects",
   channels: "channels",
-  body: "body"
+  body: "body",
 } as const;
 export const RELATION_FIELD_NAMES = {
   factions: "faction",
@@ -35,7 +35,7 @@ export const RELATION_FIELD_NAMES = {
   inventory: [
     "inventory.consumables.item",
     "inventory.spells.item",
-    "inventory.equipments.item"
+    "inventory.equipments.item,
   ].join(","),
   item: ["item", "consumables(item)", "equipments(item)", "spells(item)"].join(","),
   body: [

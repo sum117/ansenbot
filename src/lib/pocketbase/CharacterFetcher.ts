@@ -10,6 +10,7 @@ import { BotError, PocketBaseError } from "../../utils/Errors";
 import getImageBlob from "../../utils/getImageBlob";
 import getSafeKeys from "../../utils/getSafeKeys";
 import jsonToFormData from "../../utils/jsonToFormData";
+import PlayerFetcher from "./PlayerFetcher";
 import PocketBase from "./PocketBase";
 
 export default class CharacterFetcher {
@@ -161,7 +162,7 @@ export default class CharacterFetcher {
         startingSkills.items[1]
       );
 
-      const [baseSkills, baseStatus, body] = await Promise.all([
+      const [baseSkills, baseStatus, body, inventory] = await Promise.all([
         PocketBase.createEntity<Skills>({
           entityData: skills,
           entityType: "skills",
@@ -215,11 +216,11 @@ export default class CharacterFetcher {
         skills: baseSkills.id,
         status: baseStatus.id,
         body: body.id,
-        inventory: inventory.d,
+        inventory: inventory.i,
       });
       formData.set("image", blob, fileName);
       const response = await PocketBase.createEntityWithFormData<Character>("characters", formData);
-
+      await PlayerFetcher.setCurrentCharacter(response.playerId, response.id);
       return response;
     } catch (error) {
       console.error(inspect(error, false, null, true));

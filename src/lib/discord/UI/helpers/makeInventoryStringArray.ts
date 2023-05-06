@@ -11,7 +11,7 @@ export default function makeInventoryStringArray(
   }
 
   const itemToHighlight = itemsArray.find((item) => item.id === id);
-  const inventoryStringArray = itemsArray.map((data) => {
+  return itemsArray.map((data) => {
     const equipment = equipmentSchema.or(spellSchema).safeParse(data);
     const itemString: string[] = [];
     itemString.push(`${ITEM_TYPES_EMOJIS[data.expand.item.type]}`);
@@ -26,6 +26,4 @@ export default function makeInventoryStringArray(
 
     return itemString.join(" ");
   });
-
-  return inventoryStringArray;
 }

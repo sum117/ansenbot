@@ -16,9 +16,5 @@ export default async function getCharEffects(
     return ["Nenhum"];
   }
 
-  const stateArray = effects.map(
-    (effect) => statesDictionary[effect.name as keyof typeof statesDictionary]
-  );
-
-  return stateArray;
+  return effects.map((effect) => statesDictionary[effect.name as keyof typeof statesDictionary]);
 }

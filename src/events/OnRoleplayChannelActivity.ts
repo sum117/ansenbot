@@ -39,17 +39,6 @@ export class OnRoleplayChannelActivity {
         const roleplayingChannels = this.getRoleplayingChannels(roleplayingCategories);
         await this.cachePresentationMessages(roleplayingChannels);
         await this.processRoleplayingChannels(roleplayingChannels);
-        // void roleplayingChannels.forEach((channel) => {
-        //   {
-        //     if (channel.type !== ChannelType.GuildText) {
-        //       return;
-        //     }
-        //     channel.messages.fetch({ limit: 30 }).then((msgCol) => {
-        //       const spam = msgCol.filter((msg) => msg.author.bot);
-        //       channel.bulkDelete(spam);
-        //     });
-        //   }
-        // });
       } catch (error) {
         console.error(error);
       }

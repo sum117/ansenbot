@@ -20,11 +20,11 @@ export interface PaginationResult<T> {
 }
 
 export default function makeXYPagination<T extends { id: string }>({
-                                                                     pageSize,
-                                                                     itemsArray,
-                                                                     itemIdFromCustomId,
-                                                                     pageFromCustomId
-                                                                   }: PaginationOptions<T>): PaginationResult<T> {
+  pageSize,
+  itemsArray,
+  itemIdFromCustomId,
+  pageFromCustomId,
+}: PaginationOptions<T>): PaginationResult<T> {
   const totalPages = Math.ceil(itemsArray.length / pageSize);
   const currentPage = pageFromCustomId ? parseInt(pageFromCustomId) : 1;
 
@@ -51,6 +51,6 @@ export default function makeXYPagination<T extends { id: string }>({
     selectedItemId,
     previousItemId,
     nextItemId,
-    currentlySelectedItem: foundItem
+    currentlySelectedItem: foundItem,
   };
 }

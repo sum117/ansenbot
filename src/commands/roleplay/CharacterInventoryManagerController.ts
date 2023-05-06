@@ -1,5 +1,5 @@
 import type { ButtonInteraction } from "discord.js";
-import { ButtonStyle, userMention } from "discord.js";
+import { userMention } from "discord.js";
 import { ButtonComponent, Discord } from "discordx";
 import mustache from "mustache";
 
@@ -22,18 +22,19 @@ export class CharacterInventoryManagerController {
   private trackedInteraction = new TrackedInteraction();
 
   @ButtonComponent({ id: INVENTORY_REGEX })
-  public async inventoryButton(interaction: ButtonInteraction) {
+  public async inventoryButton(interaction: ButtonInteraction): Promise<void> {
     try {
       const { itemId, page, kind, playerId } =
         this.getInventoryCredentialsFromCustomId(interaction);
 
       if (this.inventoryAlreadyOpen(interaction, playerId)) {
-        return interaction
+        void interaction
           .reply({
             content: "❌ Você já possui um inventário aberto.",
             ephemeral: true,
           })
           .catch(() => null);
+        return;
       }
 
       let useItemAction = "";
@@ -53,7 +54,8 @@ export class CharacterInventoryManagerController {
         case "info": {
           const embed = await this.inspectItemInteraction(interaction);
           if (embed) {
-            return interaction.reply({ embeds: [embed] });
+            void interaction.reply({ embeds: [embed] });
+            return;
           } else {
             useItemAction = "❌ Houve um erro ao tentar inspecionar o item.";
           }
@@ -65,7 +67,7 @@ export class CharacterInventoryManagerController {
       const itemsArray = [
         ...(currentCharacter.expand.inventory.expand.consumables ?? []),
         ...(currentCharacter.expand.inventory.expand.equipments ?? []),
-        ...(currentCharacter.expand.inventory.expand.spells ?? [],
+        ...(currentCharacter.expand.inventory.expand.spells ?? []),
       ];
 
       const trackedInteraction = await this.trackedInteraction.getOrCreateTrackedInteraction(
@@ -85,12 +87,12 @@ export class CharacterInventoryManagerController {
         previousPage,
         nextItemId,
         currentPage,
-        currentlySelectedItem
+        currentlySelectedIte,
       } = makeXYPagination({
         pageSize: PAGE_SIZE,
         itemsArray,
         pageFromCustomId: page,
-        itemIdFromCustomId: itemId
+        itemIdFromCustomId: itemId,
       });
 
       const inventoryString = makeInventoryStringArray(pageItems, selectedItemId);
@@ -106,9 +108,9 @@ export class CharacterInventoryManagerController {
         counters: {
           consumable: currentCharacter.expand.inventory.consumables.length,
           equipment: currentCharacter.expand.inventory.equipments.length,
-          spell: currentCharacter.expand.inventory.spells.length
+          spell: currentCharacter.expand.inventory.spells.lengt,
         },
-        itemsString: inventoryString.join("\n")
+        itemsString: inventoryString.join("\n",
       };
 
       const messageOptions = characterInventoryMessageOptions(options);
@@ -129,19 +131,15 @@ export class CharacterInventoryManagerController {
     }
     const { characterManager } = await getRoleplayDataFromUserId(playerId);
 
-    const feedback = await characterManager.use(itemId);
-    return feedback;
+    return characterManager.use(itemId);
   }
 
   private inventoryAlreadyOpen(interaction: ButtonInteraction, playerId: string) {
     const isDifferentUser = interaction.user.id !== playerId;
     const hasCachedInteraction = this.trackedInteraction.cache.get(interaction.user.id);
-    const shouldAbort =
-      isDifferentUser && hasCachedInteraction && !interaction.customId.includes("open");
-    if (shouldAbort) {
-      return true;
-    }
-    return false;
+    return Boolean(
+      isDifferentUser && hasCachedInteraction && !interaction.customId.includes("open")
+    );
   }
 
   private async equipItemInteraction(interaction: ButtonInteraction) {
@@ -189,8 +187,7 @@ export class CharacterInventoryManagerController {
     }
 
     const item = await ItemFetcher.getItemWithRole(itemsTableId);
-    const embed = getItemInfoEmbed(item, currentCharacter.name);
-    return embed;
+    return getItemInfoEmbed(item, currentCharacter.name);
   }
 
   private async discardItemInteraction(interaction: ButtonInteraction) {
@@ -199,8 +196,7 @@ export class CharacterInventoryManagerController {
     if (interaction.user.id !== playerId) {
       return "❌ Você não pode descartar itens de outros jogadores.";
     }
-    const feedback = await characterManager.discard(itemId);
-    return feedback;
+    return characterManager.discard(itemId);
   }
 
   private async handleEmptyInventory(
@@ -220,7 +216,9 @@ export class CharacterInventoryManagerController {
         )
       });
       // delay for 5 seconds before deleting the message
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => {
+        setTimeout(resolve, 5000);
+      });
       void trackedInteraction.deleteReply();
       this.trackedInteraction.cache.delete(trackedInteraction.user.id);
       return true;
@@ -231,11 +229,11 @@ export class CharacterInventoryManagerController {
   private getInventoryCredentialsFromCustomId(interaction: ButtonInteraction) {
     const [_, action, kind, itemId, playerId, page] = interaction.customId.split(":") as [
       "character",
-        "inventory" | "item",
-        "browse" | "use" | "discard" | "open" | "equip" | "info",
+      "inventory" | "item",
+      "browse" | "use" | "discard" | "open" | "equip" | "info",
       string,
       string,
-        string | undefined
+      string | undefined
     ];
     return { itemId, page, action, kind, playerId };
   }

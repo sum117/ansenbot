@@ -1,11 +1,9 @@
-import { CharacterManager } from "./CharacterManager";
-import { Character } from "../../../../types/Character";
-import { EquipmentItem, SpellItem } from "../../../../types/Item";
 import random from "lodash.random";
-import { skillsDictionary, statusDictionary } from "../../../../data/translations";
+
+import type { skillsDictionary, statusDictionary } from "../../../../data/translations";
 import { equipmentSchema, spellSchema } from "../../../../schemas/characterSchema";
-import { BotError } from "../../../../utils/Errors";
-import {
+import type { Character, Status } from "../../../../types/Character";
+import type {
   AttackTurnResult,
   ButtonAttackKind,
   ButtonDefenseKind,
@@ -19,7 +17,16 @@ import {
   Turn,
   TurnResult,
 } from "../../../../types/Combat";
+import type { EquipmentItem, SpellItem } from "../../../../types/Item";
+import { BotError } from "../../../../utils/Errors";
 import { ItemFetcher } from "../../../pocketbase/ItemFetcher";
+import type { CharacterManager } from "./CharacterManager";
+
+export interface ResolvedSupportTurn {
+  statusesReplenished: Array<keyof typeof statusDictionary>;
+  amount: number;
+  status: Status;
+}
 
 export default class CharacterCombat {
   public agent: Character;
@@ -91,7 +98,7 @@ export default class CharacterCombat {
     const defenseSuccess = this.prepareDefense(turn.kind);
 
     if (defenseSuccess) {
-      // Se a defesa teve sucesso, o dano será reduzido de acordo com a opção de defesa
+      // Se a defesa teve sucesso, o dano será reduzido conforme a opção de defesa
       switch (turn.kind) {
         case "dodge":
           // Se esquivou com sucesso, o dano é reduzido em 75%
@@ -113,7 +120,6 @@ export default class CharacterCombat {
             damageDealt: counterDamage.damageDealt,
             isKillingBlow: counterDamage.isKillingBlow,
           };
-          break;
         default:
           throw new BotError("Opção de defesa inválida.");
       }
@@ -131,8 +137,8 @@ export default class CharacterCombat {
     };
   }
 
-  public async resolveSupport(item: SpellItem | undefined) {
-    let statusesReplenished: Array<keyof typeof statusDictionary> = [];
+  public async resolveSupport(item: SpellItem | undefined): Promise<ResolvedSupportTurn> {
+    const statusesReplenished: Array<keyof typeof statusDictionary> = [];
     if (!item) {
       // gives 1/3 of the health to the target
       const agentHealth = this.agent.expand.status.health;
@@ -270,8 +276,7 @@ export default class CharacterCombat {
         targetStatus[status] = targetStatus[status] - damageDealt;
       }
     } else {
-      const health = targetStatus.health - damageDealt;
-      targetStatus.health = health;
+      targetStatus.health = targetStatus.health - damageDealt;
     }
 
     if (targetStatus.health <= 0) {
@@ -316,7 +321,7 @@ export default class CharacterCombat {
       const equipmentLeft = equipmentSchema.parse(leftArm);
       const equipmentRight = equipmentSchema.parse(rightArm);
       if (equipmentLeft.isWeapon && equipmentRight.isWeapon) {
-        // Se o personagem possui duas armas equipadas, os danos são somados e o dano final é dividido por 1.25
+        // Se o personagem possui duas armas equipadas, os danos são somados e o dano final é dividido por 1,25
         const finalDamage = (equipmentLeft.quotient + equipmentRight.quotient) / 1.25;
         return {
           item: {
@@ -335,8 +340,7 @@ export default class CharacterCombat {
   }
 
   private getSkillLevel(type: keyof typeof skillsDictionary) {
-    const skill = this.agent.expand.skills[type];
-    return skill;
+    return this.agent.expand.skills[type];
   }
 
   private calculateMultiplier({ quotient, type, multiplier }: SpellItem | EquipmentItem) {

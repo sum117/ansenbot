@@ -3,9 +3,7 @@ import type { CharacterBody } from "../../../../types/Character";
 import type { EquipmentItem, SpellItem } from "../../../../types/Item";
 import isInventoryItem from "../../Character/helpers/isInventoryItem";
 
-export default async function makeEquipmentStringArray(
-  body: CharacterBody
-): Promise<Array<string>> {
+export default function makeEquipmentStringArray(body: CharacterBody): Promise<Array<string>> {
   const orderedKeys: (keyof typeof equipmentDictionary)[] = [
     "head",
     "face",
@@ -37,6 +35,5 @@ export default async function makeEquipmentStringArray(
     }
   });
 
-  const descriptions = await Promise.all(descriptionsPromises);
-  return descriptions;
+  return Promise.all(descriptionsPromises);
 }

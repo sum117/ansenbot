@@ -86,9 +86,9 @@ export class OnRoleplayMessage {
       const characterPost = new CharacterPost(currentCharacter);
       const equipment = await characterManager.getEquipment();
 
+      this.addStatusBarsToEmbed(skills, status, characterPost);
       await Promise.all([
         this.addEffectsToEmbed(status, characterPost),
-        this.addStatusBarsToEmbed(skills, status, characterPost),
         this.addEquipmentToEmbed(equipment, characterPost),
       ]);
 
