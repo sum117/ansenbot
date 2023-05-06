@@ -1,34 +1,28 @@
-import {
-  AttachmentBuilder,
-  BaseMessageOptions,
-  ButtonInteraction,
-  ChannelType,
-  EmbedBuilder,
-  Message,
-} from "discord.js";
+import type { BaseMessageOptions, ButtonInteraction, Message } from "discord.js";
+import { AttachmentBuilder, ChannelType, EmbedBuilder } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On } from "discordx";
+import mustache from "mustache";
 
+import { STATUS_SKILLS_RELATION } from "../data/constants";
+import type { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
+import getMaxStatus from "../lib/discord/Character/helpers/getMaxStatus";
+import getRoleplayDataFromUserId from "../lib/discord/Character/helpers/getRoleplayDataFromUserId";
+import isStatus from "../lib/discord/Character/helpers/isStatus";
 import CharacterPost from "../lib/discord/UI/classes/CharacterPost";
+import getCharEffects from "../lib/discord/UI/helpers/getCharEffects";
+import getStatusBars from "../lib/discord/UI/helpers/getStatusBars";
+import makeEquipmentStringArray from "../lib/discord/UI/helpers/makeEquipmentStringArray";
+import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
+import { EffectFetcher } from "../lib/pocketbase/EffectFetcher";
+import PocketBase from "../lib/pocketbase/PocketBase";
 import PostFetcher from "../lib/pocketbase/PostFetcher";
+import type { Character, CharacterBody, Skills, Status } from "../types/Character";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import equalityPercentage from "../utils/equalityPercentage";
 import { BotError } from "../utils/Errors";
-import handleError from "../utils/handleError";
-import { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
-import mustache from "mustache";
-import { Character, CharacterBody, Skills, Status } from "../types/Character";
-import { STATUS_SKILLS_RELATION } from "../data/constants";
 import getSafeEntries from "../utils/getSafeEntries";
-import { EffectFetcher } from "../lib/pocketbase/EffectFetcher";
-import getMaxStatus from "../lib/discord/Character/helpers/getMaxStatus";
-import isStatus from "../lib/discord/Character/helpers/isStatus";
-import getStatusBars from "../lib/discord/UI/helpers/getStatusBars";
-import PocketBase from "../lib/pocketbase/PocketBase";
-import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
-import getRoleplayDataFromUserId from "../lib/discord/Character/helpers/getRoleplayDataFromUserId";
-import makeEquipmentStringArray from "../lib/discord/UI/helpers/makeEquipmentStringArray";
-import getCharEffects from "../lib/discord/UI/helpers/getCharEffects";
+import handleError from "../utils/handleError";
 
 @Discord()
 export class OnRoleplayMessage {
@@ -87,7 +81,7 @@ export class OnRoleplayMessage {
   @ButtonComponent({ id: /character:status:open:\w+:\d+/ })
   async statusButton(interaction: ButtonInteraction): Promise<void> {
     try {
-      const { currentCharacter, characterManager, view, status, skills } =
+      const { currentCharacter, characterManager, status, skills } =
         await getRoleplayDataFromUserId(interaction.customId.split(":")[4]);
       const characterPost = new CharacterPost(currentCharacter);
       const equipment = await characterManager.getEquipment();
@@ -132,11 +126,7 @@ export class OnRoleplayMessage {
     }
   }
 
-  private async addStatusBarsToEmbed(
-    skills: Skills,
-    status: Status,
-    characterPost: CharacterPost
-  ): Promise<void> {
+  private addStatusBarsToEmbed(skills: Skills, status: Status, characterPost: CharacterPost): void {
     const statusBars: string[] = getStatusBars(skills, status);
     characterPost.embed.addFields({
       name: "Status",
@@ -228,11 +218,11 @@ export class OnRoleplayMessage {
     }
   }
 
-  private async handleSimilarMessage(
+  private handleSimilarMessage(
     similarMessage: Message,
     message: Message,
     messageOptions: BaseMessageOptions
-  ): Promise<void> {
+  ): void {
     const attachmentUrl = similarMessage.embeds[0]?.image?.url;
     if (attachmentUrl && !message.attachments.first()?.url) {
       const attachmentName = attachmentUrl?.split("/").pop();
@@ -260,7 +250,7 @@ export class OnRoleplayMessage {
     const effects = await EffectFetcher.getBaseEffects();
 
     const warningMessageArray: string[] = [];
-    for (const [stat, amount] of getSafeEntries(status)) {
+    for (const [stat] of getSafeEntries(status)) {
       if (!isStatus(stat)) {
         continue;
       }

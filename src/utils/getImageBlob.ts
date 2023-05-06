@@ -1,6 +1,7 @@
-import { isImageUrl } from "../schemas/utiltitySchemas";
-import axios from "axios";
 import assert from "assert";
+import axios from "axios";
+
+import { isImageUrl } from "../schemas/utiltitySchemas";
 import { BotError } from "./Errors";
 
 export default async function getImageBlob(value: string): Promise<{

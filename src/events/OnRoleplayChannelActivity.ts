@@ -4,18 +4,20 @@ import type {
   CategoryChildChannel,
   Collection,
   GuildBasedChannel,
+  Snowflake,
   TextChannel,
 } from "discord.js";
-import { AuditLogEvent, ButtonStyle, ChannelType, Snowflake } from "discord.js";
+import { ChannelType } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On } from "discordx";
-import { Channel } from "../types/Channel";
+
 import config from "../../config.json" assert { type: "json" };
+import channelPlaceholderDismissButton from "../lib/discord/UI/channel/channelPlaceholderDismissButton";
 import { channelPlaceHolderEmbed } from "../lib/discord/UI/channel/channelPlaceholderEmbed";
 import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
-import handleError from "../utils/handleError";
+import type { Channel } from "../types/Channel";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
-import channelPlaceholderDismissButton from "../lib/discord/UI/channel/channelPlaceholderDismissButton";
+import handleError from "../utils/handleError";
 
 @Discord()
 export class OnRoleplayChannelActivity {
@@ -51,7 +53,9 @@ export class OnRoleplayChannelActivity {
       } catch (error) {
         console.error(error);
       }
-      await new Promise((resolve) => setTimeout(resolve, this.LoopInterval));
+      await new Promise((resolve) => {
+        setTimeout(resolve, this.LoopInterval);
+      });
     }
   }
 
@@ -186,6 +190,8 @@ export class OnRoleplayChannelActivity {
           discordId: channel.id,
           description: "Atualize a descrição no banco de dados.",
           image: "",
+          // ! Not advised bunt but we know this will always be here!
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           categoryId: channel.parentId!,
           hasSleep: false,
           hasSpirit: false,

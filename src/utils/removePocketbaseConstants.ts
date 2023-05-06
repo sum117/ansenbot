@@ -1,4 +1,4 @@
-import { PocketBaseConstants } from "../types/PocketBaseCRUD";
+import type { PocketBaseConstants } from "../types/PocketBaseCRUD";
 
 export default function removePocketbaseConstants<T extends Partial<PocketBaseConstants>>(
   obj: T

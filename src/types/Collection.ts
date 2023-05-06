@@ -1,6 +1,8 @@
+import type { Channel } from "./Channel";
 import type {
   Beast,
   Character,
+  CharacterBody,
   DestinyMaiden,
   Effect,
   Faction,
@@ -13,10 +15,8 @@ import type {
   Spec,
   Status,
 } from "./Character";
-import { CharacterBody } from "./Character";
-import { BaseItem, Item } from "./Item";
+import type { BaseItem, Item } from "./Item";
 import type { Form } from "./MultiForm";
-import { Channel } from "./Channel";
 
 export type Collection =
   | Character

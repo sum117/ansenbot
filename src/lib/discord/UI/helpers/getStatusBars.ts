@@ -1,9 +1,10 @@
-import { Skills, Status } from "../../../../types/Character";
 import progressBar from "string-progressbar";
-import getMaxStatus from "../../Character/helpers/getMaxStatus";
-import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
 
-export default function getStatusBars(skills: Skills, status: Status) {
+import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
+import type { Skills, Status } from "../../../../types/Character";
+import getMaxStatus from "../../Character/helpers/getMaxStatus";
+
+export default function getStatusBars(skills: Skills, status: Status): Array<string> {
   const healthBar =
     "❤️ " +
     progressBar
@@ -22,11 +23,12 @@ export default function getStatusBars(skills: Skills, status: Status) {
       )
       .shift();
 
-  const manaBar =
-    "🔮 " +
-    progressBar
-      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.mana], status.mana, 7, "🟥", "🟦")
-      .shift();
+  // TODO: Keep this for future use!
+  // const manaBar =
+  //   "🔮 " +
+  //   progressBar
+  //     .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.mana], status.mana, 7, "🟥", "🟦")
+  //     .shift();
 
   const voidBar =
     "💀  " +

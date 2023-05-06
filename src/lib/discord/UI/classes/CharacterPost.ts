@@ -1,10 +1,11 @@
+import type {
+  BaseMessageOptions,
+  ColorResolvable} from "discord.js";
 import {
   ActionRowBuilder,
-  BaseMessageOptions,
   ButtonBuilder,
   ButtonStyle,
   Collection,
-  ColorResolvable,
   EmbedBuilder,
   userMention,
 } from "discord.js";

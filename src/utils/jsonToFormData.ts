@@ -1,4 +1,6 @@
 // Função para converter um objeto em FormData
+// TODO: Ughhh, Sum said it makes sense whatever that means!
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export default function jsonToFormData(obj: any): FormData {
   const formData = new FormData();
 
