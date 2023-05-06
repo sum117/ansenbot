@@ -302,10 +302,22 @@ export class OnRoleplayMessage {
     if (!message.inGuild() || !message.channel.parent) {
       return false;
     }
+    const isOffTopic =
+      message.content.startsWith("//") ||
+      message.content.startsWith("!") ||
+      message.content.startsWith("((") ||
+      message.content.startsWith("[[") ||
+      message.content.startsWith("))");
+
+    if (isOffTopic) {
+      deleteDiscordMessage(message, 5_000 * 60);
+    }
+
     return (
       message.channel.type === ChannelType.GuildText &&
       message.channel.parent.name.startsWith("RP") &&
-      !message.author.bot
+      !message.author.bot &&
+      !isOffTopic
     );
   }
 }
