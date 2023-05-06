@@ -385,21 +385,25 @@ export class CharacterCreatorController {
     const { form } = instance;
     assert(form, new BotError("Could not find form data."));
 
-    form.level = 4;
-    form.reputation = 0;
-    form.skills = "";
-    form.status = "";
-    form.memory = "";
-    form.playerId = instance.interaction.user.id;
-    form.player = "";
-    form.posts = [""];
-    form.xp = 0;
-    form.skillPoints = 0;
-    form.ascendedSkills = [];
-    form.skillTraits = [];
-    form.body = "";
-    form.inventory = "";
-    const character = createUpdateCharacterSchema.parse(form);
+    // Initialize default form values
+    const defaultFormData = {
+      level: 4,
+      reputation: 0,
+      skills: "",
+      status: "",
+      memory: "",
+      playerId: instance.interaction.user.id,
+      player: "",
+      posts: [""],
+      xp: 0,
+      skillPoints: 0,
+      ascendedSkills: [],
+      skillTraits: [],
+      body: "",
+      inventory: "",
+    };
+    const updatedForm = { ...defaultFormData, ...form };
+    const character = createUpdateCharacterSchema.parse(updatedForm);
     return CharacterFetcher.createCharacter(character, instance.interaction.user.id);
   }
 }
