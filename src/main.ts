@@ -40,7 +40,7 @@ bot.on("interactionCreate", (interaction: Interaction) => {
 });
 
 bot.on("messageCreate", (message) => {
-  void bot.executeCommand(message);
+  bot.executeCommand(message);
 });
 
 bot.on("messageDelete", async (message) => {
@@ -48,7 +48,7 @@ bot.on("messageDelete", async (message) => {
     try {
       const foundPost = await PostFetcher.getPostByMessageId(message.id).catch(() => null);
       if (foundPost) {
-        void PostFetcher.deletePost(message);
+        await PostFetcher.deletePost(message);
       }
     } catch (error) {
       console.error("Error deleting post", error);
@@ -69,4 +69,4 @@ async function run() {
 server.listen(8000, () => {
   console.log("Server started");
 });
-void run();
+run();

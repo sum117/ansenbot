@@ -61,7 +61,7 @@ export class OnRoleplayMessage {
         attachmentUrl: message.attachments.first()?.url,
       });
 
-      void deleteDiscordMessage(message, 1000);
+      deleteDiscordMessage(message, 1000);
 
       const similarMessage = await this.checkSimilarityFromPreviousMessages(message);
       if (similarMessage) {
@@ -218,16 +218,16 @@ export class OnRoleplayMessage {
     }
   }
 
-  private handleSimilarMessage(
+  private async handleSimilarMessage(
     similarMessage: Message,
     message: Message,
     messageOptions: BaseMessageOptions
-  ): void {
+  ): Promise<void> {
     const attachmentUrl = similarMessage.embeds[0]?.image?.url;
     if (attachmentUrl && !message.attachments.first()?.url) {
       const attachmentName = attachmentUrl?.split("/").pop();
       if (!attachmentName) {
-        void similarMessage.edit(messageOptions);
+        await similarMessage.edit(messageOptions);
         return;
       }
       const attachment = new AttachmentBuilder(attachmentUrl).setName(attachmentName);
@@ -237,7 +237,7 @@ export class OnRoleplayMessage {
       messageOptions.embeds = [embed];
     }
 
-    void similarMessage.edit(messageOptions);
+    await similarMessage.edit(messageOptions);
   }
 
   private async getStatusWarning(

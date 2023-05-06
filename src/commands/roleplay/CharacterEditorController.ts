@@ -53,15 +53,17 @@ export class CharacterEditorController {
         entityType: "players",
         entityData: player,
       });
-      void interaction.editReply({
+      await interaction.editReply({
         content: `Seu personagem principal foi setado para ${character.name}.`,
       });
     } catch (error) {
       console.error(error);
       if (error instanceof PocketBaseError) {
-        void interaction.editReply({
-          content: error.message,
-        });
+        await interaction
+          .editReply({
+            content: error.message,
+          })
+          .catch(() => null);
         return;
       }
     }
@@ -78,7 +80,7 @@ export class CharacterEditorController {
   ): Promise<void> {
     try {
       await CharacterFetcher.deleteCharacter(interaction.user.id, characterId);
-      void replyOrFollowUp(interaction, {
+      await replyOrFollowUp(interaction, {
         content: "Personagem deletado com sucesso.",
       });
     } catch (error) {
@@ -111,10 +113,10 @@ export class CharacterEditorController {
         const messageOptions = await characterPost.createMessageOptions({
           to: "profile",
         });
-        void interaction.editReply(messageOptions);
+        await interaction.editReply(messageOptions);
       } else {
         const charProfile = await getCharProfile(targetUser);
-        void interaction.editReply(charProfile);
+        await interaction.editReply(charProfile);
       }
     } catch (error) {
       handleError(interaction, error);
@@ -141,7 +143,7 @@ export class CharacterEditorController {
           "Não consegui criar o formulário de edição. Por favor entre em contato com o suporte."
         )
       );
-      void replyOrFollowUp(interaction, form);
+      await replyOrFollowUp(interaction, form);
     } catch (error) {
       handleError(interaction, error);
     }

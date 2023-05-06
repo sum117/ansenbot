@@ -30,7 +30,7 @@ export class OnImageGenerationRequest {
   }
 
   @On()
-  messageCreate([message]: ArgsOf<"messageCreate">, _client: Client): void {
+  async messageCreate([message]: ArgsOf<"messageCreate">, _client: Client): Promise<void> {
     try {
       const canExecute =
         message.channel.type === ChannelType.GuildText &&
@@ -43,12 +43,12 @@ export class OnImageGenerationRequest {
       }
 
       if (this.pendingUserImageRequests.get(message.author.id)?.isPending) {
-        void message.reply("❌ Você já tem uma imagem sendo gerada.");
+        await message.reply("❌ Você já tem uma imagem sendo gerada.");
         return;
       }
 
       if (this.pendingUserImageRequests.size > 0) {
-        void message.reply(
+        await message.reply(
           `⚠️ Sua imagem está na fila de espera, ${userMention(
             message.author.id
           )}. Não tente gerar outra imagem.`
@@ -59,7 +59,7 @@ export class OnImageGenerationRequest {
         isPending: true,
         message: null,
       });
-      void this.imageGenerationQueue.enqueue(async () => {
+      await this.imageGenerationQueue.enqueue(async () => {
         await this.generateAnimeImage();
       });
     } catch (error) {
@@ -120,7 +120,7 @@ export class OnImageGenerationRequest {
     }
 
     this.pendingUserImageRequests.delete(currentMessage.author.id);
-    void currentMessage.channel.send({
+    await currentMessage.channel.send({
       content: `✅ ${userMention(currentMessage.author.id)} Sua imagem foi gerada com sucesso!`,
       files: [attachment],
     });

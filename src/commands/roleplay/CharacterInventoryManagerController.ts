@@ -28,7 +28,7 @@ export class CharacterInventoryManagerController {
         this.getInventoryCredentialsFromCustomId(interaction);
 
       if (this.inventoryAlreadyOpen(interaction, playerId)) {
-        void interaction
+        await interaction
           .reply({
             content: "❌ Você já possui um inventário aberto.",
             ephemeral: true,
@@ -54,7 +54,7 @@ export class CharacterInventoryManagerController {
         case "info": {
           const embed = await this.inspectItemInteraction(interaction);
           if (embed) {
-            void interaction.reply({ embeds: [embed] });
+            await interaction.reply({ embeds: [embed] });
             return;
           } else {
             useItemAction = "❌ Houve um erro ao tentar inspecionar o item.";
@@ -214,7 +214,7 @@ export class CharacterInventoryManagerController {
       currentCharacter.expand.inventory.equipments.length +
       currentCharacter.expand.inventory.spells.length;
     if (length === 0) {
-      void trackedInteraction.editReply({
+      await trackedInteraction.editReply({
         content: mustache.render(
           "{{{author}}}, o personagem **{{{character}}}** não possui itens no inventário.",
           view
@@ -224,7 +224,7 @@ export class CharacterInventoryManagerController {
       await new Promise((resolve) => {
         setTimeout(resolve, 5000);
       });
-      void trackedInteraction.deleteReply();
+      await trackedInteraction.deleteReply().catch(() => null);
       this.trackedInteraction.cache.delete(trackedInteraction.user.id);
       return true;
     }

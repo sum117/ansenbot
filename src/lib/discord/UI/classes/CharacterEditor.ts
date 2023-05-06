@@ -61,7 +61,7 @@ export class CharacterEditor {
       const value = this.getCharacterUpdateValue(character, action);
 
       const modal = this.createModal(action, characterId, character.name, field, length, value);
-      void this.interaction.showModal(modal);
+      await this.interaction.showModal(modal);
     } catch (error) {
       handleError(this.interaction, error);
     }
@@ -77,7 +77,7 @@ export class CharacterEditor {
       const newFactionId = this.interaction.values[0];
       await this.updateFaction(characterId, newFactionId);
       await this.updateForm("Facção");
-      void this.interaction.deleteReply();
+      await this.interaction.deleteReply().catch(() => null);
     } catch (error) {
       handleError(this.interaction, error);
     }
@@ -101,7 +101,7 @@ export class CharacterEditor {
         await this.validateAndUpdateCharacter(character);
       }
       await this.updateForm(label);
-      void this.interaction.deleteReply();
+      await this.interaction.deleteReply().catch(() => null);
     } catch (error) {
       handleError(this.interaction, error);
     }
@@ -146,7 +146,7 @@ export class CharacterEditor {
     if (!newForm) {
       throw new BotError("Não foi possível encontrar o formulário.");
     }
-    void formMessage.edit(newForm.setMessageContent(`✅ Última edição: ${label}`));
+    await formMessage.edit(newForm.setMessageContent(`✅ Última edição: ${label}`));
   }
 
   private createModal(
@@ -193,7 +193,7 @@ export class CharacterEditor {
   private async updateFaction(characterId: string, newFactionId: string): Promise<void> {
     const character = await CharacterFetcher.getCharacterById(characterId);
     if (!this.checkOwnership(character)) {
-      void replyOrFollowUp(this.interaction, "Você não é o dono desse personagem.");
+      await replyOrFollowUp(this.interaction, "Você não é o dono desse personagem.");
       return;
     }
     await this.validateAndUpdateCharacter({ ...character, faction: newFactionId });

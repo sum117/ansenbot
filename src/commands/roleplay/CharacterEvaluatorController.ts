@@ -38,7 +38,7 @@ export class CharacterEvaluatorController {
         interaction.inCachedGuild() &&
         !interaction.member?.permissions.has(PermissionsBitField.Flags.ManageGuild)
       ) {
-        void replyOrFollowUp(
+        await replyOrFollowUp(
           interaction,
           "Você não tem permissão para aprovar ou reprovar personagens"
         );
@@ -99,8 +99,8 @@ export class CharacterEvaluatorController {
           view
         ),
       });
-      void interaction.deleteReply();
-      void deleteDiscordMessage(this.interaction.message, 0);
+      await interaction.deleteReply().catch(() => null);
+      deleteDiscordMessage(this.interaction.message, 0);
     } catch (error) {
       handleError(interaction, error);
     }
@@ -135,9 +135,9 @@ export class CharacterEvaluatorController {
     approvedCharacterEmbed.setDescription(
       mustache.render("Personagem de {{{owner}}} aprovado por {{{staff}}}", view)
     );
-    await this.interaction.deleteReply();
-    void deleteDiscordMessage(this.interaction.message, 0);
-    void approvedCharacterChannel.send({
+    await this.interaction.deleteReply().catch(() => null);
+    deleteDiscordMessage(this.interaction.message, 0);
+    await approvedCharacterChannel.send({
       content: mustache.render("||{{{owner}}} {{{staff}}}||", view),
       embeds: [approvedCharacterEmbed],
     });

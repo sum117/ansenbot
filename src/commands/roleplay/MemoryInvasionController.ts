@@ -45,7 +45,7 @@ export class MemoryInvasionController {
         record: chosenMemory,
       });
       const attachment = new AttachmentBuilder(imageUrl).setName("image.png");
-      void interaction.reply({
+      await interaction.reply({
         content: mustache.render(chosenMemory.phrase, view),
         files: [attachment],
       });

@@ -92,12 +92,13 @@ export class OnRoleplayChannelActivity {
       }
       const presentationMessage = this._presentationMessages.get(channel.id);
       if (!presentationMessage) {
-        return interaction.deleteReply();
+        await interaction.deleteReply().catch(() => null);
+        return;
       }
       presentationMessage.updated = new Date().toISOString();
       this._presentationMessages.set(channel.id, presentationMessage);
-      void interaction.message.delete();
-      void interaction.deleteReply();
+      await interaction.message.delete().catch(() => null);
+      await interaction.deleteReply().catch(() => null);
     } catch (error) {
       handleError(interaction, error);
     }
@@ -127,7 +128,7 @@ export class OnRoleplayChannelActivity {
             .fetch(presentationMessage.placeholderMessageId)
             .catch(() => null);
           if (oldMessage) {
-            void deleteDiscordMessage(oldMessage, 0);
+            deleteDiscordMessage(oldMessage, 0);
           }
           await ChannelFetcher.updateChannelById({
             ...presentationMessage,

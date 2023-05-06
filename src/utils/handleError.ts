@@ -53,7 +53,7 @@ export default function handleError(
     return;
   }
 
-  void interaction.channel
+  interaction.channel
     ?.send(errorMessage)
     .then((message) => {
       deleteDiscordMessage(message, 5000);

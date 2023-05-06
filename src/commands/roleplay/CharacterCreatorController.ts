@@ -59,7 +59,7 @@ export class CharacterCreatorController {
   async generateCreateBtn(interaction: ChatInputCommandInteraction): Promise<void> {
     try {
       await interaction.deferReply();
-      void interaction.editReply(characterCreateTrigger);
+      await interaction.editReply(characterCreateTrigger);
     } catch (error) {
       handleError(interaction, error);
     }
@@ -223,7 +223,7 @@ export class CharacterCreatorController {
 
     if (state === "cancel" && mainInstance) {
       this.characterCreatorInstances.delete(interaction.user.id);
-      void mainInstance.interaction.deleteReply();
+      await mainInstance.interaction.deleteReply().catch(() => null);
       return;
     }
 
@@ -235,7 +235,7 @@ export class CharacterCreatorController {
     );
 
     if (Number(step) > form.totalSteps && interaction instanceof ButtonInteraction) {
-      void mainInstance.interaction.editReply(
+      await mainInstance.interaction.editReply(
         characterCreateModalTrigger(false, form.totalSteps.toString())
       );
       this.totalSteps = form.totalSteps.toString();
@@ -300,7 +300,7 @@ export class CharacterCreatorController {
       this.characterCreatorInstances.set(interaction.user.id, mainInstance);
       this.updateFormPrompt(form, entities);
     }
-    void mainInstance.interaction.editReply(form.prompt);
+    await mainInstance.interaction.editReply(form.prompt);
   }
 
   private async fetchEntities(
@@ -382,7 +382,7 @@ export class CharacterCreatorController {
     const oldInstance = this.characterCreatorInstances.get(interaction.user.id);
     if (state === "start" && oldInstance) {
       this.characterCreatorInstances.delete(interaction.user.id);
-      void oldInstance.interaction.deleteReply();
+      await oldInstance.interaction.deleteReply().catch(() => null);
     }
 
     if (
@@ -394,16 +394,16 @@ export class CharacterCreatorController {
     }
     const instance = this.characterCreatorInstances.get(interaction.user.id);
     if (interaction.id !== instance?.interaction.id) {
-      void interaction.deferReply({ ephemeral: true });
-      void interaction.deleteReply();
+      await interaction.deferReply({ ephemeral: true });
+      await interaction.deleteReply().catch(() => null);
     }
     return instance;
   }
 
-  private showCharacterModal(interaction: ButtonInteraction) {
+  private async showCharacterModal(interaction: ButtonInteraction) {
     const [_, _state, requiredOrOptional] = interaction.customId.split(":");
     const modal = this.modals[requiredOrOptional as "required" | "optional"];
-    void interaction.showModal(modal);
+    await interaction.showModal(modal);
   }
 
   private sendCreateRequest(

@@ -33,7 +33,7 @@ const characterEditForm = async (
   const character = await CharacterFetcher.getCharacterById(charId);
 
   if (!CharacterFetcher.isOwner(interaction.user.id, character.playerId)) {
-    void replyOrFollowUp(interaction, {
+    await replyOrFollowUp(interaction, {
       content: "Você não é o dono desse personagem.",
     });
     return;
