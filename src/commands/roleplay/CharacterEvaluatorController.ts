@@ -1,28 +1,22 @@
-import { ButtonComponent, Discord, ModalComponent } from "discordx";
-import {
-  ButtonInteraction,
-  EmbedBuilder,
-  ModalSubmitInteraction,
-  PermissionsBitField,
-  TextChannel,
-  TextInputStyle,
-  userMention,
-} from "discord.js";
-import config from "../../../config.json" assert { type: "json" };
-import { BotError } from "../../utils/Errors";
 import assert from "assert";
+import type { ButtonInteraction, ModalSubmitInteraction, TextChannel } from "discord.js";
+import { EmbedBuilder, PermissionsBitField, TextInputStyle, userMention } from "discord.js";
+import { ButtonComponent, Discord, ModalComponent } from "discordx";
 import mustache from "mustache";
+
+import config from "../../../config.json" assert { type: "json" };
 import promptBox from "../../lib/discord/UI/helpers/promptBox";
-import replyOrFollowUp from "../../utils/replyOrFollowUp";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
-import handleError from "../../utils/handleError";
 import deleteDiscordMessage from "../../utils/deleteDiscordMessage";
+import { BotError } from "../../utils/Errors";
+import handleError from "../../utils/handleError";
+import replyOrFollowUp from "../../utils/replyOrFollowUp";
 
 @Discord()
 export class CharacterEvaluatorController {
   private _interaction: ButtonInteraction | null = null;
 
-  get interaction() {
+  get interaction(): ButtonInteraction {
     if (!this._interaction) {
       throw new BotError("Interaction not set");
     }
@@ -36,11 +30,11 @@ export class CharacterEvaluatorController {
   @ButtonComponent({
     id: /character:(approve|deny):\w+:\d+/,
   })
-  async evaluateCharacter(interaction: ButtonInteraction) {
+  async evaluateCharacter(interaction: ButtonInteraction): Promise<void> {
     try {
       if (
         interaction.inCachedGuild() &&
-        !interaction.member!.permissions.has(PermissionsBitField.Flags.ManageGuild)
+        interaction.member?.permissions.has(PermissionsBitField.Flags.ManageGuild)
       ) {
         void replyOrFollowUp(
           interaction,
@@ -69,7 +63,7 @@ export class CharacterEvaluatorController {
   @ModalComponent({
     id: /character:deny:\w+:\d+/,
   })
-  async denyCharacter(interaction: ModalSubmitInteraction) {
+  async denyCharacter(interaction: ModalSubmitInteraction): Promise<void> {
     try {
       await interaction.deferReply({ ephemeral: true });
       const [_, _action, characterId, characterPlayerId] = interaction.customId.split(":") as [

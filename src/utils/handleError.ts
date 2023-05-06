@@ -58,5 +58,5 @@ export default function handleError(
     .then((message) => {
       deleteDiscordMessage(message, 5000);
     })
-    .catch(() => {});
+    .catch(() => null);
 }

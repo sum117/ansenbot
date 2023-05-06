@@ -1,10 +1,10 @@
 import type { Message } from "discord.js";
 
 import type { Character, Player, Post } from "../../types/Character";
+import { BotError } from "../../utils/Errors";
 import CharacterFetcher from "./CharacterFetcher";
 import PlayerFetcher from "./PlayerFetcher";
 import PocketBase from "./PocketBase";
-import { BotError } from "../../utils/Errors";
 
 export default class PostFetcher {
   public static getPostByMessageId(messageId: string): Promise<Post> {
@@ -24,11 +24,10 @@ export default class PostFetcher {
       throw new BotError("Esse personagem não tem posts!");
     }
 
-    const latestPost = await PocketBase.getEntityById<Post>({
+    return PocketBase.getEntityById<Post>({
       entityType: "posts",
       id: character.posts[character.posts.length - 1],
     });
-    return latestPost;
   }
 
   public static async createPost<T extends Message>(message: T): Promise<Post | void> {

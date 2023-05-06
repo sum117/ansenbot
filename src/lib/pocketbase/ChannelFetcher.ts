@@ -1,6 +1,6 @@
-import { Channel } from "../../types/Channel";
+import type { Channel } from "../../types/Channel";
+import type { CreateData } from "../../types/PocketBaseCRUD";
 import PocketBase from "./PocketBase";
-import { CreateData } from "../../types/PocketBaseCRUD";
 
 export class ChannelFetcher {
   public static getChannelById(id: string): Promise<Channel | null> {

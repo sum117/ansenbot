@@ -1,5 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
-import { Character } from "../../../../types/Character";
+
+import type { Character } from "../../../../types/Character";
 
 const characterApprovalBtnRow = (character: Character): ActionRowBuilder<ButtonBuilder> =>
   new ActionRowBuilder<ButtonBuilder>().setComponents(

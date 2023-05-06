@@ -1,9 +1,9 @@
 import { equipmentDictionary } from "../../../../data/translations";
+import type { CharacterBody } from "../../../../types/Character";
+import type { EquipmentItem, SpellItem } from "../../../../types/Item";
 import isInventoryItem from "../../Character/helpers/isInventoryItem";
-import { CharacterBody } from "../../../../types/Character";
-import { EquipmentItem, SpellItem } from "../../../../types/Item";
 
-export default async function makeEquipmentStringArray(body: CharacterBody) {
+export default function makeEquipmentStringArray(body: CharacterBody): Promise<Array<string>> {
   const orderedKeys: (keyof typeof equipmentDictionary)[] = [
     "head",
     "face",
@@ -19,7 +19,7 @@ export default async function makeEquipmentStringArray(body: CharacterBody) {
     "spells",
   ];
 
-  const descriptionsPromises = orderedKeys.map(async (key) => {
+  const descriptionsPromises = orderedKeys.map((key) => {
     const itemSlot = equipmentDictionary[key];
     const isRingOrSpell = (equipment: unknown): equipment is EquipmentItem[] | SpellItem[] =>
       Array.isArray(equipment) && equipment.every(isInventoryItem);
@@ -35,6 +35,5 @@ export default async function makeEquipmentStringArray(body: CharacterBody) {
     }
   });
 
-  const descriptions = await Promise.all(descriptionsPromises);
-  return descriptions;
+  return Promise.all(descriptionsPromises);
 }

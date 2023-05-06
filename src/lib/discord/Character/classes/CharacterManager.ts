@@ -1,4 +1,15 @@
+import { userMention } from "discord.js";
+import mustache from "mustache";
+
+import type { COLLECTIONS } from "../../../../data/constants";
+import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
+import type { equipmentDictionary } from "../../../../data/translations";
 import {
+  consumableSchema,
+  equipmentSchema,
+  spellSchema,
+} from "../../../../schemas/characterSchema";
+import type {
   Character,
   CharacterBody,
   Effect,
@@ -7,27 +18,18 @@ import {
   Memory,
   Status,
 } from "../../../../types/Character";
-import PocketBase from "../../../pocketbase/PocketBase";
+import type { BodyPart } from "../../../../types/Combat";
+import type { EquipmentItem, Item, SpellItem } from "../../../../types/Item";
+import type { Properties } from "../../../../types/Utils";
 import { BotError } from "../../../../utils/Errors";
-import { COLLECTIONS, STATUS_SKILLS_RELATION } from "../../../../data/constants";
-import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
-import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
-import { Properties } from "../../../../types/Utils";
-import AnsenfallLeveling from "../helpers/ansenfallLeveling";
-import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
-import { EquipmentItem, Item, SpellItem } from "../../../../types/Item";
-import {
-  consumableSchema,
-  equipmentSchema,
-  spellSchema,
-} from "../../../../schemas/characterSchema";
-import mustache from "mustache";
-import { userMention } from "discord.js";
-import getMaxStatus from "../helpers/getMaxStatus";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import removePocketbaseConstants from "../../../../utils/removePocketbaseConstants";
-import { equipmentDictionary } from "../../../../data/translations";
-import { BodyPart } from "../../../../types/Combat";
+import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
+import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
+import PocketBase from "../../../pocketbase/PocketBase";
+import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
+import AnsenfallLeveling from "../helpers/ansenfallLeveling";
+import getMaxStatus from "../helpers/getMaxStatus";
 
 export class CharacterManager implements ICharacterManager {
   public constructor(public character: Character) {}
@@ -124,20 +126,17 @@ export class CharacterManager implements ICharacterManager {
     await this.setStatus(characterStatus);
   }
 
-  async addMemory(memoryId: string): Promise<void> {
+  addMemory(memoryId: string): void {
     this.character.memory = memoryId;
     void CharacterFetcher.updateCharacter(this.character);
   }
 
-  async removeMemory(memoryId: string): Promise<void> {
+  removeMemory(): void {
     this.character.memory = "";
-
-    await CharacterFetcher.updateCharacter(this.character);
-
-    return;
+    void CharacterFetcher.updateCharacter(this.character);
   }
 
-  async getMemory(): Promise<Memory> {
+  getMemory(): Promise<Memory> {
     if (!this.character.memory) {
       throw new BotError("Personagem não possui memória no momento.");
     }
@@ -173,7 +172,7 @@ export class CharacterManager implements ICharacterManager {
     return updatedStatus;
   }
 
-  async getStatuses(statusId: Status["id"]): Promise<Status> {
+  getStatuses(statusId: Status["id"]): Promise<Status> {
     return PocketBase.getEntityById<Status>({
       entityType: "status",
       id: statusId,
@@ -181,7 +180,7 @@ export class CharacterManager implements ICharacterManager {
     });
   }
 
-  async getStatus(statusKey: keyof Status): Promise<Properties<Status>> {
+  getStatus(statusKey: keyof Status): Promise<Properties<Status>> {
     return this.getStatuses(this.character.status).then((status) => status[statusKey]);
   }
 
@@ -200,20 +199,20 @@ export class CharacterManager implements ICharacterManager {
   }
 
   getInventoryItem(inventoryItemId: Inventory["id"]): Item | undefined {
-    const item = [
+    return [
       ...(this.character.expand.inventory.expand.consumables ?? []),
       ...(this.character.expand.inventory.expand.spells ?? []),
       ...(this.character.expand.inventory.expand.equipments ?? []),
     ].find((item) => item.id === inventoryItemId);
-
-    return item;
   }
 
   async getEquipmentItem<T extends BodyPart>(slot: T): Promise<EquipmentItem | undefined>;
   async getEquipmentItem<T extends keyof typeof equipmentDictionary>(
     slot: T
   ): Promise<EquipmentItem | EquipmentItem[] | SpellItem[] | undefined>;
-  async getEquipmentItem(slot: BodyPart | keyof typeof equipmentDictionary) {
+  async getEquipmentItem(
+    slot: BodyPart | keyof typeof equipmentDictionary
+  ): Promise<EquipmentItem | EquipmentItem[] | SpellItem[] | undefined> {
     const body = await PocketBase.getEntityById<CharacterBody>({
       entityType: "body",
       id: this.character.body,

@@ -1,26 +1,18 @@
+import type { ButtonInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js";
 import { ButtonComponent, Discord, SelectMenuComponent } from "discordx";
-import characterInteractionForm from "../../lib/discord/UI/character/characterInteractionForm";
-import {
-  ButtonInteraction,
-  ComponentType,
-  Snowflake,
-  StringSelectMenuInteraction,
-} from "discord.js";
+
+import { BATTLE_INTERACTION_ID_REGEX, CHARACTER_INTERACTION_ID_REGEX } from "../../data/constants";
+import { equipmentDictionary, statusDictionary } from "../../data/translations";
+import CharacterCombat from "../../lib/discord/Character/classes/CharacterCombat";
+import type { CharacterManager } from "../../lib/discord/Character/classes/CharacterManager";
 import getRoleplayDataFromUserId from "../../lib/discord/Character/helpers/getRoleplayDataFromUserId";
 import battleInteractionAttackForm from "../../lib/discord/UI/battle/battleInteractionAttackForm";
-import { BATTLE_INTERACTION_ID_REGEX, CHARACTER_INTERACTION_ID_REGEX } from "../../data/constants";
-import battleInteractionSupportForm from "../../lib/discord/UI/battle/battleInteractionSupportForm";
-import { equipmentDictionary, statusDictionary } from "../../data/translations";
-import getSafeKeys from "../../utils/getSafeKeys";
-import { ItemFetcher } from "../../lib/pocketbase/ItemFetcher";
-
-import { CharacterManager } from "../../lib/discord/Character/classes/CharacterManager";
-import handleError from "../../utils/handleError";
-import TrackedInteraction from "../../utils/TrackedInteraction";
-import deleteDiscordMessage from "../../utils/deleteDiscordMessage";
 import battleInteractionDefenseForm from "../../lib/discord/UI/battle/battleInteractionDefenseForm";
-import MultiForm from "../../lib/discord/UI/classes/MultiForm";
-import {
+import battleInteractionSupportForm from "../../lib/discord/UI/battle/battleInteractionSupportForm";
+import characterInteractionForm from "../../lib/discord/UI/character/characterInteractionForm";
+import type MultiForm from "../../lib/discord/UI/classes/MultiForm";
+import { ItemFetcher } from "../../lib/pocketbase/ItemFetcher";
+import type {
   AttackTurnResult,
   BaseTurn,
   BodyPart,
@@ -35,7 +27,10 @@ import {
   SupportTurnResult,
   Turn,
 } from "../../types/Combat";
-import CharacterCombat from "../../lib/discord/Character/classes/CharacterCombat";
+import deleteDiscordMessage from "../../utils/deleteDiscordMessage";
+import getSafeKeys from "../../utils/getSafeKeys";
+import handleError from "../../utils/handleError";
+import TrackedInteraction from "../../utils/TrackedInteraction";
 
 @Discord()
 export class CharacterInteractionController {
@@ -45,10 +40,11 @@ export class CharacterInteractionController {
   @ButtonComponent({
     id: CHARACTER_INTERACTION_ID_REGEX,
   })
-  async characterInteractionButton(interaction: ButtonInteraction) {
+  async characterInteractionButton(interaction: ButtonInteraction): Promise<void> {
     try {
-      let { action, agentId, targetId } = this.getInteractionCredentials(interaction);
-
+      const credentials = this.getInteractionCredentials(interaction);
+      let { agentId } = credentials;
+      const { action, targetId } = credentials;
       if (agentId === "null") {
         agentId = interaction.user.id;
       }
@@ -59,7 +55,8 @@ export class CharacterInteractionController {
       );
 
       if (interaction.user.id !== targetId && interaction.user.id !== agentId) {
-        return trackedInteraction.editReply("❌ Você não está participando dessa interação.");
+        void trackedInteraction.editReply("❌ Você não está participando dessa interação.");
+        return;
       }
 
       const { currentCharacter: agent } = await getRoleplayDataFromUserId(agentId);
@@ -90,15 +87,15 @@ export class CharacterInteractionController {
   @SelectMenuComponent({
     id: BATTLE_INTERACTION_ID_REGEX,
   })
-  async battleSelectMenuInteraction(interaction: StringSelectMenuInteraction) {
-    await this.handleBattleInteraction(interaction);
+  battleSelectMenuInteraction(interaction: StringSelectMenuInteraction): Promise<void> {
+    return this.handleBattleInteraction(interaction);
   }
 
   @ButtonComponent({
     id: BATTLE_INTERACTION_ID_REGEX,
   })
-  async battleButtonInteraction(interaction: ButtonInteraction) {
-    await this.handleBattleInteraction(interaction);
+  battleButtonInteraction(interaction: ButtonInteraction): Promise<void> {
+    return this.handleBattleInteraction(interaction);
   }
 
   private async handleBattleInteraction(
@@ -144,7 +141,9 @@ export class CharacterInteractionController {
             bodyPart,
             interactionValue,
           });
-          await new Promise((resolve) => setTimeout(resolve, 5000));
+          await new Promise((resolve) => {
+            setTimeout(resolve, 5000);
+          });
           await interaction.deleteReply().catch(() => null);
         }
       } else if (interaction.isButton()) {
@@ -240,10 +239,7 @@ export class CharacterInteractionController {
   ) {
     const currentInteraction = this.turn.get(agent.playerId);
 
-    const supportHandlers: Record<
-      string,
-      (currentInteraction: Turn | undefined) => Promise<SupportTurn>
-    > = {
+    const supportHandlers: Record<string, (currentInteraction: Turn | undefined) => SupportTurn> = {
       spell: this.getSpellHelpData.bind(this, interactionValue, target.playerId),
     };
 
@@ -337,10 +333,7 @@ export class CharacterInteractionController {
     return interaction.editReply(message);
   }
 
-  private async getSpellHelpData(
-    interactionValue: string,
-    targetId: Snowflake
-  ): Promise<SupportTurn> {
+  private getSpellHelpData(interactionValue: string, targetId: Snowflake): SupportTurn {
     return {
       action: "support",
       kind: "spell",

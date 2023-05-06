@@ -10,6 +10,7 @@ import { BotError, PocketBaseError } from "../../utils/Errors";
 import getImageBlob from "../../utils/getImageBlob";
 import getSafeKeys from "../../utils/getSafeKeys";
 import jsonToFormData from "../../utils/jsonToFormData";
+import PlayerFetcher from "./PlayerFetcher";
 import PocketBase from "./PocketBase";
 
 export default class CharacterFetcher {
@@ -110,7 +111,7 @@ export default class CharacterFetcher {
     }
   }
 
-  public static async updateCharacter(character: Character): Promise<Character> {
+  public static updateCharacter(character: Character): Promise<Character> {
     return PocketBase.updateEntity<Character>({
       entityType: "characters",
       entityData: character,
@@ -137,10 +138,7 @@ export default class CharacterFetcher {
     }
   }
 
-  public static async createCharacter(
-    char: CreateData<Character>,
-    playerId: Snowflake
-  ): Promise<Character | void> {
+  public static async createCharacter(char: CreateData<Character>): Promise<Character | void> {
     try {
       const specOne = char.specs[0];
       const specTwo = char.specs[1] ?? specOne;
@@ -218,11 +216,11 @@ export default class CharacterFetcher {
         skills: baseSkills.id,
         status: baseStatus.id,
         body: body.id,
-        inventory: inventory.d,
+        inventory: inventory.i,
       });
       formData.set("image", blob, fileName);
       const response = await PocketBase.createEntityWithFormData<Character>("characters", formData);
-
+      await PlayerFetcher.setCurrentCharacter(response.playerId, response.id);
       return response;
     } catch (error) {
       console.error(inspect(error, false, null, true));

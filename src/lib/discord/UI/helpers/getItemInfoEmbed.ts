@@ -1,14 +1,15 @@
-import { ItemWithRole } from "../../../../types/Item";
 import { EmbedBuilder } from "discord.js";
-import { equipmentDictionary, itemTypesDictionary } from "../../../../data/translations";
+
 import { STATUS_NAMES } from "../../../../data/constants";
+import { equipmentDictionary, itemTypesDictionary } from "../../../../data/translations";
 import {
   consumableSchema,
   equipmentSchema,
   spellSchema,
 } from "../../../../schemas/characterSchema";
-import removePocketbaseConstants from "../../../../utils/removePocketbaseConstants";
+import type { ItemWithRole } from "../../../../types/Item";
 import getSafeEntries from "../../../../utils/getSafeEntries";
+import removePocketbaseConstants from "../../../../utils/removePocketbaseConstants";
 
 export default function getItemInfoEmbed(item: ItemWithRole, ownerName?: string): EmbedBuilder {
   const fields: Array<{ name: string; value: string; inline: boolean }> = [];

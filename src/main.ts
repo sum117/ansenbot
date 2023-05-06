@@ -1,15 +1,15 @@
 import "dotenv/config";
-import EventSource from "eventsource";
 
 import { dirname, importx } from "@discordx/importer";
 import type { Interaction } from "discord.js";
-import { ChannelType, IntentsBitField, Options } from "discord.js";
+import { IntentsBitField, Options } from "discord.js";
 import { Client } from "discordx";
+import EventSource from "eventsource";
 
-import PostFetcher from "./lib/pocketbase/PostFetcher";
-import server from "./server";
 import { COLLECTIONS } from "./data/constants";
 import { channelSubscriptionCallback, pb } from "./lib/pocketbase/PocketBase";
+import PostFetcher from "./lib/pocketbase/PostFetcher";
+import server from "./server";
 
 global.EventSource = EventSource as any;
 

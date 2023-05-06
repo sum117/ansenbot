@@ -2,7 +2,7 @@ import { ButtonBuilder, ButtonStyle } from "discord.js";
 
 import MultiForm from "../classes/MultiForm";
 
-const characterCreateTrigger = (canFinish: boolean, fallbackStep: string) =>
+const characterCreateTrigger = (canFinish: boolean, fallbackStep: string): MultiForm =>
   new MultiForm({
     description:
       "Agora só falta você preencher os formulários. Você pode usar os botões abaixo para refazer o formulário ou continuar.",

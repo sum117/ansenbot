@@ -1,4 +1,4 @@
-import { ButtonInteraction, Snowflake } from "discord.js";
+import type { ButtonInteraction, Snowflake } from "discord.js";
 
 export default class TrackedInteraction {
   public cache = new Map<Snowflake, ButtonInteraction>();
@@ -7,7 +7,7 @@ export default class TrackedInteraction {
     interaction: ButtonInteraction,
     resetKey: string,
     ephemeral = false
-  ) {
+  ): Promise<ButtonInteraction> {
     let trackedInteraction = this.cache.get(interaction.user.id);
 
     if (interaction.customId.includes(resetKey) && trackedInteraction) {

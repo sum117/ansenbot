@@ -1,6 +1,3 @@
-import { Character } from "../../../../types/Character";
-import getInteractionMetadata from "../helpers/getInteractionMetadata";
-import MultiForm from "../classes/MultiForm";
 import {
   ButtonBuilder,
   ButtonStyle,
@@ -8,7 +5,14 @@ import {
   StringSelectMenuOptionBuilder,
 } from "discord.js";
 
-export default async function battleInteractionSupportForm(helper: Character, target: Character) {
+import type { Character } from "../../../../types/Character";
+import MultiForm from "../classes/MultiForm";
+import getInteractionMetadata from "../helpers/getInteractionMetadata";
+
+export default async function battleInteractionSupportForm(
+  helper: Character,
+  target: Character
+): Promise<MultiForm> {
   const { render, imageUrl, infoFields } = await getInteractionMetadata(helper, target);
   const fields: Array<StringSelectMenuBuilder | ButtonBuilder> = [];
 
