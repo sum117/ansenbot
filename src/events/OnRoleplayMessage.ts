@@ -23,9 +23,11 @@ import equalityPercentage from "../utils/equalityPercentage";
 import { BotError } from "../utils/Errors";
 import getSafeEntries from "../utils/getSafeEntries";
 import handleError from "../utils/handleError";
+import Queue from "../utils/Queue";
 
 @Discord()
 export class OnRoleplayMessage {
+  private deleteMessageQueue = new Queue();
   @On({ event: "messageCreate" })
   async main([message]: ArgsOf<"messageCreate">): Promise<void> {
     try {
@@ -315,7 +317,9 @@ export class OnRoleplayMessage {
       message.content.startsWith("))");
 
     if (isOffTopic) {
-      deleteDiscordMessage(message, 5_000 * 60);
+      this.deleteMessageQueue.enqueue(async () => {
+        await deleteDiscordMessage(message, 5000 * 60);
+      });
     }
 
     return (
