@@ -206,7 +206,7 @@ export default class CharacterCombat {
         break;
       }
       case "block": {
-        if (!this.target.expand.body.expand?.leftArm.isWeapon) {
+        if (!this.target.expand.body.expand?.leftArm?.isWeapon) {
           success = blockRandom < blockChance;
           targetStatus.stamina -= success
             ? targetStatus.stamina * 0.1

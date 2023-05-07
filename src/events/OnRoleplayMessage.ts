@@ -1,5 +1,5 @@
 import type { BaseMessageOptions, ButtonInteraction, Message } from "discord.js";
-import { AttachmentBuilder, ChannelType, EmbedBuilder } from "discord.js";
+import { AttachmentBuilder, ChannelType, EmbedBuilder, userMention } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On } from "discordx";
 import mustache from "mustache";
@@ -17,19 +17,33 @@ import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
 import { EffectFetcher } from "../lib/pocketbase/EffectFetcher";
 import PocketBase from "../lib/pocketbase/PocketBase";
 import PostFetcher from "../lib/pocketbase/PostFetcher";
-import type { Character, CharacterBody, Skills, Status } from "../types/Character";
+import type { CharacterBody, Skills, Status } from "../types/Character";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import equalityPercentage from "../utils/equalityPercentage";
 import { BotError } from "../utils/Errors";
 import getSafeEntries from "../utils/getSafeEntries";
 import handleError from "../utils/handleError";
+import Queue from "../utils/Queue";
 
 @Discord()
 export class OnRoleplayMessage {
+  private deleteMessageQueue = new Queue();
   @On({ event: "messageCreate" })
   async main([message]: ArgsOf<"messageCreate">): Promise<void> {
     try {
       if (!this.isValidRoleplayMessage(message)) {
+        return;
+      }
+
+      const isOffTopic =
+        message.content.startsWith("//") ||
+        message.content.startsWith("!") ||
+        message.content.startsWith("((") ||
+        message.content.startsWith("[[") ||
+        message.content.startsWith("))");
+
+      if (isOffTopic) {
+        await deleteDiscordMessage(message, 1000 * 60);
         return;
       }
 
@@ -42,25 +56,23 @@ export class OnRoleplayMessage {
       const { currentCharacter, characterManager, view, status, skills } = roleplayData;
 
       await Promise.all([
-        this.processExperienceGain(view, message, currentCharacter, characterManager),
-        this.applyPassiveStatusLoss(
-          view,
-          message,
-          currentCharacter,
-          characterManager,
-          status,
-          skills
-        ),
+        this.processExperienceGain(view, message, characterManager),
+        this.applyPassiveStatusLoss(view, message, characterManager, status, skills),
       ]);
 
       const characterPost = new CharacterPost(currentCharacter);
+      const messageMentions = message.mentions.users;
+      const sanitizedContent = message.content.replace(/<@!?\d+>/g, "").trim();
 
-      const messageOptions = await characterPost.createMessageOptions({
+      const messageOptions = characterPost.createMessageOptions({
         to: "message",
-        embedContent: message.content,
+        embedContent: sanitizedContent,
         attachmentUrl: message.attachments.first()?.url,
       });
 
+      if (messageMentions.size > 0) {
+        messageOptions.content = messageMentions.map((user) => userMention(user.id)).join(" ");
+      }
       deleteDiscordMessage(message, 1000);
 
       const similarMessage = await this.checkSimilarityFromPreviousMessages(message);
@@ -148,12 +160,11 @@ export class OnRoleplayMessage {
   private async processExperienceGain(
     view: Record<string, string | number>,
     message: Message,
-    currentCharacter: Character,
     characterManager: CharacterManager
   ): Promise<void> {
-    const latestPost = await PostFetcher.getLatestPostByCharacterId(currentCharacter.id).catch(
-      () => null
-    );
+    const latestPost = await PostFetcher.getLatestPostByCharacterId(
+      characterManager.character.id
+    ).catch(() => null);
 
     let created: string;
     if (!latestPost) {
@@ -168,9 +179,9 @@ export class OnRoleplayMessage {
         Math.random() * (message.content.length - message.content.length / 2 + 1) +
           message.content.length / 2
       );
-      const didLevel = await characterManager.addXp(amount);
-
-      if (didLevel > 0) {
+      const newCharLevel = await characterManager.addXp(amount);
+      view.level = newCharLevel;
+      if (newCharLevel > 0) {
         await message.channel.send(
           mustache.render(
             "💎 O personagem {{{character}}} de {{{author}}} subiu de nível para {{{level}}}, parabéns!",
@@ -184,7 +195,6 @@ export class OnRoleplayMessage {
   private async applyPassiveStatusLoss(
     view: Record<string, string | number>,
     message: Message,
-    currentCharacter: Character,
     characterManager: CharacterManager,
     status: Status,
     skills: Skills
@@ -302,6 +312,7 @@ export class OnRoleplayMessage {
     if (!message.inGuild() || !message.channel.parent) {
       return false;
     }
+
     return (
       message.channel.type === ChannelType.GuildText &&
       message.channel.parent.name.startsWith("RP") &&

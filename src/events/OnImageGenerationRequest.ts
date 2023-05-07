@@ -64,6 +64,7 @@ export class OnImageGenerationRequest {
       });
     } catch (error) {
       console.error("Error while generating image", error);
+      this.pendingUserImageRequests.delete(message.author.id);
     }
   }
 
@@ -88,18 +89,6 @@ export class OnImageGenerationRequest {
         await trackedMessage.edit(userFeedback.join(""));
       }
     }
-
-    /* 
-    ----------------- Local Image Generation -----------------
-    const { stream } = await localRequestImageGen(currentMessage.content);
-    const onProgress = async (step: number, totalSteps: number) => {
-      const [bar, calculated] = progressBar.filledBar(totalSteps, step, 10, "▬", "🟩");
-      const message: string[] = [];
-      message.push(`✅ ${userMention(currentMessage.author.id)} Sua imagem começou a ser gerada.`);
-      message.push(`⏳ ${bar} ${calculated}%`);
-
-    }; 
-    */
 
     const sanitizedMessage = currentMessage.content
       .trim()
