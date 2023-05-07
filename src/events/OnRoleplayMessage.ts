@@ -32,6 +32,17 @@ export class OnRoleplayMessage {
   async main([message]: ArgsOf<"messageCreate">): Promise<void> {
     try {
       if (!this.isValidRoleplayMessage(message)) {
+        return;
+      }
+
+      const isOffTopic =
+        message.content.startsWith("//") ||
+        message.content.startsWith("!") ||
+        message.content.startsWith("((") ||
+        message.content.startsWith("[[") ||
+        message.content.startsWith("))");
+
+      if (isOffTopic) {
         await deleteDiscordMessage(message, 1000 * 60);
         return;
       }
@@ -301,18 +312,11 @@ export class OnRoleplayMessage {
     if (!message.inGuild() || !message.channel.parent) {
       return false;
     }
-    const isOffTopic =
-      message.content.startsWith("//") ||
-      message.content.startsWith("!") ||
-      message.content.startsWith("((") ||
-      message.content.startsWith("[[") ||
-      message.content.startsWith("))");
 
     return (
       message.channel.type === ChannelType.GuildText &&
       message.channel.parent.name.startsWith("RP") &&
-      !message.author.bot &&
-      !isOffTopic
+      !message.author.bot
     );
   }
 }
