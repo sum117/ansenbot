@@ -9,8 +9,8 @@ export default function deleteDiscordMessage(message: Message, timeout: number):
           .then(() => {
             resolve();
           })
-          .catch(() => {
-            console.error("Não foi possível deletar a mensagem.");
+          .catch((error) => {
+            console.error("Não foi possível deletar a mensagem: " + error);
           });
       } else {
         resolve();

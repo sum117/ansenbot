@@ -43,7 +43,7 @@ export class OnRoleplayMessage {
         message.content.startsWith("))");
 
       if (isOffTopic) {
-        await deleteDiscordMessage(message, 1000 * 60);
+        await deleteDiscordMessage(message, 60_000);
         return;
       }
 
@@ -54,11 +54,6 @@ export class OnRoleplayMessage {
       }
 
       const { currentCharacter, characterManager, view, status, skills } = roleplayData;
-
-      await Promise.all([
-        this.processExperienceGain(view, message, characterManager),
-        this.applyPassiveStatusLoss(view, message, characterManager, status, skills),
-      ]);
 
       const characterPost = new CharacterPost(currentCharacter);
       const messageMentions = message.mentions.users;
@@ -81,6 +76,10 @@ export class OnRoleplayMessage {
         return;
       }
 
+      await Promise.all([
+        this.processExperienceGain(view, message, characterManager),
+        this.applyPassiveStatusLoss(view, message, characterManager, status, skills),
+      ]);
       const postMessage = await message.channel.send(messageOptions);
       postMessage.author.id = message.author.id;
       postMessage.content = message.content;
