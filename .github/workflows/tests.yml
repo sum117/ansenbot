@@ -1,11 +1,12 @@
-name: Master
-
-concurrency:
-  cancel-in-progress: true
-  group: ${{ github.ref }}
+name: Tests
 
 on:
   push: {}
+  pull_request: {}
+
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
 
 jobs:
   eslint:
