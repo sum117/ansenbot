@@ -53,7 +53,7 @@ export class OnRoleplayMessage {
         return;
       }
 
-      const { currentCharacter, characterManager, view, status, skills } = roleplayData;
+      const { character: currentCharacter, characterManager, view, status, skills } = roleplayData;
 
       const characterPost = new CharacterPost(currentCharacter);
       const messageMentions = message.mentions.users;
@@ -92,8 +92,12 @@ export class OnRoleplayMessage {
   @ButtonComponent({ id: /character:status:open:\w+:\d+/ })
   async statusButton(interaction: ButtonInteraction): Promise<void> {
     try {
-      const { currentCharacter, characterManager, status, skills } =
-        await getRoleplayDataFromUserId(interaction.customId.split(":")[4]);
+      const {
+        character: currentCharacter,
+        characterManager,
+        status,
+        skills,
+      } = await getRoleplayDataFromUserId(interaction.customId.split(":")[4]);
       const characterPost = new CharacterPost(currentCharacter);
       const equipment = await characterManager.getEquipment();
 

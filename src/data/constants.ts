@@ -122,7 +122,7 @@ export const ITEM_ACTIONS_CUSTOM_IDS = {
   spell: "equip",
   consumable: "use",
 } as const;
-
+export const PAGE_SIZE = 5;
 export const STATUS_GAIN_PER_LEVEL = 10 as const;
 
 export const CHARACTER_INTERACTION_ID_REGEX =

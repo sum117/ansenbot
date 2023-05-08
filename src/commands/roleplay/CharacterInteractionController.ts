@@ -59,8 +59,8 @@ export class CharacterInteractionController {
         return;
       }
 
-      const { currentCharacter: agent } = await getRoleplayDataFromUserId(agentId);
-      const { currentCharacter: target } = await getRoleplayDataFromUserId(targetId);
+      const { character: agent } = await getRoleplayDataFromUserId(agentId);
+      const { character: target } = await getRoleplayDataFromUserId(targetId);
 
       switch (action) {
         case "open": {
@@ -111,9 +111,10 @@ export class CharacterInteractionController {
         return;
       }
 
-      const { currentCharacter: agent, characterManager: agentManager } =
-        await getRoleplayDataFromUserId(agentId);
-      const { currentCharacter: target, characterManager: targetManager } =
+      const { character: agent, characterManager: agentManager } = await getRoleplayDataFromUserId(
+        agentId
+      );
+      const { character: target, characterManager: targetManager } =
         await getRoleplayDataFromUserId(targetId);
 
       const currentInteraction = this.turn.get(agentId);

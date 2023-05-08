@@ -38,7 +38,9 @@ export default class CharacterPost {
 
     if (to === "profile") {
       if (embedContent) {
-        throw new BotError("Você não consegue enviar conteúdos para esse perfil!");
+        throw new BotError(
+          "Você não pode fornecer uma mensagem de conteúdo sobre um embed de perfil."
+        );
       }
       embed = this.getProfileEmbed();
     } else {
@@ -71,6 +73,11 @@ export default class CharacterPost {
           .setCustomId(`character:interaction:open:null:${this.character.playerId}`)
           .setLabel("Interagir")
           .setEmoji("🤝")
+          .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId(`character:leveling:${this.character.playerId}:open`)
+          .setLabel("Skills")
+          .setEmoji("📚")
           .setStyle(ButtonStyle.Primary),
       ]),
     ];

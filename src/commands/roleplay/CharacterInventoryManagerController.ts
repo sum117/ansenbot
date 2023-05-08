@@ -3,16 +3,16 @@ import { userMention } from "discord.js";
 import { ButtonComponent, Discord } from "discordx";
 import mustache from "mustache";
 
-import { INVENTORY_REGEX } from "../../data/constants";
+import { INVENTORY_REGEX, PAGE_SIZE } from "../../data/constants";
 import getRoleplayDataFromUserId from "../../lib/discord/Character/helpers/getRoleplayDataFromUserId";
 import characterInventoryMessageOptions from "../../lib/discord/UI/character/characterInventoryMessageOptions";
 import getItemInfoEmbed from "../../lib/discord/UI/helpers/getItemInfoEmbed";
 import makeInventoryStringArray from "../../lib/discord/UI/helpers/makeInventoryStringArray";
+import makeXYItemPagination from "../../lib/discord/UI/helpers/makeXYItemPagination";
 import { ItemFetcher } from "../../lib/pocketbase/ItemFetcher";
 import { equipmentSchema, spellSchema } from "../../schemas/characterSchema";
 import type { Character } from "../../types/Character";
 import handleError from "../../utils/handleError";
-import makeXYPagination from "../../utils/makeXandYPagination";
 import TrackedInteraction from "../../utils/TrackedInteraction";
 
 // placeholder:action:kind:itemId:playerId:page:(previous|next)
@@ -63,7 +63,7 @@ export class CharacterInventoryManagerController {
         }
       }
 
-      const { currentCharacter, view } = await getRoleplayDataFromUserId(playerId);
+      const { character: currentCharacter, view } = await getRoleplayDataFromUserId(playerId);
       const itemsArray = [
         ...(currentCharacter.expand.inventory.expand.consumables ?? []),
         ...(currentCharacter.expand.inventory.expand.equipments ?? []),
@@ -78,7 +78,6 @@ export class CharacterInventoryManagerController {
         return;
       }
 
-      const PAGE_SIZE = 5;
       const {
         pageItems,
         nextPage,
@@ -88,7 +87,7 @@ export class CharacterInventoryManagerController {
         nextItemId,
         currentPage,
         currentlySelectedItem,
-      } = makeXYPagination({
+      } = makeXYItemPagination({
         pageSize: PAGE_SIZE,
         itemsArray,
         pageFromCustomId: page,
@@ -177,7 +176,9 @@ export class CharacterInventoryManagerController {
 
   private async inspectItemInteraction(interaction: ButtonInteraction) {
     const { itemId, playerId } = this.getInventoryCredentialsFromCustomId(interaction);
-    const { currentCharacter, characterManager } = await getRoleplayDataFromUserId(playerId);
+    const { character: currentCharacter, characterManager } = await getRoleplayDataFromUserId(
+      playerId
+    );
 
     const itemsArray = [
       ...(currentCharacter.expand.inventory.expand.consumables ?? []),

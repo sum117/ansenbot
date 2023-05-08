@@ -1,4 +1,4 @@
-import getPageItems from "./getPageItems";
+import getPageItems from "../../../../utils/getPageItems";
 
 export interface PaginationOptions<T> {
   pageSize: number;
@@ -19,7 +19,7 @@ export interface PaginationResult<T> {
   currentlySelectedItem: T;
 }
 
-export default function makeXYPagination<T extends { id: string }>({
+export default function makeXYItemPagination<T extends { id: string }>({
   pageSize,
   itemsArray,
   itemIdFromCustomId,
