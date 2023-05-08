@@ -69,7 +69,7 @@ export class CharacterLeveling {
 
   public canIncreaseSkill(skill: keyof typeof this.characterSkills): boolean {
     const level = this.characterSkills[skill];
-    if (!level) {
+    if (level === undefined) {
       return false;
     }
     const isMax = level < this.maxLevel;
@@ -85,7 +85,7 @@ export class CharacterLeveling {
   public increaseSkill(skill: keyof SanitizedSkill): boolean {
     if (this.canIncreaseSkill(skill)) {
       const level = this.characterSkills[skill];
-      if (!level) {
+      if (level === undefined) {
         return false;
       }
       this.characterSkills[skill] = level + 1;
