@@ -3,7 +3,7 @@ import mustache from "mustache";
 
 import type { COLLECTIONS } from "../../../../data/constants";
 import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
-import type { equipmentDictionary } from "../../../../data/translations";
+import type { equipmentDictionary, skillsDictionary } from "../../../../data/translations";
 import {
   consumableSchema,
   equipmentSchema,
@@ -110,6 +110,38 @@ export class CharacterManager {
 
     await CharacterFetcher.updateCharacter(this.character);
     return didLevelUp ? leveling.characterLevel : 0;
+  }
+
+  async levelUpSkill(skillName: keyof typeof skillsDictionary, times?: number): Promise<Character> {
+    const skills = await SkillsFetcher.getSkillsById(this.character.skills);
+    const leveling = new AnsenfallLeveling(skills, this.character);
+    const errorMessage =
+      "❌ Você provavelmente não tem pontos de skill suficientes para fazer isso, ou o nível da Skill já está muito alto.";
+
+    if (times) {
+      for (let i = 0; i < times; i++) {
+        if (!leveling.increaseSkill(skillName)) {
+          throw new BotError(errorMessage);
+        }
+      }
+    } else {
+      if (!leveling.increaseSkill(skillName)) {
+        throw new BotError(errorMessage);
+      }
+    }
+    const newLevel = leveling.characterSkills[skillName];
+    if (!newLevel) {
+      throw new BotError(errorMessage);
+    }
+
+    skills[skillName] = newLevel;
+    this.character.skillPoints = leveling.characterSpareSkillPoints;
+
+    const [character] = await Promise.all([
+      CharacterFetcher.updateCharacter(this.character),
+      SkillsFetcher.updateSkills(skills),
+    ]);
+    return character;
   }
 
   async addSpirit(amount: number): Promise<number> {

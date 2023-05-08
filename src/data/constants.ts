@@ -132,3 +132,6 @@ export const BATTLE_INTERACTION_ID_REGEX =
 
 export const INVENTORY_REGEX =
   /character:(inventory|item):(browse|use|discard|open|equip|info):(\w+):\d+(:\d+:(previous|next|null))?/;
+
+export const CHARACTER_LEVELING_REGEX =
+  /^character:leveling:(?<playerId>\d+):((?<skillId>\w+):)?(?<action>previous|next|level-one-time|level-ten-times|open)$/;

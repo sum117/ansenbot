@@ -129,7 +129,9 @@ export default class PocketBase {
       ...body
     } = entityData;
 
-    return pb.collection(COLLECTIONS[entityType]).update<T>(id, body);
+    return pb
+      .collection(COLLECTIONS[entityType])
+      .update<T>(id, body, PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)));
   }
 
   public static async deleteEntity(params: DeleteEntityParams): Promise<boolean> {

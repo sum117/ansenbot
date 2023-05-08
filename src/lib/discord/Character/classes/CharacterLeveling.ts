@@ -9,6 +9,7 @@ export type TCharacterLeveling = {
   skillTraits?: string[];
 };
 
+type SanitizedSkill = Partial<Omit<Skills, keyof PocketBaseConstants | "character" | "expand">>;
 export class CharacterLeveling {
   public characterLevel: number;
   public characterSpareSkillPoints: number;
@@ -22,7 +23,7 @@ export class CharacterLeveling {
   constructor(
     maxLevel = 99,
     increaseFactor: number,
-    skills: Partial<Omit<Skills, keyof PocketBaseConstants | "character" | "expand">>,
+    skills: SanitizedSkill,
     { level = 1, skillPoints = 0, xp = 0, ascendedSkills = [], skillTraits = [] }: Character
   ) {
     this.maxLevel = maxLevel;
@@ -81,7 +82,7 @@ export class CharacterLeveling {
     return isMax && hasPoints;
   }
 
-  public increaseSkill(skill: keyof typeof this.characterSkills): boolean {
+  public increaseSkill(skill: keyof SanitizedSkill): boolean {
     if (this.canIncreaseSkill(skill)) {
       const level = this.characterSkills[skill];
       if (!level) {
