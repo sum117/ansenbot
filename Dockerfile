@@ -1,41 +1,34 @@
-## build runner
-FROM node:lts-alpine as build-runner
+# ! ~~~ Builder ~~~ !
+FROM node:18.16.0-slim AS builder
 
-# Set temp directory
 WORKDIR /tmp/app
 
-# Move package.json
+RUN npm install pnpm -g
+
 COPY package.json .
+COPY pnpm-lock.yaml .
+COPY src src
 
-# Install dependencies
-RUN apk add --no-cache --virtual .build-deps make gcc g++ python3 && \
-    npm install --legacy-peer-deps && \
-    apk del .build-deps
+RUN pnpm install
 
-# Move source files
-COPY src ./src
-COPY config.json   .
-COPY tsconfig.json   .
+COPY tsconfig.json .
+COPY config.json .
 
-# Build project
-RUN npm run build
+RUN pnpm run build
 
-## production runner
-FROM node:lts-alpine as prod-runner
+# ! ~~~ Runner ~~~ !
+FROM node:18.16.0-slim AS runner
 
-# Set work directory
 WORKDIR /app
 
-# Copy package.json from build-runner
-COPY --from=build-runner /tmp/app/package.json /app/package.json
+RUN npm install pnpm -g
 
-# Install dependencies
-RUN apk add --no-cache --virtual .build-deps make gcc g++ python3 && \
-    npm install --legacy-peer-deps && \
-    apk del .build-deps
+COPY --from=builder /tmp/app/build /app/build
+COPY --from=builder /tmp/app/package.json /app/package.json
+COPY --from=builder /tmp/app/pnpm-lock.yaml /app/pnpm-lock.yaml
 
-# Move build files
-COPY --from=build-runner /tmp/app/build /app/build
-COPY src/data/docs/* /app/build/src/data/docs/
-# Start bot
-CMD [ "npm",  "start" ]
+COPY src/data/docs /app/build/src/data/docs
+
+RUN pnpm install --prod --ignore-scripts
+
+CMD ["pnpm", "run", "start"]
