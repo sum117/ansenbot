@@ -36,6 +36,5 @@ RUN apk add --no-cache --virtual .build-deps make gcc g++ python3 && \
 
 # Move build files
 COPY --from=build-runner /tmp/app/build /app/build
-COPY src/data/docs/* /app/build/src/data/docs/
 # Start bot
 CMD [ "npm",  "start" ]
