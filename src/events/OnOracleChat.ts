@@ -1,7 +1,7 @@
 import type { Client } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { Discord, On } from "discordx";
-import type { ChatVectorDBQAChain } from "langchain/chains";
+import type { ConversationalRetrievalQAChain } from "langchain/chains";
 import { OpenAIEmbeddings } from "langchain/embeddings";
 import { PineconeStore } from "langchain/vectorstores";
 import split from "lodash.split";
@@ -15,9 +15,9 @@ import { BotError } from "../utils/Errors";
 export class OnOracleChat {
   private vectorStore: PineconeStore | null = null;
   private history: [string, string][] = [];
-  private _chain: ChatVectorDBQAChain | null = null;
+  private _chain: ConversationalRetrievalQAChain | null = null;
 
-  get chain(): ChatVectorDBQAChain {
+  get chain(): ConversationalRetrievalQAChain {
     if (!this._chain) {
       throw new BotError(
         "A corrente de conversa com o Oráculo não foi inicializada ainda. Entre em contato com um administrador."
@@ -26,7 +26,7 @@ export class OnOracleChat {
     return this._chain;
   }
 
-  set chain(chain: ChatVectorDBQAChain) {
+  set chain(chain: ConversationalRetrievalQAChain) {
     this._chain = chain;
   }
 
