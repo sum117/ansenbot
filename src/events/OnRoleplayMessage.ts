@@ -175,7 +175,7 @@ export class OnRoleplayMessage {
     } else {
       created = latestPost.created;
     }
-    const thirtyMinutes = new Date(created) > new Date(Date.now() - 30 * 60 * 1000);
+    const thirtyMinutes = new Date(Date.now() - 30 * 60 * 1000) > new Date(created);
 
     if (thirtyMinutes) {
       const amount = Math.floor(
@@ -246,6 +246,7 @@ export class OnRoleplayMessage {
       const attachment = new AttachmentBuilder(attachmentUrl).setName(attachmentName);
       const embed = EmbedBuilder.from(similarMessage.embeds[0]);
       embed.setImage("attachment://" + attachment.name);
+      embed.setDescription(message.content);
       messageOptions.files = [attachment];
       messageOptions.embeds = [embed];
     }

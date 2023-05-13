@@ -2,7 +2,7 @@ import random from "lodash.random";
 
 import type { skillsDictionary, statusDictionary } from "../../../../data/translations";
 import { equipmentSchema, spellSchema } from "../../../../schemas/characterSchema";
-import type { Character, Status } from "../../../../types/Character";
+import type { Character, Skills, Status } from "../../../../types/Character";
 import type {
   AttackTurnResult,
   ButtonAttackKind,
@@ -183,18 +183,13 @@ export default class CharacterCombat {
     } = this.agent;
 
     agentStatus.stamina = Math.max(agentStatus.stamina, 1);
-    const dodgeChance = (targetStatus.stamina / agentStatus.stamina) * targetSkills.dexterity;
-    const blockChance = (targetStatus.stamina / agentStatus.stamina) * targetSkills.fortitude;
-    const fleeQuotient = (targetStatus.stamina / agentStatus.stamina) * targetSkills.stealth;
-    const discoveryQuotient = (targetStatus.stamina / agentStatus.stamina) * agentSkills.discovery;
-    const fleeChance = (fleeQuotient / (fleeQuotient + discoveryQuotient)) * 100;
-    const counterChance =
-      ((targetStatus.stamina / agentStatus.stamina) *
-        (targetSkills.dexterity + targetSkills.strength)) /
-      2;
+    const dodgeChance = this.calculateDodgeChance(targetStatus, agentStatus, targetSkills);
+    const blockChance = this.calculateBlockChance(targetStatus, agentStatus, targetSkills);
+    const fleeChance = this.calculateFleeChance(targetStatus, agentSkills, targetSkills);
+    const counterChance = this.calculateCounterChance(agentStatus, targetStatus, targetSkills);
 
     const dodgeRandom = random(0, 100, true);
-    const blockRandom = random(0, 75, true);
+    const blockRandom = random(0, 90, true);
     const fleeRandom = random(0, 100, true);
     const counterRandom = random(0, 100, true);
     let success = false;
@@ -337,5 +332,42 @@ export default class CharacterCombat {
 
     const finalQuotient = baseValue + rngValue;
     return finalQuotient;
+  }
+
+  private calculateDodgeChance(
+    targetStatus: Status,
+    agentStatus: Status,
+    targetSkills: Skills
+  ): number {
+    return targetSkills.dexterity / 2 + targetStatus.stamina / 10 - agentStatus.stamina / 20;
+  }
+
+  private calculateBlockChance(
+    targetStatus: Status,
+    agentStatus: Status,
+    targetSkills: Skills
+  ): number {
+    return targetSkills.fortitude / 2 + targetStatus.stamina / 10 - agentStatus.stamina / 20;
+  }
+
+  private calculateFleeChance(
+    targetStatus: Status,
+    agentSkills: Skills,
+    targetSkills: Skills
+  ): number {
+    const fleeQuotient = (targetStatus.stamina / 10) * targetSkills.stealth;
+    const discoveryQuotient = (targetStatus.stamina / 10) * agentSkills.discovery;
+    return (fleeQuotient / (fleeQuotient + discoveryQuotient)) * 100;
+  }
+
+  private calculateCounterChance(
+    targetStatus: Status,
+    agentStatus: Status,
+    targetSkills: Skills
+  ): number {
+    const counterChance =
+      (targetSkills.strength * 0.4 + targetSkills.dexterity * 0.4 + targetSkills.charisma * 0.1) *
+      ((targetStatus.stamina * 0.8) / agentStatus.stamina);
+    return counterChance;
   }
 }

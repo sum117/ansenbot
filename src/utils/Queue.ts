@@ -15,7 +15,7 @@ export default class Queue {
     while (this.tasks.length > 0) {
       const task = this.tasks.shift();
       if (task) {
-        await task().catch(console.error);
+        await task();
       }
     }
   }

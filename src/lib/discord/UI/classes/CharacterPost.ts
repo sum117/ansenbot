@@ -1,6 +1,7 @@
 import type { BaseMessageOptions, ColorResolvable } from "discord.js";
 import {
   ActionRowBuilder,
+  AttachmentBuilder,
   ButtonBuilder,
   ButtonStyle,
   Collection,
@@ -47,7 +48,18 @@ export default class CharacterPost {
       if (!embedContent) {
         throw new BotError("Você deve fornecer um conteúdo para o embed.");
       }
-      embed = this.getPostEmbed({ attachmentUrl, content: embedContent });
+
+      if (attachmentUrl) {
+        const name = attachmentUrl.split("/").pop();
+        if (!name) {
+          throw new BotError("Não consegui encontrar o nome do arquivo para mandar a imagem.");
+        }
+        const attachmentBuilder = new AttachmentBuilder(attachmentUrl).setName(name);
+        options.files = [attachmentBuilder];
+        embed = this.getPostEmbed({ attachmentUrl: `attachment://${name}`, content: embedContent });
+      } else {
+        embed = this.getPostEmbed({ attachmentUrl, content: embedContent });
+      }
     }
 
     const image = PocketBase.getImageUrl({
@@ -91,8 +103,10 @@ export default class CharacterPost {
     attachmentUrl,
   }: T): EmbedBuilder {
     this.embed.setDescription(content ?? null);
-    this.embed.setImage(attachmentUrl ?? null);
     this.embed.setTimestamp(Date.now());
+    if (attachmentUrl) {
+      this.embed.setImage(attachmentUrl);
+    }
     return this.embed;
   }
 
