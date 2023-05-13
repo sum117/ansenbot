@@ -35,6 +35,7 @@
     "lodash.split": "^4.4.2",
     "mustache": "^4.2.0",
     "pocketbase": "^0.14.0",
+    "sharp": "^0.32.1",
     "string-progressbar": "^1.0.4",
     "zod": "^3.21.4"
   },
