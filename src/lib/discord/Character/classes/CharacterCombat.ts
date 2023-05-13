@@ -235,13 +235,14 @@ export default class CharacterCombat {
     isCounter = false
   ) {
     const attackerFinalQuotient = attacker ? this.calculateMultiplier(attacker) : 0;
-    const defenderFinalQuotient = defender ? this.calculateMultiplier(defender) : 0;
+    const defenderFinalQuotient = defender ? this.calculateMultiplier(defender) : 1;
+    const defenderPercentage = defenderFinalQuotient / 100;
+
+    const damageToNegate = Math.ceil(Math.max(attackerFinalQuotient * defenderPercentage, 0));
+    const damageDealt = Math.ceil(Math.max(attackerFinalQuotient - damageToNegate, 0));
 
     const targetStatus = isCounter ? this.agent.expand.status : this.target.expand.status;
-    const damageDealt = Math.ceil(Math.max(attackerFinalQuotient - defenderFinalQuotient, 0));
-
     let isKillingBlow = false;
-
     if (attacker?.expand.item.type === "spell") {
       const spell = spellSchema.parse(attacker);
       const statusesToDamage = spell.status;
