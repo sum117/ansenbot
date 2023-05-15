@@ -135,11 +135,13 @@ export class CharacterCreatorController {
       )
     );
 
-    await userInstance.interaction.editReply({
-      content: "Personagem criado com sucesso!",
-      components: [],
-      embeds: [],
-    });
+    await userInstance.interaction
+      .editReply({
+        content: "Personagem criado com sucesso!",
+        components: [],
+        embeds: [],
+      })
+      .catch((error) => console.error(error));
 
     const queueChannel = interaction.guild?.channels.cache.get(
       config.channels.createCharacterQueue
