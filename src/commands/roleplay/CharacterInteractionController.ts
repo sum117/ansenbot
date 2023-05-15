@@ -59,8 +59,8 @@ export class CharacterInteractionController {
         return;
       }
 
-      const { currentCharacter: agent } = await getRoleplayDataFromUserId(agentId);
-      const { currentCharacter: target } = await getRoleplayDataFromUserId(targetId);
+      const { character: agent } = await getRoleplayDataFromUserId(agentId);
+      const { character: target } = await getRoleplayDataFromUserId(targetId);
 
       switch (action) {
         case "open": {
@@ -111,9 +111,10 @@ export class CharacterInteractionController {
         return;
       }
 
-      const { currentCharacter: agent, characterManager: agentManager } =
-        await getRoleplayDataFromUserId(agentId);
-      const { currentCharacter: target, characterManager: targetManager } =
+      const { character: agent, characterManager: agentManager } = await getRoleplayDataFromUserId(
+        agentId
+      );
+      const { character: target, characterManager: targetManager } =
         await getRoleplayDataFromUserId(targetId);
 
       const currentInteraction = this.turn.get(agentId);
@@ -125,14 +126,17 @@ export class CharacterInteractionController {
           action,
         }
       );
+
       if (interaction.isStringSelectMenu()) {
         const interactionValue = interaction.values[0];
         const bodyPart = this.getBodyPart(interactionValue) ?? "chest";
+
         const selectMenuInteractionHandlers: Record<string, SelectMenuInteractionHandler> = {
           attack: this.handleSelectMenuAttackInteraction,
           support: this.handleSelectMenuSupportInteraction,
         };
         const selectMenuInteractionHandler = selectMenuInteractionHandlers[action];
+
         if (selectMenuInteractionHandler && !CharacterCombat.isButtonKind(kind)) {
           await selectMenuInteractionHandler.call(this, interaction, {
             kind,
@@ -141,9 +145,11 @@ export class CharacterInteractionController {
             bodyPart,
             interactionValue,
           });
+
           await new Promise((resolve) => {
             setTimeout(resolve, 5000);
           });
+
           await interaction.deleteReply().catch(() => null);
         }
       } else if (interaction.isButton()) {
@@ -312,7 +318,7 @@ export class CharacterInteractionController {
     };
 
     const message = messageMapping[kind];
-    return interaction.editReply(message);
+    return interaction.channel?.send(message);
   }
 
   private async sendAttackInteractionReply(

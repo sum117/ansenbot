@@ -139,7 +139,7 @@ export default class CharacterFetcher {
       startingSkills.items[1]
     );
 
-    const [baseSkills, baseStatus, body, inventory] = await Promise.all([
+    const [baseSkills, baseStatus, body, inventory, player] = await Promise.all([
       PocketBase.createEntity<Skills>({
         entityData: skills,
         entityType: "skills",
@@ -185,6 +185,7 @@ export default class CharacterFetcher {
         },
         entityType: "inventory",
       }),
+      PlayerFetcher.getPlayerById(char.playerId),
     ]);
 
     const { blob, fileName } = await getImageBlob(char.image);
@@ -192,6 +193,7 @@ export default class CharacterFetcher {
       ...char,
       skills: baseSkills.id,
       status: baseStatus.id,
+      player: player.id,
       body: body.id,
       inventory: inventory.id,
     });

@@ -15,14 +15,18 @@ const dirPath = path.join(
   "..",
   "..",
   "data",
-  "docs"
+  "ansenfall"
 );
 
 export const run = async (): Promise<void> => {
   try {
-    const directoryLoader = new DirectoryLoader(dirPath, {
-      ".txt": (filePath: string) => new TextLoader(filePath),
-    });
+    const directoryLoader = new DirectoryLoader(
+      dirPath,
+      {
+        ".md": (filePath: string) => new TextLoader(filePath),
+      },
+      true
+    );
 
     const rawDocs = await directoryLoader.load();
 

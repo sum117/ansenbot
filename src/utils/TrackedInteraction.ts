@@ -2,6 +2,7 @@ import type { ButtonInteraction, Snowflake } from "discord.js";
 
 export default class TrackedInteraction {
   public cache = new Map<Snowflake, ButtonInteraction>();
+  private timers = new Map<Snowflake, NodeJS.Timeout>();
 
   public async getOrCreateTrackedInteraction(
     interaction: ButtonInteraction,
@@ -12,30 +13,45 @@ export default class TrackedInteraction {
 
     if (interaction.customId.includes(resetKey) && trackedInteraction) {
       await trackedInteraction.deleteReply().catch(() => null);
-      this.cache.delete(interaction.user.id);
+      this.deleteInteractionFromCache(interaction.user.id);
       trackedInteraction = undefined;
     }
 
     if (!trackedInteraction) {
       await interaction.deferReply({ ephemeral });
       this.cache.set(interaction.user.id, interaction);
+      this.setDeletionTimer(interaction.user.id);
       trackedInteraction = interaction;
     }
-    this.shouldRecreate(trackedInteraction, interaction);
+    this.handleEqualInteraction(trackedInteraction, interaction);
     return trackedInteraction;
   }
 
-  private async shouldRecreate(
+  private async handleEqualInteraction(
     trackedInteraction: ButtonInteraction,
     interaction: ButtonInteraction
-  ): Promise<boolean> {
+  ): Promise<void> {
     const isEqualInteraction = trackedInteraction?.id !== interaction.id;
     if (isEqualInteraction) {
       await interaction.deferReply();
       await interaction.deleteReply().catch(() => null);
-      return true;
     }
+  }
 
-    return false;
+  private setDeletionTimer(userId: Snowflake): void {
+    const timer = setTimeout(() => {
+      this.deleteInteractionFromCache(userId);
+    }, 15 * 60 * 1000);
+
+    this.timers.set(userId, timer);
+  }
+
+  private deleteInteractionFromCache(userId: Snowflake): void {
+    this.cache.delete(userId);
+    const timer = this.timers.get(userId);
+    if (timer) {
+      clearTimeout(timer);
+      this.timers.delete(userId);
+    }
   }
 }

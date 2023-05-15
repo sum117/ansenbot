@@ -2,9 +2,10 @@ import type { RecordListQueryParams } from "pocketbase";
 import type z from "zod";
 
 import type { COLLECTIONS } from "../data/constants";
-import type baseSchema from "../schemas/baseSchema";
+import baseSchema from "../schemas/baseSchema";
 import type { Collection } from "./Collection";
 
+export const pocketbaseConstants = baseSchema.keyof().Enum;
 export type PocketBaseConstants = z.infer<typeof baseSchema>;
 
 export type GetEntityParams = {

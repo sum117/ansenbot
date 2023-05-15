@@ -59,11 +59,15 @@ export class OnImageGenerationRequest {
         isPending: true,
         message: null,
       });
+
       await this.imageGenerationQueue.enqueue(async () => {
-        await this.generateAnimeImage();
+        await this.generateAnimeImage().catch((error) => {
+          console.error("Error while generating image", error);
+          this.pendingUserImageRequests.delete(message.author.id);
+        });
       });
     } catch (error) {
-      console.error("Error while generating image", error);
+      console.error("Error while sending image to discord", error);
       this.pendingUserImageRequests.delete(message.author.id);
     }
   }

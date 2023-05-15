@@ -7,7 +7,7 @@ import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
 import { CharacterManager } from "../classes/CharacterManager";
 
 export interface RoleplayDataFromUserIdResult {
-  currentCharacter: Character;
+  character: Character;
   characterManager: CharacterManager;
   view: { character: string; level: number; author: string };
   status: Status;
@@ -18,16 +18,16 @@ export default async function getRoleplayDataFromUserId(
   userId: string
 ): Promise<RoleplayDataFromUserIdResult> {
   const player = await PlayerFetcher.getPlayerById(userId);
-  const currentCharacter = await CharacterFetcher.getCharacterById(player.currentCharacterId);
-  const characterManager = new CharacterManager(currentCharacter);
+  const character = await CharacterFetcher.getCharacterById(player.currentCharacterId);
+  const characterManager = new CharacterManager(character);
   const view = {
-    character: currentCharacter.name,
-    level: currentCharacter.level,
+    character: character.name,
+    level: character.level,
     author: userMention(userId),
   };
   const [status, skills] = await Promise.all([
-    characterManager.getStatuses(currentCharacter.status),
-    SkillsFetcher.getSkillsById(currentCharacter.skills),
+    characterManager.getStatuses(character.status),
+    SkillsFetcher.getSkillsById(character.skills),
   ]);
-  return { currentCharacter, characterManager, view, status, skills };
+  return { character, characterManager, view, status, skills };
 }

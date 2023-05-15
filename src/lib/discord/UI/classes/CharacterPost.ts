@@ -1,6 +1,7 @@
 import type { BaseMessageOptions, ColorResolvable } from "discord.js";
 import {
   ActionRowBuilder,
+  AttachmentBuilder,
   ButtonBuilder,
   ButtonStyle,
   Collection,
@@ -38,14 +39,27 @@ export default class CharacterPost {
 
     if (to === "profile") {
       if (embedContent) {
-        throw new BotError("Você não consegue enviar conteúdos para esse perfil!");
+        throw new BotError(
+          "Você não pode fornecer uma mensagem de conteúdo sobre um embed de perfil."
+        );
       }
       embed = this.getProfileEmbed();
     } else {
       if (!embedContent) {
         throw new BotError("Você deve fornecer um conteúdo para o embed.");
       }
-      embed = this.getPostEmbed({ attachmentUrl, content: embedContent });
+
+      if (attachmentUrl) {
+        const name = attachmentUrl.split("/").pop();
+        if (!name) {
+          throw new BotError("Não consegui encontrar o nome do arquivo para mandar a imagem.");
+        }
+        const attachmentBuilder = new AttachmentBuilder(attachmentUrl).setName(name);
+        options.files = [attachmentBuilder];
+        embed = this.getPostEmbed({ attachmentUrl: `attachment://${name}`, content: embedContent });
+      } else {
+        embed = this.getPostEmbed({ attachmentUrl, content: embedContent });
+      }
     }
 
     const image = PocketBase.getImageUrl({
@@ -72,6 +86,11 @@ export default class CharacterPost {
           .setLabel("Interagir")
           .setEmoji("🤝")
           .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId(`character:leveling:${this.character.playerId}:open`)
+          .setLabel("Skills")
+          .setEmoji("📚")
+          .setStyle(ButtonStyle.Primary),
       ]),
     ];
 
@@ -84,8 +103,10 @@ export default class CharacterPost {
     attachmentUrl,
   }: T): EmbedBuilder {
     this.embed.setDescription(content ?? null);
-    this.embed.setImage(attachmentUrl ?? null);
     this.embed.setTimestamp(Date.now());
+    if (attachmentUrl) {
+      this.embed.setImage(attachmentUrl);
+    }
     return this.embed;
   }
 
