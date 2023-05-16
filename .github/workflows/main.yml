@@ -11,7 +11,11 @@ on:
 concurrency:
   cancel-in-progress: true
   group: ${{ github.ref }}
-
+  
+permissions:
+  packages: write
+  contents: read
+  
 jobs:
   eslint:
     name: Check ESLint.
