@@ -27,8 +27,6 @@ COPY --from=builder /tmp/app/build /app/build
 COPY --from=builder /tmp/app/package.json /app/package.json
 COPY --from=builder /tmp/app/pnpm-lock.yaml /app/pnpm-lock.yaml
 
-COPY src/data/docs /app/build/src/data/docs
-
 RUN pnpm install --prod --ignore-scripts
 
 CMD ["pnpm", "run", "start"]
