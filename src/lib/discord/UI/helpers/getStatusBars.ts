@@ -23,12 +23,11 @@ export default function getStatusBars(skills: Skills, status: Status): Array<str
       )
       .shift();
 
-  // TODO: Keep this for future use!
-  // const manaBar =
-  //   "🔮 " +
-  //   progressBar
-  //     .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.mana], status.mana, 7, "🟥", "🟦")
-  //     .shift();
+  const manaBar =
+    "🔮 " +
+    progressBar
+      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.mana], status.mana, 7, "🟥", "🟦")
+      .shift();
 
   const voidBar =
     "💀  " +
@@ -60,5 +59,5 @@ export default function getStatusBars(skills: Skills, status: Status): Array<str
       )
       .shift();
 
-  return [healthBar, staminaBar, voidBar, hungerBar, sleepBar, despairBar];
+  return [healthBar, manaBar, staminaBar, voidBar, hungerBar, sleepBar, despairBar];
 }

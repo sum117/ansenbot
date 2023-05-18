@@ -51,6 +51,11 @@ export default class MultiForm extends BaseMessageBuilder {
     return this;
   }
 
+  public setEmbedThumbnail(url: string): this {
+    this.embed = this.embed.setThumbnail(url);
+    return this;
+  }
+
   public setEmbedImage(url: string): this {
     this.embed = this.embed.setImage(url);
     return this;
