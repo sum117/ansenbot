@@ -115,6 +115,20 @@ const baseCharacterSchema = baseSchema.extend({
   ...createUpdateCharacterSchema.shape,
 });
 
+const skillsSchema = baseSchema.extend({
+  vigor: z.number(),
+  strength: z.number(),
+  fortitude: z.number(),
+  intelligence: z.number(),
+  dexterity: z.number(),
+  darkness: z.number(),
+  order: z.number(),
+  discovery: z.number(),
+  stealth: z.number(),
+  charisma: z.number(),
+  expand: z.object({}).optional(),
+});
+
 const itemSchema = baseSchema.extend({
   name: defaultZodString,
   description: defaultZodString,
@@ -163,60 +177,66 @@ const statusNameSchema = z.enum([
   "spirit",
 ]);
 
-const spellSchema = baseSchema.extend({
-  item: defaultZodString,
-  quantity: z.number(),
-  isEquipped: z.boolean(),
-  isBuff: z.boolean(),
-  type: skillNameSchema,
-  status: z.array(statusNameSchema),
-  manaCost: z.number(),
-  healthCost: z.number(),
-  staminaCost: z.number(),
-  quotient: z.number(),
-  multiplier: z.number(),
-  slot: z.literal("spells"),
-  expand: z.object(
-    {
-      item: itemSchema.extend({
-        type: z.literal("spell"),
-      }),
-    },
-    { invalid_type_error: "Não é um feitiço." }
-  ),
-});
-const equipmentSchema = baseSchema.extend({
-  item: defaultZodString,
-  quantity: z.number(),
-  slot: z.enum([
-    "head",
-    "face",
-    "shoulders",
-    "chest",
-    "amulet",
-    "back",
-    "legs",
-    "feet",
-    "leftArm",
-    "rightArm",
-    "rings",
-    "spells",
-  ]),
-  type: skillNameSchema,
-  isCursed: z.boolean(),
-  isWeapon: z.boolean(),
-  quotient: z.number(),
-  multiplier: z.number(),
-  isEquipped: z.boolean(),
-  expand: z.object(
-    {
-      item: itemSchema.extend({
-        type: z.literal("equipment"),
-      }),
-    },
-    { invalid_type_error: "Não é um equipamento." }
-  ),
-});
+const spellSchema = baseSchema
+  .extend({
+    rarity: z.string(),
+    item: defaultZodString,
+    quantity: z.number(),
+    isEquipped: z.boolean(),
+    isBuff: z.boolean(),
+    type: skillNameSchema,
+    status: z.array(statusNameSchema),
+    manaCost: z.number(),
+    healthCost: z.number(),
+    staminaCost: z.number(),
+    quotient: z.number(),
+    multiplier: z.number(),
+    slot: z.literal("spells"),
+    expand: z.object(
+      {
+        item: itemSchema.extend({
+          type: z.literal("spell"),
+        }),
+      },
+      { invalid_type_error: "Não é um feitiço." }
+    ),
+  })
+  .extend(skillsSchema.omit({ expand: true }).shape);
+const equipmentSchema = baseSchema
+  .extend({
+    rarity: z.string(),
+    item: defaultZodString,
+    quantity: z.number(),
+    slot: z.enum([
+      "head",
+      "face",
+      "shoulders",
+      "chest",
+      "amulet",
+      "back",
+      "legs",
+      "feet",
+      "leftArm",
+      "rightArm",
+      "rings",
+      "spells",
+    ]),
+    type: skillNameSchema,
+    isCursed: z.boolean(),
+    isWeapon: z.boolean(),
+    quotient: z.number(),
+    multiplier: z.number(),
+    isEquipped: z.boolean(),
+    expand: z.object(
+      {
+        item: itemSchema.extend({
+          type: z.literal("equipment"),
+        }),
+      },
+      { invalid_type_error: "Não é um equipamento." }
+    ),
+  })
+  .extend(skillsSchema.omit({ expand: true }).shape);
 
 const inventory = baseSchema.extend({
   consumables: z.array(defaultZodString),
@@ -303,20 +323,6 @@ const effectSchema = baseSchema.extend({
   type: defaultZodString,
   duration: z.number(),
   amount: z.number(),
-});
-
-const skillsSchema = baseSchema.extend({
-  vigor: z.number(),
-  strength: z.number(),
-  fortitude: z.number(),
-  intelligence: z.number(),
-  dexterity: z.number(),
-  darkness: z.number(),
-  order: z.number(),
-  discovery: z.number(),
-  stealth: z.number(),
-  charisma: z.number(),
-  expand: z.object({}).optional(),
 });
 
 const specSchema = baseSchema.extend({
