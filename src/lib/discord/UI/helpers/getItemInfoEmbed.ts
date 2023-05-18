@@ -1,22 +1,25 @@
 import { EmbedBuilder } from "discord.js";
+import { inspect } from "util";
 
 import { STATUS_NAMES } from "../../../../data/constants";
-import { equipmentDictionary, itemTypesDictionary } from "../../../../data/translations";
+import { itemTypesDictionary } from "../../../../data/translations";
 import {
   consumableSchema,
   equipmentSchema,
   spellSchema,
 } from "../../../../schemas/characterSchema";
-import type { ItemWithRole } from "../../../../types/Item";
+import type { EquipmentItem, ItemWithRole, SpellItem } from "../../../../types/Item";
+import type { CreateData } from "../../../../types/PocketBaseCRUD";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import removePocketbaseConstants from "../../../../utils/removePocketbaseConstants";
 import type { CharacterManager } from "../../Character/classes/CharacterManager";
+import { getRequirementsInfoFields } from "./getRequirementsInfoFields";
 
 export default function getItemInfoEmbed(
   item: ItemWithRole,
   characterManager: CharacterManager
 ): EmbedBuilder {
-  const fields: Array<{ name: string; value: string; inline: boolean }> = [];
+  let fields: Array<{ name: string; value: string; inline: boolean }> = [];
   fields.push({ name: "Tipo", value: itemTypesDictionary[item.type], inline: true });
   fields.push({ name: "Dono(a)", value: characterManager.character.name, inline: true });
 
@@ -36,6 +39,26 @@ export default function getItemInfoEmbed(
     const keysBlacklist = ["item", "expand", "isCooked", "isPoisoned", "quantity", "isEquipped"];
     const isBlacklisted = (key: string): key is (typeof keysBlacklist)[number] =>
       keysBlacklist.includes(key);
+
+    const getRequirementFieldsProps = (item: CreateData<EquipmentItem | SpellItem>) => ({
+      requirements: {
+        strength: item.strength,
+        dexterity: item.dexterity,
+        intelligence: item.intelligence,
+        darkness: item.darkness,
+        discovery: item.discovery,
+        fortitude: item.fortitude,
+        order: item.order,
+        stealth: item.stealth,
+        vigor: item.vigor,
+        charisma: item.charisma,
+      },
+      multiplier: item.multiplier,
+      quotient: item.quotient,
+      slot: item.slot,
+      type: item.type,
+      rarity: item.rarity ? item.rarity : "n",
+    });
 
     switch (item.type) {
       case "consumable": {
@@ -59,13 +82,13 @@ export default function getItemInfoEmbed(
 
       case "equipment": {
         const equipment = equipmentSchema.omit({ expand: true }).parse(expanded[0]);
-        fields.push({ name: "Slot", value: equipmentDictionary[equipment.slot], inline: true });
         fields.push({
           name: "Equipado",
           value: equipment.isEquipped ? "Sim" : "Não",
           inline: true,
         });
         fields.push({ name: "Quantidade", value: equipment.quantity.toString(), inline: true });
+        fields = fields.concat(getRequirementsInfoFields(getRequirementFieldsProps(equipment)));
 
         break;
       }
@@ -74,11 +97,12 @@ export default function getItemInfoEmbed(
         const spell = spellSchema.omit({ expand: true }).parse(expanded[0]);
         fields.push({ name: "Quantidade", value: spell.quantity.toString(), inline: true });
         fields.push({ name: "Equipado", value: spell.isEquipped ? "Sim" : "Não", inline: true });
-
+        fields = fields.concat(getRequirementsInfoFields(getRequirementFieldsProps(spell)));
         break;
       }
     }
   }
+  console.log(inspect(fields, false, 10, true));
   return new EmbedBuilder()
     .setTitle(item.name)
     .setDescription(item.description)
