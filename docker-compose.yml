@@ -1,30 +1,42 @@
-name: ansenbot
-version: '3.8'
 
+version: "3.7"
 services:
-  ansenbot:
-    build:
-      context: .
-    environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      POCKETBASE_URL: ${POCKETBASE_URL} # TODO: Figure out why this isn't statically defined ?
-      POCKETBASE_ADMIN_EMAIL: ${POCKETBASE_ADMIN_EMAIL}
-      POCKETBASE_ADMIN_PASSWORD: ${POCKETBASE_ADMIN_PASSWORD}
-    image: ghcr.io/sum117/ansenbot:master
-    restart: unless-stopped
   pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    container_name: pocketbase
+    restart: unless-stopped
+    #command:
+    #- --encryptionEnv #optional
+    # - ENCRYPTION #optional
+    #environment:
+    # ENCRYPTION: example #optional
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pb_data/:/pb_data
+      - ./pb_migrations/:/pb_migrations
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:8090/api/health || exit 1"]
+      #optional (recommended) since v0.10.0
+      test: wget --no-verbose --tries=1 --spider http://localhost:8090/api/health || exit 1
       interval: 5s
       timeout: 5s
       retries: 5
-      start_period: 30s
-    image: ghcr.io/muchobien/pocketbase:0.15.3 # ! Shouldn't really want to use latest version.
-    ports:
-      - 8090:8090
-    restart: unless-stopped
-    volumes:
-      - /pb_data:/pb_data
-      - /pb_migrations/:/pb_migrations
+  ansenbot:
+   image: sum117/ansenbot:0.5.3
+   command: npm start
+   restart: unless-stopped
+   environment:
+    - POCKETBASE_URL=${POCKETBASE_URL}
+    - ANIME_IMG_GEN_API_URL=${ANIME_IMG_GEN_API_URL}
+    - NOVEL_AI_API_URL=${NOVEL_AI_API_URL}
+    - NOVEL_AI_API_KEY=${NOVEL_AI_API_KEY}
+    - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+    - POCKETBASE_ADMIN_EMAIL=${POCKETBASE_ADMIN_EMAIL}
+    - POCKETBASE_ADMIN_PASSWORD=${POCKETBASE_ADMIN_PASSWORD}
+    - OPENAI_API_KEY=${OPENAI_API_KEY}
+    - PINECONE_API_KEY=${PINECONE_API_KEY}
+    - PINECONE_ENVIRONMENT=${PINECONE_ENVIRONMENT}
+    - PINECONE_INDEX_NAME=${PINECONE_INDEX_NAME}
+    - IMAGEKIT_PUBLIC_KEY=${IMAGEKIT_PUBLIC_KEY}
+    - IMAGEKIT_PRIVATE_KEY=${IMAGEKIT_PRIVATE_KEY}
+    - IMAGEKIT_URL_ENDPOINT=${IMAGEKIT_URL_ENDPOINT}
