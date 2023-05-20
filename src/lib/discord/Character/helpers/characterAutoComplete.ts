@@ -8,16 +8,14 @@ export function characterAutoCompleteFromPlayer(
   user?: User
 ): void {
   const userInput = interaction.options.getFocused();
-  CharacterFetcher.getCharactersByPlayerId({
+  CharacterFetcher.getCharactersFromAutoComplete({
     playerId: user ? user.id : interaction.user.id,
-    page: 1,
+    input: userInput,
   }).then((characters) => {
-    const choices = characters.items
-      .filter((character) => character.name.includes(userInput))
-      .map((character) => ({
-        name: character.name,
-        value: character.id,
-      }));
+    const choices = characters.items.map((character) => ({
+      name: character.name,
+      value: character.id,
+    }));
 
     interaction.respond(choices).catch(console.error);
   });

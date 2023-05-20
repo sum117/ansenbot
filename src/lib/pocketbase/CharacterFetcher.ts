@@ -63,6 +63,26 @@ export default class CharacterFetcher {
     });
   }
 
+  public static getCharactersFromAutoComplete({
+    playerId,
+    input,
+  }: {
+    playerId: Snowflake;
+    input: string;
+  }): Promise<ListResult<Character>> {
+    return PocketBase.getEntitiesByFilter<Character>({
+      entityType: "characters",
+      filter: [
+        1,
+        25,
+        {
+          filter: `playerId="${playerId}" && name~"${input}"`,
+          ...PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)),
+        },
+      ],
+    });
+  }
+
   public static getCharactersByPlayerId({
     page,
     playerId,
@@ -74,7 +94,7 @@ export default class CharacterFetcher {
       entityType: "characters",
       filter: [
         page,
-        10,
+        50,
         {
           filter: `playerId="${playerId}"`,
           ...PocketBase.expand(...Object.values(RELATION_FIELD_NAMES)),
