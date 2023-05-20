@@ -36,7 +36,8 @@ export default function characterInventoryMessageOptions({
     .addFields(
       { name: "Consumíveis", value: counters.consumable.toString(), inline: true },
       { name: "Equipamentos", value: counters.equipment.toString(), inline: true },
-      { name: "Feitiços", value: counters.spell.toString(), inline: true }
+      { name: "Feitiços", value: counters.spell.toString(), inline: true },
+      { name: "Lascas Espirituais", value: character.expand.status.spirit.toString(), inline: true }
     );
   const itemControls = new ActionRowBuilder<ButtonBuilder>().setComponents([
     new ButtonBuilder()

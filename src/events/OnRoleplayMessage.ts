@@ -4,7 +4,11 @@ import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On } from "discordx";
 import mustache from "mustache";
 
-import { STATUS_SKILLS_RELATION } from "../data/constants";
+import {
+  ENDURANCE_GAIN_PER_SAFE_TICK_MULTIPLIER,
+  SPIRIT_GAIN_PER_TICK,
+  STATUS_SKILLS_RELATION,
+} from "../data/constants";
 import type { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
 import getMaxStatus from "../lib/discord/Character/helpers/getMaxStatus";
 import getRoleplayDataFromUserId from "../lib/discord/Character/helpers/getRoleplayDataFromUserId";
@@ -23,11 +27,9 @@ import equalityPercentage from "../utils/equalityPercentage";
 import { BotError } from "../utils/Errors";
 import getSafeEntries from "../utils/getSafeEntries";
 import handleError from "../utils/handleError";
-import Queue from "../utils/Queue";
 
 @Discord()
 export class OnRoleplayMessage {
-  private deleteMessageQueue = new Queue();
   @On({ event: "messageCreate" })
   async main([message]: ArgsOf<"messageCreate">): Promise<void> {
     try {
@@ -202,27 +204,27 @@ export class OnRoleplayMessage {
     status: Status,
     skills: Skills
   ): Promise<void> {
-    const statusLoss = Math.ceil(message.content.length / 1000);
+    const statusTick = Math.ceil(message.content.length / 1000);
     const channel = await ChannelFetcher.getChannelById(message.channel.id);
     const isSafe = channel?.isSafe ?? false;
     const hasSleep = channel?.hasSleep ?? false;
     const hasSpirit = channel?.hasSpirit ?? false;
     let statusWarning: { message: string; updatedStatus: Status } | null = null;
     if (!isSafe) {
-      status.sleep -= statusLoss;
-      status.hunger -= statusLoss;
-      status.void -= statusLoss;
-      status.stamina -= statusLoss;
+      status.sleep -= statusTick;
+      status.hunger -= statusTick;
+      status.void -= statusTick;
+      status.stamina -= statusTick;
       // if any of the status is below 25%, send warning message with what's low
       statusWarning = await this.getStatusWarning(skills, status, view);
     } else if (isSafe && hasSleep) {
-      status.sleep += statusLoss;
-      status.void += statusLoss;
-      status.stamina += statusLoss;
+      status.sleep += statusTick * ENDURANCE_GAIN_PER_SAFE_TICK_MULTIPLIER;
+      status.void += statusTick * ENDURANCE_GAIN_PER_SAFE_TICK_MULTIPLIER;
+      status.stamina += statusTick * ENDURANCE_GAIN_PER_SAFE_TICK_MULTIPLIER;
       status.effects = [];
     }
     if (hasSpirit) {
-      status.spirit += statusLoss;
+      status.spirit += statusTick * SPIRIT_GAIN_PER_TICK;
     }
 
     await characterManager.setStatus(statusWarning?.updatedStatus ?? status);

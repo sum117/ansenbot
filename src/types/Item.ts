@@ -41,4 +41,7 @@ export type GachaItemBuilderResponse = {
   rarityImage: string;
   type: keyof typeof ITEM_TYPES;
   requirements: PartialRequirements;
+  name?: string;
+  description?: string;
 };
+export type GachaParam = "reroll" | "keep" | "modal";

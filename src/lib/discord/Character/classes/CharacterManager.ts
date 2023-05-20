@@ -18,7 +18,7 @@ import type {
   Status,
 } from "../../../../types/Character";
 import type { BodyPart } from "../../../../types/Combat";
-import type { EquipmentItem, Item, SpellItem } from "../../../../types/Item";
+import type { EquipmentItem, Item, ItemWithRole, SpellItem } from "../../../../types/Item";
 import type { Properties } from "../../../../types/Utils";
 import { BotError } from "../../../../utils/Errors";
 import getSafeEntries from "../../../../utils/getSafeEntries";
@@ -225,6 +225,47 @@ export class CharacterManager {
       entityType: item.collectionName as keyof typeof COLLECTIONS,
       entityData: item,
     });
+  }
+
+  public async addInventoryItem(itemRef: ItemWithRole): Promise<true> {
+    const inventory = this.getInventory();
+    const itemType = (itemRef.type + "s") as "consumables" | "equipments" | "spells";
+    const map = {
+      spells: "spells(item)",
+      equipments: "equipments(item)",
+      consumables: "consumables(item)",
+    } as const;
+
+    const item = itemRef.expand?.[map[itemType]].filter((item) => item.id === item.id)[0];
+    if (!item) {
+      throw new BotError("Item não encontrado no inventário.");
+    }
+
+    const isAlreadyInInventory = inventory[itemType].includes(itemRef.id);
+    if (isAlreadyInInventory) {
+      item.quantity += 1;
+      await this.setInventoryItem(item);
+      return true;
+    }
+
+    switch (itemRef.type) {
+      case "consumable":
+        inventory.consumables.push(item.id);
+        break;
+      case "equipment":
+        inventory.equipments.push(item.id);
+        break;
+      case "spell":
+        inventory.spells.push(item.id);
+        break;
+    }
+
+    await PocketBase.updateEntity<Inventory>({
+      entityType: "inventory",
+      entityData: { ...inventory },
+    });
+
+    return true;
   }
 
   getInventoryItem(inventoryItemId: Inventory["id"]): Item | undefined {

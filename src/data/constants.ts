@@ -134,38 +134,36 @@ export const ITEM_ACTIONS_CUSTOM_IDS = {
   consumable: "use",
 } as const;
 export const PAGE_SIZE = 5;
-export const STATUS_GAIN_PER_LEVEL = 10 as const;
 
+export const STATUS_GAIN_PER_LEVEL = 10 as const;
 export const MANA_COST_MULTIPLIER = 2;
 export const STAMINA_COST_MULTIPLIER = 1.3;
-
 export const QUOTIENT_RANGES = {
   n: [10, 45],
   r: [55, 70],
   sr: [75, 115],
   ssr: [120, 150],
 } as const;
-
 export const MULTIPLIER_RANGES = {
   n: [1, 2],
   r: [4, 6],
   sr: [7, 9],
   ssr: [10, 12],
 } as const;
-
 export const REQUIREMENT_RANGES = {
   n: [0, 25],
   r: [26, 50],
   sr: [51, 75],
   ssr: [76, 99],
 } as const;
-
 export const STATUS_GIVEN_PER_RARITY_RANGE = {
   n: [1, 2],
   r: [2, 3],
   sr: [3, 4],
   ssr: [4, 6],
 };
+export const SPIRIT_GAIN_PER_TICK = 125;
+export const ENDURANCE_GAIN_PER_SAFE_TICK_MULTIPLIER = 2;
 
 export const RARITY_IMAGES = {
   n: "https://i.imgur.com/OEqauf9.png",
@@ -173,7 +171,7 @@ export const RARITY_IMAGES = {
   sr: "https://i.imgur.com/svrCQNX.png",
   ssr: "https://i.imgur.com/f4Hftkz.png",
 };
-
+export const GACHA_MODAL_ID_REGEX = /^gacha:item:modal(:(?<param>\w+))?$/;
 export const GACHA_ID_PREFIX = "gacha:item";
 export const GACHA_ID_REGEX = /gacha:item:(?<param>\w+)/;
 export const CHARACTER_INTERACTION_ID_REGEX =

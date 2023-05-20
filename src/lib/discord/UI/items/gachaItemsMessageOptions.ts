@@ -1,16 +1,12 @@
 import type { Snowflake } from "discord.js";
 import { ButtonBuilder, ButtonStyle } from "discord.js";
 
-import { GACHA_ID_PREFIX } from "../../../../data/constants";
 import type { GachaItemBuilderResponse } from "../../../../types/Item";
 import getRoleplayDataFromUserId from "../../Character/helpers/getRoleplayDataFromUserId";
 import MultiForm from "../classes/MultiForm";
 import getCharacterMustache from "../helpers/characterMustache";
+import getGachaId from "../helpers/getGachaId";
 import { getRequirementsInfoFields } from "../helpers/getRequirementsInfoFields";
-
-export type GachaParam = "reroll" | "keep";
-
-const getGachaId = (param: GachaParam) => `${GACHA_ID_PREFIX}:${param}`;
 
 export const gachaItemsMessageOptions = async (
   userId: Snowflake,
