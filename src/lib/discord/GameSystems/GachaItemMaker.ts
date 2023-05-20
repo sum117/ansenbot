@@ -96,6 +96,7 @@ export default class GachaItemBuilder {
       slot: "spells",
       type: itemSkill,
       status: statusArray,
+      rarity,
     };
     return equipment;
   }
