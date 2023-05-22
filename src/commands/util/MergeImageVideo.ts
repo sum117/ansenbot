@@ -38,7 +38,7 @@ export class MergeImageVideo {
         return;
       }
 
-      const outputName = "output.mp4";
+      const outputName = "output" + Date.now() + ".mp4";
 
       const cacheFolderPath = ensureCacheFolder();
       const outputPath = path.join(cacheFolderPath, outputName);
@@ -56,7 +56,7 @@ export class MergeImageVideo {
       });
 
       async function sendMessage() {
-        const attachment = new AttachmentBuilder(outputPath).setName("output.mp4");
+        const attachment = new AttachmentBuilder(outputPath).setName(outputName);
         await message.reply({
           files: [attachment],
         });
