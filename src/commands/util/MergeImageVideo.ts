@@ -38,14 +38,12 @@ export class MergeImageVideo {
         return;
       }
 
-      const outputName = "output" + Date.now() + ".mp4";
-
+      const now = Date.now();
+      const outputName = "output" + now + ".mp4";
       const cacheFolderPath = ensureCacheFolder();
       const outputPath = path.join(cacheFolderPath, outputName);
       const imagePath = path.join(cacheFolderPath, imageSuffix);
-      const audioPath = fs.createWriteStream(
-        path.join(cacheFolderPath, "audio" + Date.now() + ".mp3")
-      );
+      const audioPath = fs.createWriteStream(path.join(cacheFolderPath, "audio" + now + ".mp3"));
       const streamPath = audioPath.path;
       if (typeof streamPath !== "string") {
         return;
