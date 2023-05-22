@@ -80,13 +80,18 @@ export class MergeImageVideo {
             .on("end", () => {
               audioPath.close();
               fs.unlinkSync(streamPath);
-              sendMessage().catch(console.error);
-              deleteDiscordMessage(loading, 0).catch(console.error);
+              sendMessage().then(() => {
+                deleteDiscordMessage(loading, 0).catch(console.error);
+                fs.unlinkSync(imagePath);
+                fs.unlinkSync(outputPath);
+              });
             })
             .on("error", (err) => {
               console.log(err);
               audioPath.close();
               fs.unlinkSync(streamPath);
+              fs.unlinkSync(imagePath);
+              fs.unlinkSync(outputPath);
             })
             .saveToFile(outputPath);
         });
