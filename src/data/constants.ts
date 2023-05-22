@@ -1,3 +1,5 @@
+export const SPINNER_EMOJI = "<a:spinner:1094479348037324820>";
+
 export const COLLECTIONS = {
   characters: "characters",
   posts: "posts",
