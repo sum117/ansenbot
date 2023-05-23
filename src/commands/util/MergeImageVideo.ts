@@ -46,9 +46,14 @@ export class MergeImageVideo {
           return;
         }
 
-        const imageLink = message.attachments.first()?.url;
+        const imageAttachment = message.attachments.first();
+        if (!imageAttachment) {
+          return;
+        }
+
+        const imageLink = imageAttachment.url;
         const imageSuffix = imageLink?.split("/").pop();
-        if (!imageSuffix || !imageLink) {
+        if (!imageSuffix) {
           return;
         }
 
