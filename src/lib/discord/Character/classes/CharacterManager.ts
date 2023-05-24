@@ -3,10 +3,12 @@ import mustache from "mustache";
 
 import type { COLLECTIONS } from "../../../../data/constants";
 import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
-import type { equipmentDictionary, skillsDictionary } from "../../../../data/translations";
+import type { equipmentDictionary } from "../../../../data/translations";
+import { skillsDictionary } from "../../../../data/translations";
 import {
   consumableSchema,
   equipmentSchema,
+  skillsSchema,
   spellSchema,
 } from "../../../../schemas/characterSchema";
 import type {
@@ -18,7 +20,7 @@ import type {
   Status,
 } from "../../../../types/Character";
 import type { BodyPart } from "../../../../types/Combat";
-import type { EquipmentItem, Item, SpellItem } from "../../../../types/Item";
+import type { EquipmentItem, Item, ItemWithRole, SpellItem } from "../../../../types/Item";
 import type { Properties } from "../../../../types/Utils";
 import { BotError } from "../../../../utils/Errors";
 import getSafeEntries from "../../../../utils/getSafeEntries";
@@ -227,6 +229,47 @@ export class CharacterManager {
     });
   }
 
+  public async addInventoryItem(itemRef: ItemWithRole): Promise<true> {
+    const inventory = this.getInventory();
+    const itemType = (itemRef.type + "s") as "consumables" | "equipments" | "spells";
+    const map = {
+      spells: "spells(item)",
+      equipments: "equipments(item)",
+      consumables: "consumables(item)",
+    } as const;
+
+    const item = itemRef.expand?.[map[itemType]].filter((item) => item.id === item.id)[0];
+    if (!item) {
+      throw new BotError("Item não encontrado no inventário.");
+    }
+
+    const isAlreadyInInventory = inventory[itemType].includes(itemRef.id);
+    if (isAlreadyInInventory) {
+      item.quantity += 1;
+      await this.setInventoryItem(item);
+      return true;
+    }
+
+    switch (itemRef.type) {
+      case "consumable":
+        inventory.consumables.push(item.id);
+        break;
+      case "equipment":
+        inventory.equipments.push(item.id);
+        break;
+      case "spell":
+        inventory.spells.push(item.id);
+        break;
+    }
+
+    await PocketBase.updateEntity<Inventory>({
+      entityType: "inventory",
+      entityData: { ...inventory },
+    });
+
+    return true;
+  }
+
   getInventoryItem(inventoryItemId: Inventory["id"]): Item | undefined {
     return [
       ...(this.character.expand.inventory.expand.consumables ?? []),
@@ -300,15 +343,18 @@ export class CharacterManager {
     slot: keyof CharacterBody,
     previousItems: string[]
   ): Promise<CharacterBody> {
+    this.compareRequirementsWithSkills(equipment);
     const previousItem = equipmentSchema.safeParse(this.getInventoryItem(previousItems[0]));
-
+    const equipmentItem = equipmentSchema.safeParse(equipment);
     if (previousItem.success) {
       previousItem.data.isEquipped = false;
       await this.setInventoryItem(previousItem.data);
     }
 
-    equipment.isEquipped = true;
-    await this.setInventoryItem(equipment);
+    if (equipmentItem.success) {
+      equipmentItem.data.isEquipped = true;
+      await this.setInventoryItem(equipmentItem.data);
+    }
 
     const updatedEquipment = {
       ...body,
@@ -323,6 +369,7 @@ export class CharacterManager {
     body: CharacterBody,
     slot: keyof CharacterBody
   ): Promise<CharacterBody> {
+    this.compareRequirementsWithSkills(equipment);
     equipment.isEquipped = true;
     await this.setInventoryItem(equipment);
     const updatedEquipment = {
@@ -340,5 +387,26 @@ export class CharacterManager {
     });
     this.character = await CharacterFetcher.getCharacterById(this.character.id);
     return updatedBody;
+  }
+
+  private compareRequirementsWithSkills(equipment: EquipmentItem | SpellItem) {
+    const skills = skillsSchema
+      .omit({ updated: true, created: true, id: true })
+      .parse(this.character.expand.skills);
+    const requirements = Object.entries(equipment).filter(
+      (entry): entry is [keyof typeof skillsDictionary, number] =>
+        entry[0] in skills && typeof entry[1] === "number"
+    );
+
+    const missingRequirements = requirements.filter(([key, value]) => skills[key] < value);
+    if (missingRequirements.length) {
+      const missingRequirementsString = missingRequirements
+        .map(([key, value]) => `${skillsDictionary[key]}: ${value}`)
+        .join(", ");
+
+      throw new BotError(
+        `Você não possui os requisitos necessários para equipar este item. Requisitos: ${missingRequirementsString}`
+      );
+    }
   }
 }

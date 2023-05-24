@@ -1,3 +1,5 @@
+import type { StatusBar } from "../types/Character";
+
 export const SPINNER_EMOJI = "<a:spinner:1094479348037324820>";
 
 export const COLLECTIONS = {
@@ -109,10 +111,33 @@ export const STATUS_NAMES = {
 } as const;
 
 export const ITEM_TYPES_EMOJIS = {
-  consumable: "🍔",
-  equipment: "🛡️",
-  spell: "🔮",
+  consumable: "<:consumableemoji:1110956925660692632>",
+  equipment: "<:equipmentemoji:1110953970832244886>",
+  spell: "<:spellemoji:1110953972941979799>",
 } as const;
+
+export const STATUS_BAR_DETAILS: Record<keyof typeof STATUS_SKILLS_RELATION, StatusBar> = {
+  health: {
+    emoji: "<:he:1107400309443145818>",
+    color: "<:hb:1107400290065457234>",
+  },
+  stamina: {
+    emoji: "<:se:1107400307564097627>",
+    color: "<:sb:1107400275473477692>",
+  },
+  mana: { emoji: "<:me:1110952945295573002>", color: "🟦" },
+  void: { emoji: "<:ve:1107402190001274901>", color: "<:vb:1107400279202222140>" },
+  hunger: {
+    emoji: "<:he:1107400300144378009>",
+    color: "<:hb:1107400284659007538>",
+  },
+  sleep: { emoji: "<:sle:1107400296205930578>", color: "<:sb:1107400281064485006>" },
+  despair: {
+    emoji: "<:de:1107400304078639165>",
+    color: "<:db:1107400287783747667>",
+  },
+};
+export const EMPTY_BAR_EMOJI = "<:eb:1107400620580802702>";
 export const SKILLS_EMOJIS = {
   charisma: "😊",
   darkness: "🌑",
@@ -156,10 +181,10 @@ export const MULTIPLIER_RANGES = {
 } as const;
 
 export const REQUIREMENT_RANGES = {
-  n: [0, 25],
-  r: [26, 50],
-  sr: [51, 75],
-  ssr: [76, 99],
+  n: [0, 15],
+  r: [16, 25],
+  sr: [26, 60],
+  ssr: [61, 99],
 } as const;
 
 export const STATUS_GIVEN_PER_RARITY_RANGE = {
@@ -168,6 +193,8 @@ export const STATUS_GIVEN_PER_RARITY_RANGE = {
   sr: [3, 4],
   ssr: [4, 6],
 };
+export const SPIRIT_GAIN_PER_TICK = 125;
+export const ENDURANCE_GAIN_PER_SAFE_TICK_MULTIPLIER = 2;
 
 export const RARITY_IMAGES = {
   n: "https://i.imgur.com/OEqauf9.png",
@@ -175,7 +202,7 @@ export const RARITY_IMAGES = {
   sr: "https://i.imgur.com/svrCQNX.png",
   ssr: "https://i.imgur.com/f4Hftkz.png",
 };
-
+export const GACHA_MODAL_ID_REGEX = /^gacha:item:modal(:(?<param>\w+))?$/;
 export const GACHA_ID_PREFIX = "gacha:item";
 export const GACHA_ID_REGEX = /gacha:item:(?<param>\w+)/;
 export const CHARACTER_INTERACTION_ID_REGEX =

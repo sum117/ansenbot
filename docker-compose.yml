@@ -21,7 +21,7 @@ services:
       IMAGEKIT_PUBLIC_KEY: ${IMAGEKIT_PUBLIC_KEY}
       IMAGEKIT_PRIVATE_KEY: ${IMAGEKIT_PRIVATE_KEY}
       IMAGEKIT_URL_ENDPOINT: ${IMAGEKIT_URL_ENDPOINT}
-    image: ghcr.io/sum117/ansenbot:master
+    image: sum117/ansenbot:0.5.4
     restart: unless-stopped
   pocketbase:
     healthcheck:

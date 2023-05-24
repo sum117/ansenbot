@@ -96,6 +96,7 @@ export default class GachaItemBuilder {
       slot: "spells",
       type: itemSkill,
       status: statusArray,
+      rarity,
     };
     return equipment;
   }
@@ -173,11 +174,14 @@ export default class GachaItemBuilder {
   private calculateItemRequirements({ quotient, multiplier, rarity }: ItemRequirementsProps) {
     const requirements: Partial<Record<keyof typeof skillsDictionary, number>> = {};
     const skillNames = getSafeKeys(skillsDictionary);
-
+    let total = 99;
     for (let index = 0; index < 5; index++) {
       const randomSkill = skillNames[random(0, skillNames.length - 1)];
       const requirementLevel = this.calculateRequirementLevel({ quotient, multiplier, rarity });
-      const randomSkillLevel = Math.min(requirementLevel, 99);
+      const randomSkillLevel = Math.min(requirementLevel, 99, total);
+      if (!(randomSkill in requirements)) {
+        total -= randomSkillLevel;
+      }
       requirements[randomSkill] = randomSkillLevel;
     }
 

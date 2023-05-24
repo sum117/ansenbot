@@ -1,6 +1,5 @@
 import type { z } from "zod";
 
-import type { equipmentDictionary } from "../data/translations";
 import type {
   beastsSchema,
   bodySchema,
@@ -18,9 +17,6 @@ import type {
   specSchema,
   statusSchema,
 } from "../schemas/characterSchema";
-import type { BodyPart } from "./Combat";
-import type { EquipmentItem, Item, SpellItem } from "./Item";
-import type { Properties } from "./Utils";
 
 export type CreateUpdateCharacter = z.infer<typeof createUpdateCharacterSchema>;
 export type Character = z.infer<typeof fullCharacterSchema>;
@@ -43,35 +39,7 @@ export type CredentialsArray = [
   string
 ];
 
-export interface ICharacterManager {
-  use: (consumableId: Item["id"]) => Promise<string>;
-  sleep: (hours: number) => Promise<void>;
-
-  heal: (amount: number) => Promise<void>;
-
-  takeDamage: (damage: number) => Promise<void>;
-  applyEffect: (effect: Effect) => Promise<void>;
-
-  addXp: (amount: number) => Promise<number>;
-  addSpirit: (amount: number) => Promise<number>;
-
-  setStatus: (status: Status) => Promise<Status>;
-  getStatuses: (statusId: Status["id"]) => Promise<Status>;
-  getStatus: (statusKey: keyof Status) => Promise<Properties<Status>>;
-
-  addMemory: (memoryId: Memory["id"]) => void;
-  removeMemory: () => void;
-  getMemory: () => Promise<Memory>;
-  // setBeast: (beast: Beast) => Promise<Beast>;
-  // getBeast: () => Promise<Beast>;
-  setInventoryItem: (item: Item) => Promise<Item>;
-  getInventoryItem: (id: Inventory["id"]) => Item | undefined;
-  getInventory: () => Inventory;
-
-  setEquipment: (equipment: Item) => Promise<CharacterBody>;
-  getEquipment: () => Promise<CharacterBody>;
-
-  getEquipmentItem: (
-    slot: keyof typeof equipmentDictionary | BodyPart
-  ) => Promise<EquipmentItem | EquipmentItem[] | SpellItem[] | undefined>;
-}
+export type StatusBar = {
+  emoji: string;
+  color: string;
+};
