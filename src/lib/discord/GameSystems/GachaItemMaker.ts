@@ -83,7 +83,7 @@ export default class GachaItemBuilder {
   ) {
     const { hasEnduranceCost, getCost, isHealingSpell, statusArray } = this.getRng(stats, rarity);
 
-    const equipment: Partial<CreateData<SpellItem>> = {
+    const spell: Partial<CreateData<SpellItem>> = {
       healthCost: hasEnduranceCost() ? getCost() : 0,
       manaCost: getCost() * MANA_COST_MULTIPLIER,
       staminaCost: hasEnduranceCost() ? getCost() * STAMINA_COST_MULTIPLIER : 0,
@@ -98,7 +98,7 @@ export default class GachaItemBuilder {
       status: statusArray,
       rarity,
     };
-    return equipment;
+    return spell;
   }
 
   private generateEquipment(
@@ -139,7 +139,7 @@ export default class GachaItemBuilder {
   }
 
   private getItemSlot() {
-    const slots = getSafeKeys(equipmentDictionary);
+    const slots = getSafeKeys(equipmentDictionary).filter((slot) => slot !== "spells");
     return slots[random(0, slots.length - 1)];
   }
 

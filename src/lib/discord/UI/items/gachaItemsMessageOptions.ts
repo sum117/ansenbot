@@ -15,6 +15,7 @@ export const gachaItemsMessageOptions = async (
   const fields: ButtonBuilder[] = [];
   const { character } = await getRoleplayDataFromUserId(userId);
   const characterMustache = getCharacterMustache(character);
+
   fields.push(
     new ButtonBuilder()
       .setCustomId(getGachaId("reroll"))
@@ -40,7 +41,6 @@ export const gachaItemsMessageOptions = async (
   });
 
   form.setEmbedThumbnail(record.rarityImage);
-
   form.addEmbedFields(
     getRequirementsInfoFields({
       requirements: record.requirements,
@@ -49,6 +49,10 @@ export const gachaItemsMessageOptions = async (
       slot: record.item.slot,
       type: record.item.type,
       rarity: record.item.rarity ?? "n",
+      isBuff:
+        "isBuff" in record.item && typeof record.item.isBuff === "boolean"
+          ? record.item.isBuff
+          : undefined,
     })
   );
 

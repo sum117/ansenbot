@@ -12,6 +12,7 @@ type RequirementsInfoFields = {
   slot: keyof typeof equipmentDictionary;
   rarity: string;
   requirements: PartialRequirements;
+  isBuff?: boolean;
 };
 
 export const getRequirementsInfoFields = ({
@@ -21,6 +22,7 @@ export const getRequirementsInfoFields = ({
   slot,
   requirements,
   rarity,
+  isBuff,
 }: RequirementsInfoFields): Array<EmbedField> => {
   const fields = [
     {
@@ -57,6 +59,14 @@ export const getRequirementsInfoFields = ({
       inline: true,
       name: "Requisitos",
       value: formattedRequirements,
+    });
+  }
+
+  if (isBuff) {
+    fields.push({
+      inline: true,
+      name: "Função",
+      value: "Benigna",
     });
   }
 
