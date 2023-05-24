@@ -12,13 +12,13 @@ export const skillsDictionary = {
 } as const;
 
 export const statusDictionary = {
-  health: "❤️ Vida",
-  stamina: "🔋 Energia",
-  spirit: "🔮 Espírito",
-  hunger: "🍔 Fome",
-  sleep: "😴 Sono",
-  void: "🌑 Vazio",
-  despair: "😭 Desespero",
+  health: "<:he:1107400309443145818> Vida",
+  stamina: "<:se:1107400307564097627> Energia",
+  spirit: "<:me:1110952945295573002> Espírito",
+  hunger: "<:he:1107400300144378009> Fome",
+  sleep: "<:sle:1107400296205930578> Sono",
+  void: "<:ve:1107402190001274901> Vazio",
+  despair: "<:de:1107400304078639165> Desespero",
 } as const;
 
 export const statesDictionary = {
@@ -47,7 +47,7 @@ export const equipmentDictionary = {
 };
 
 export const itemTypesDictionary = {
-  consumable: "🍔 Consumível",
-  equipment: "🛡️ Equipamento",
-  spell: "📜 Feitiço",
+  consumable: "<:spellemoji:1110953972941979799> Consumível",
+  equipment: "<:equipmentemoji:1110953970832244886> Equipamento",
+  spell: "<:spellemoji:1110953972941979799> Feitiço",
 };

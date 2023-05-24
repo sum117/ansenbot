@@ -15,8 +15,6 @@ import type { Character } from "../../types/Character";
 import handleError from "../../utils/handleError";
 import TrackedInteraction from "../../utils/TrackedInteraction";
 
-// placeholder:action:kind:itemId:playerId:page:(previous|next)
-
 @Discord()
 export class CharacterInventoryManagerController {
   private trackedInteraction = new TrackedInteraction();

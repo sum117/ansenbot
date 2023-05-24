@@ -3,10 +3,12 @@ import mustache from "mustache";
 
 import type { COLLECTIONS } from "../../../../data/constants";
 import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
-import type { equipmentDictionary, skillsDictionary } from "../../../../data/translations";
+import type { equipmentDictionary } from "../../../../data/translations";
+import { skillsDictionary } from "../../../../data/translations";
 import {
   consumableSchema,
   equipmentSchema,
+  skillsSchema,
   spellSchema,
 } from "../../../../schemas/characterSchema";
 import type {
@@ -341,15 +343,18 @@ export class CharacterManager {
     slot: keyof CharacterBody,
     previousItems: string[]
   ): Promise<CharacterBody> {
+    this.compareRequirementsWithSkills(equipment);
     const previousItem = equipmentSchema.safeParse(this.getInventoryItem(previousItems[0]));
-
+    const equipmentItem = equipmentSchema.safeParse(equipment);
     if (previousItem.success) {
       previousItem.data.isEquipped = false;
       await this.setInventoryItem(previousItem.data);
     }
 
-    equipment.isEquipped = true;
-    await this.setInventoryItem(equipment);
+    if (equipmentItem.success) {
+      equipmentItem.data.isEquipped = true;
+      await this.setInventoryItem(equipmentItem.data);
+    }
 
     const updatedEquipment = {
       ...body,
@@ -364,6 +369,7 @@ export class CharacterManager {
     body: CharacterBody,
     slot: keyof CharacterBody
   ): Promise<CharacterBody> {
+    this.compareRequirementsWithSkills(equipment);
     equipment.isEquipped = true;
     await this.setInventoryItem(equipment);
     const updatedEquipment = {
@@ -381,5 +387,26 @@ export class CharacterManager {
     });
     this.character = await CharacterFetcher.getCharacterById(this.character.id);
     return updatedBody;
+  }
+
+  private compareRequirementsWithSkills(equipment: EquipmentItem | SpellItem) {
+    const skills = skillsSchema
+      .omit({ updated: true, created: true, id: true })
+      .parse(this.character.expand.skills);
+    const requirements = Object.entries(equipment).filter(
+      (entry): entry is [keyof typeof skillsDictionary, number] =>
+        entry[0] in skills && typeof entry[1] === "number"
+    );
+
+    const missingRequirements = requirements.filter(([key, value]) => skills[key] < value);
+    if (missingRequirements.length) {
+      const missingRequirementsString = missingRequirements
+        .map(([key, value]) => `${skillsDictionary[key]}: ${value}`)
+        .join(", ");
+
+      throw new BotError(
+        `Você não possui os requisitos necessários para equipar este item. Requisitos: ${missingRequirementsString}`
+      );
+    }
   }
 }

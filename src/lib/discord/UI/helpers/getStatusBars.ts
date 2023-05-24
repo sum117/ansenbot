@@ -1,63 +1,30 @@
 import progressBar from "string-progressbar";
 
-import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
+import {
+  EMPTY_BAR_EMOJI,
+  STATUS_BAR_DETAILS,
+  STATUS_SKILLS_RELATION,
+} from "../../../../data/constants";
 import type { Skills, Status } from "../../../../types/Character";
+import getSafeEntries from "../../../../utils/getSafeEntries";
 import getMaxStatus from "../../Character/helpers/getMaxStatus";
 
+function createStatusBar(
+  maxStatus: number,
+  currentStatus: number,
+  emoji: string,
+  color: string
+): string {
+  return `${emoji} ${progressBar
+    .filledBar(maxStatus, currentStatus, 4, EMPTY_BAR_EMOJI, color)
+    .shift()} ${currentStatus}/${maxStatus}`;
+}
+
 export default function getStatusBars(skills: Skills, status: Status): Array<string> {
-  const healthBar =
-    "❤️ " +
-    progressBar
-      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.health], status.health, 7, "🟥", "🟩")
-      .shift();
+  const maxStatus = getMaxStatus(skills);
 
-  const staminaBar =
-    "🏃 " +
-    progressBar
-      .filledBar(
-        getMaxStatus(skills)[STATUS_SKILLS_RELATION.stamina],
-        status.stamina,
-        7,
-        "🟥",
-        "🟨"
-      )
-      .shift();
-
-  const manaBar =
-    "🔮 " +
-    progressBar
-      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.mana], status.mana, 7, "🟥", "🟦")
-      .shift();
-
-  const voidBar =
-    "💀  " +
-    progressBar
-      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.void], status.void, 7, "🟥", "🟪")
-      .shift();
-
-  const hungerBar =
-    "🍖 " +
-    progressBar
-      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.hunger], status.hunger, 7, "🟥", "🟫")
-      .shift();
-
-  const sleepBar =
-    "💤 " +
-    progressBar
-      .filledBar(getMaxStatus(skills)[STATUS_SKILLS_RELATION.sleep], status.sleep, 7, "🟥", "🟦")
-      .shift();
-
-  const despairBar =
-    "❗ " +
-    progressBar
-      .filledBar(
-        getMaxStatus(skills)[STATUS_SKILLS_RELATION.despair],
-        status.despair,
-        7,
-        "🟥",
-        "⬛"
-      )
-      .shift();
-
-  return [healthBar, manaBar, staminaBar, voidBar, hungerBar, sleepBar, despairBar];
+  return getSafeEntries(STATUS_SKILLS_RELATION).map(([statusName, statusKey]) => {
+    const { emoji, color } = STATUS_BAR_DETAILS[statusName as keyof typeof STATUS_SKILLS_RELATION];
+    return createStatusBar(maxStatus[statusKey], status[statusName], emoji, color);
+  });
 }

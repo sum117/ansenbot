@@ -34,7 +34,7 @@ export const gachaItemsMessageOptions = async (
   const form = new MultiForm({
     title: characterMustache("Canalizador de Itens Espiritual"),
     description: characterMustache(
-      '"A sorte não é nada sem sabedoria e coragem, {{{character.name}}}."'
+      "{{{character.name}}}, você ainda tem **{{{character.expand.status.spirit}}}** Lascas Espirituais."
     ),
     fields: fields,
   });

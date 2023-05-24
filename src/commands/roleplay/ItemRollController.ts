@@ -25,6 +25,10 @@ export class ItemRollController {
   })
   public async main(interaction: ChatInputCommandInteraction): Promise<void> {
     try {
+      if (!(await this.canRoll(interaction))) {
+        await interaction.reply("Você não tem lascas espirituais suficientes.");
+        return;
+      }
       const messageOptions = await this.generateRollMessage(interaction);
       await interaction.reply({ ...messageOptions, fetchReply: true });
     } catch (error) {
@@ -48,11 +52,10 @@ export class ItemRollController {
         return;
       }
 
-      // Deduct spirit
-      const { characterManager } = await getRoleplayDataFromUserId(interaction.user.id);
-
-      characterManager.character.expand.status.spirit -= 1000;
-      characterManager.setStatus(characterManager.character.expand.status);
+      if (!(await this.canRoll(interaction))) {
+        await interaction.reply("Você não tem lascas espirituais suficientes.");
+        return;
+      }
 
       await interaction.deferUpdate();
       const messageOptions = await this.generateRollMessage(interaction);
@@ -116,5 +119,18 @@ export class ItemRollController {
       throw new Error("Parâmetro inválido. Contate um administrador.");
     }
     return param as GachaParam;
+  }
+
+  private async canRoll(
+    interaction: ButtonInteraction | ChatInputCommandInteraction
+  ): Promise<boolean> {
+    const { characterManager } = await getRoleplayDataFromUserId(interaction.user.id);
+    let spirit = characterManager.character.expand.status.spirit;
+    if (spirit < 1000) {
+      return false;
+    }
+    spirit -= 1000;
+    characterManager.setStatus({ ...characterManager.character.expand.status, spirit });
+    return true;
   }
 }

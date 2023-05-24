@@ -108,7 +108,6 @@ export class OnRoleplayMessage {
         this.addEffectsToEmbed(status, characterPost),
         this.addEquipmentToEmbed(equipment, characterPost),
       ]);
-
       const text = characterPost.embed.data.title;
       const iconURL = PocketBase.getImageUrl({
         record: currentCharacter,
@@ -145,13 +144,8 @@ export class OnRoleplayMessage {
 
   private addStatusBarsToEmbed(skills: Skills, status: Status, characterPost: CharacterPost): void {
     const statusBars: string[] = getStatusBars(skills, status);
-    characterPost.embed.addFields({
-      name: "Status",
-      value: statusBars.join("\n\n"),
-      inline: true,
-    });
+    characterPost.embed.addFields({ name: "Status", value: statusBars.join("\n"), inline: true });
   }
-
   private async addEquipmentToEmbed(equipment: CharacterBody, characterPost: CharacterPost) {
     const equipmentString = await makeEquipmentStringArray(equipment);
 
