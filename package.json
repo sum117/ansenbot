@@ -39,7 +39,7 @@
     "pocketbase": "^0.14.4",
     "sharp": "^0.32.1",
     "string-progressbar": "^1.0.4",
-    "ytdl-core": "^4.11.4",
+    "ytdl-core": "github:milanbabiclibrafire/node-ytdl-core",
     "zod": "^3.21.4"
   },
   "devDependencies": {
