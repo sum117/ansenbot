@@ -1,8 +1,8 @@
 export default class Queue {
-  private tasks: (() => Promise<void>)[] = [];
+  private tasks: (() => Promise<void> | void)[] = [];
   private isRunning = false;
 
-  async enqueue(task: () => Promise<void>): Promise<void> {
+  async enqueue(task: () => Promise<void> | void): Promise<void> {
     this.tasks.push(task);
     if (!this.isRunning) {
       this.isRunning = true;

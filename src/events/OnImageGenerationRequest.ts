@@ -4,6 +4,7 @@ import type { ArgsOf, Client } from "discordx";
 import { Discord, On } from "discordx";
 
 import config from "../../config.json" assert { type: "json" };
+import { SPINNER_EMOJI } from "../data/constants";
 import { novelRequestImageGen } from "../lib/anime-img-gen/novelAIApi";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import { BotError } from "../utils/Errors";
@@ -76,10 +77,9 @@ export class OnImageGenerationRequest {
     const currentMessage = this.message;
 
     const userFeedback: string[] = [];
-    const spinnerEmoji = "<a:spinner:1094479348037324820>";
     // TODO: upgrade to use mustache .render() after next pull request
     userFeedback.push(
-      `${spinnerEmoji} ${userMention(currentMessage.author.id)} Sua imagem começou a ser gerada.`
+      `${SPINNER_EMOJI} ${userMention(currentMessage.author.id)} Sua imagem começou a ser gerada.`
     );
     if (!this.pendingUserImageRequests.get(currentMessage.author.id)?.message) {
       const trackedMessage = await currentMessage.reply(userFeedback.join(""));
