@@ -67,7 +67,12 @@ export class MergeImageVideo {
 
         await this.downloadDiscordImage(imageLink, paths.imagePath);
         await this.downloadYoutubeAudio(audioLink, paths.audioFileStream);
-        await this.mergeYoutubeAudioAndImage(paths.imagePath, info, paths.audioPath);
+        await this.mergeYoutubeAudioAndImage(
+          paths.imagePath,
+          info,
+          paths.audioPath,
+          paths.outputPath
+        );
 
         await deleteDiscordMessage(loading, 0);
 
@@ -92,7 +97,7 @@ export class MergeImageVideo {
     const outputPath = path.join(cacheFolderPath, outputName);
     const imagePath = path.join(cacheFolderPath, now + imageSuffix);
     const audioFileStream = fs.createWriteStream(
-      path.join(cacheFolderPath, "audio" + now + ".mp3")
+      path.join(cacheFolderPath, "audio" + now + ".opus")
     );
     const audioPath = audioFileStream.path;
     return { outputName, cacheFolderPath, outputPath, imagePath, audioFileStream, audioPath };
@@ -123,7 +128,8 @@ export class MergeImageVideo {
   private mergeYoutubeAudioAndImage(
     imagePath: string,
     info: videoInfo,
-    audioPath: string
+    audioPath: string,
+    outputPath: string
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       ffmpeg()
@@ -139,7 +145,8 @@ export class MergeImageVideo {
         .outputOptions("-shortest")
         .outputOptions("-movflags +faststart")
         .on("end", resolve)
-        .on("error", reject);
+        .on("error", reject)
+        .saveToFile(outputPath);
     });
   }
 }
