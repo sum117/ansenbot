@@ -14,7 +14,8 @@ export const skillsDictionary = {
 export const statusDictionary = {
   health: "<:he:1107400309443145818> Vida",
   stamina: "<:se:1107400307564097627> Energia",
-  spirit: "<:me:1110952945295573002> Espírito",
+  mana: "<:me:1110952945295573002> Mana",
+  spirit: "Espírito",
   hunger: "<:he:1107400300144378009> Fome",
   sleep: "<:sle:1107400296205930578> Sono",
   void: "<:ve:1107402190001274901> Vazio",

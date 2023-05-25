@@ -1,6 +1,7 @@
 import random from "lodash.random";
 
-import type { skillsDictionary, statusDictionary } from "../../../../data/translations";
+import type { skillsDictionary } from "../../../../data/translations";
+import { statusDictionary } from "../../../../data/translations";
 import { equipmentSchema, spellSchema } from "../../../../schemas/characterSchema";
 import type { Character, Skills, Status } from "../../../../types/Character";
 import type {
@@ -18,7 +19,8 @@ import type {
   TurnResult,
 } from "../../../../types/Combat";
 import type { EquipmentItem, SpellItem } from "../../../../types/Item";
-import { BotError } from "../../../../utils/Errors";
+import { CombatError } from "../../../../utils/Errors";
+import getSafeEntries from "../../../../utils/getSafeEntries";
 import { ItemFetcher } from "../../../pocketbase/ItemFetcher";
 import type { CharacterManager } from "./CharacterManager";
 
@@ -77,7 +79,10 @@ export default class CharacterCombat {
   public async processTurn(turn: SupportTurn): Promise<SupportTurnResult>;
 
   public async processTurn(turn: Turn): Promise<TurnResult> {
-    const { item: agentItem, itemName } = await this.getAgentItem(turn.spellId);
+    const { item: agentItem, itemName } = await this.getWeapon({
+      from: "agent",
+      spellId: turn.spellId,
+    });
     const targetItem = CharacterCombat.isDuelTurn(turn)
       ? await this.targetManager.getEquipmentItem(turn.bodyPart ?? "chest")
       : undefined;
@@ -91,13 +96,13 @@ export default class CharacterCombat {
     }
 
     if (!CharacterCombat.isDefenseButtonKind(turn.kind)) {
-      throw new BotError("Opção de defesa inválida.");
+      throw new CombatError("Opção de defesa inválida.");
     }
 
     // Verifica se a ação de defesa teve sucesso
     const defenseSuccess = this.prepareDefense(turn.kind);
 
-    if (defenseSuccess) {
+    if (defenseSuccess.success) {
       // Se a defesa teve sucesso, o dano será reduzido conforme a opção de defesa
       switch (turn.kind) {
         case "dodge":
@@ -114,14 +119,19 @@ export default class CharacterCombat {
           break;
         case "counter":
           // Se o contra-ataque teve sucesso, o dano é refletido de volta ao atacante
-          const counterDamage = await this.resolveDuel(targetItem, agentItem, true);
+          const targetWeapon = await this.getWeapon({ from: "target" });
+          console.log(targetWeapon.item);
+          const counterDamage = await this.resolveDuel(targetWeapon.item, agentItem, true);
           return {
-            defenseSuccess,
+            defenseSuccess: defenseSuccess.success,
             damageDealt: counterDamage.damageDealt,
             isKillingBlow: counterDamage.isKillingBlow,
+            odds: {
+              ...defenseSuccess,
+            },
           };
         default:
-          throw new BotError("Opção de defesa inválida.");
+          throw new CombatError("Opção de defesa inválida.");
       }
     }
 
@@ -129,7 +139,10 @@ export default class CharacterCombat {
     const { status, damageDealt, isKillingBlow } = await this.resolveDuel(agentItem, targetItem);
 
     return {
-      defenseSuccess,
+      defenseSuccess: defenseSuccess.success,
+      odds: {
+        ...defenseSuccess,
+      },
       damageDealt,
       isKillingBlow,
       status,
@@ -146,6 +159,12 @@ export default class CharacterCombat {
       const finalHealQuotient = Math.floor(agentHealth / 3);
       const finalHealth = targetHealth + finalHealQuotient;
       statusesReplenished.push("health");
+
+      this.agentManager.setStatus({
+        ...this.agent.expand.status,
+        health: Math.max(agentHealth - finalHealQuotient, 1),
+      });
+
       return {
         statusesReplenished,
         amount: Math.ceil(finalHealQuotient),
@@ -160,6 +179,13 @@ export default class CharacterCombat {
       const statusesToReplenish = item.status;
       const statuses = this.target.expand.status;
 
+      const deductedStatus = this.getDeductedStatus(item);
+
+      this.agentManager.setStatus({
+        ...this.agent.expand.status,
+        ...deductedStatus,
+      });
+
       for (const status of statusesToReplenish) {
         statuses[status] = statuses[status] + finalBuffQuotient;
         statusesReplenished.push(status);
@@ -170,11 +196,38 @@ export default class CharacterCombat {
         status: await this.targetManager.setStatus(statuses),
       };
     } else {
-      throw new BotError("A ação não é benéfica.");
+      throw new CombatError("A ação não é benéfica.");
     }
   }
 
-  private prepareDefense(defenseOption: ButtonDefenseKind): boolean {
+  private getDeductedStatus(item: SpellItem) {
+    const costs = {
+      mana: item.manaCost,
+      stamina: item.staminaCost,
+      health: item.healthCost,
+    };
+
+    const deductedStatus = Object.fromEntries(
+      getSafeEntries(this.agent.expand.status)
+        .filter((entries): entries is [keyof typeof costs, number] => {
+          return entries[0] in costs;
+        })
+        .map(([key, value]) => {
+          const newValue = value - costs[key];
+          if (newValue < 0) {
+            throw new CombatError(
+              `O personagem ${this.agent.name} não possui ${statusDictionary[key]} suficiente para usar o feitiço.`
+            );
+          }
+          return [key, newValue];
+        })
+    );
+    return deductedStatus;
+  }
+
+  private prepareDefense(
+    defenseOption: ButtonDefenseKind
+  ): AttackTurnResult["odds"] & { success: boolean } {
     const {
       expand: { status: targetStatus, skills: targetSkills },
     } = this.target;
@@ -183,15 +236,27 @@ export default class CharacterCombat {
     } = this.agent;
 
     agentStatus.stamina = Math.max(agentStatus.stamina, 1);
-    const dodgeChance = this.calculateDodgeChance(targetStatus, agentStatus, targetSkills);
-    const blockChance = this.calculateBlockChance(targetStatus, agentStatus, targetSkills);
-    const fleeChance = this.calculateFleeChance(targetStatus, agentSkills, targetSkills);
-    const counterChance = this.calculateCounterChance(agentStatus, targetStatus, targetSkills);
+    const dodgeChance = Math.max(
+      Math.ceil(this.calculateDodgeChance(targetStatus, agentStatus, targetSkills)),
+      0
+    );
+    const blockChance = Math.max(
+      Math.ceil(this.calculateBlockChance(targetStatus, agentStatus, targetSkills)),
+      0
+    );
+    const fleeChance = Math.max(
+      Math.ceil(this.calculateFleeChance(targetStatus, agentSkills, targetSkills)),
+      0
+    );
+    const counterChance = Math.max(
+      Math.ceil(this.calculateCounterChance(targetStatus, agentStatus, targetSkills)),
+      0
+    );
 
-    const dodgeRandom = random(0, 100, true);
-    const blockRandom = random(0, 90, true);
-    const fleeRandom = random(0, 100, true);
-    const counterRandom = random(0, 100, true);
+    const dodgeRandom = random(0, 100);
+    const blockRandom = random(0, 90);
+    const fleeRandom = random(0, 100);
+    const counterRandom = random(0, 100);
     let success = false;
 
     switch (defenseOption) {
@@ -207,7 +272,7 @@ export default class CharacterCombat {
             ? targetStatus.stamina * 0.1
             : targetStatus.stamina * 0.15;
         } else {
-          throw new BotError("O personagem não está utilizando um escudo.");
+          throw new CombatError("O personagem não está utilizando um escudo.");
         }
         break;
       }
@@ -222,11 +287,17 @@ export default class CharacterCombat {
         break;
       }
       default: {
-        throw new BotError("Opção de defesa inválida.");
+        throw new CombatError("Opção de defesa inválida.");
       }
     }
 
-    return success;
+    return {
+      dodge: [dodgeChance, dodgeRandom],
+      block: [blockChance, blockRandom],
+      flee: [fleeChance, fleeRandom],
+      counter: [counterChance, counterRandom],
+      success,
+    };
   }
 
   private async resolveDuel(
@@ -242,15 +313,23 @@ export default class CharacterCombat {
     const damageDealt = Math.ceil(Math.max(attackerFinalQuotient - damageToNegate, 0));
 
     const targetStatus = isCounter ? this.agent.expand.status : this.target.expand.status;
+
     let isKillingBlow = false;
     if (attacker?.expand.item.type === "spell") {
       const spell = spellSchema.parse(attacker);
       const statusesToDamage = spell.status;
+      const deductedAgentStatus = this.getDeductedStatus(spell);
+
+      this.agentManager.setStatus({
+        ...this.agent.expand.status,
+        ...deductedAgentStatus,
+      });
+
       for (const status of statusesToDamage) {
-        targetStatus[status] = targetStatus[status] - damageDealt;
+        targetStatus[status] = Math.max(targetStatus[status] - damageDealt, 0);
       }
     } else {
-      targetStatus.health = targetStatus.health - damageDealt;
+      targetStatus.health = Math.max(targetStatus.health - damageDealt, 0);
     }
 
     if (targetStatus.health <= 0) {
@@ -268,15 +347,20 @@ export default class CharacterCombat {
     };
   }
 
-  private async getAgentItem(
-    spellId?: string
-  ): Promise<{ item: EquipmentItem | SpellItem; itemName: string }> {
+  private async getWeapon({
+    spellId,
+    from,
+  }: {
+    spellId?: string;
+    from: "agent" | "target";
+  }): Promise<{ item: EquipmentItem | SpellItem; itemName: string }> {
+    const manager = from === "agent" ? this.agentManager : this.targetManager;
     if (spellId) {
-      const spell = this.agentManager.character.expand.body.expand?.spells?.find(
+      const spell = manager.character.expand.body.expand?.spells?.find(
         (spell) => spell.id === spellId
       );
       if (!spell) {
-        throw new BotError("O feitiço não foi encontrado.");
+        throw new CombatError("O feitiço não foi encontrado.");
       }
       return {
         item: spellSchema.parse(spell),
@@ -284,11 +368,11 @@ export default class CharacterCombat {
       };
     }
 
-    const leftArm = await this.agentManager.getEquipmentItem("leftArm");
-    const rightArm = await this.agentManager.getEquipmentItem("rightArm");
+    const leftArm = await manager.getEquipmentItem("leftArm");
+    const rightArm = await manager.getEquipmentItem("rightArm");
 
     if (!leftArm && !rightArm) {
-      throw new BotError("O personagem não possui armas equipadas para atacar.");
+      throw new CombatError("O personagem não possui armas equipadas para atacar.");
     }
 
     if (leftArm && rightArm) {

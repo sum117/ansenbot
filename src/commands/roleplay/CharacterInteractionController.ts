@@ -1,4 +1,5 @@
 import type { ButtonInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js";
+import { bold } from "discord.js";
 import { ButtonComponent, Discord, SelectMenuComponent } from "discordx";
 
 import { BATTLE_INTERACTION_ID_REGEX, CHARACTER_INTERACTION_ID_REGEX } from "../../data/constants";
@@ -28,6 +29,7 @@ import type {
   Turn,
 } from "../../types/Combat";
 import deleteDiscordMessage from "../../utils/deleteDiscordMessage";
+import { CombatError } from "../../utils/Errors";
 import getSafeKeys from "../../utils/getSafeKeys";
 import handleError from "../../utils/handleError";
 import TrackedInteraction from "../../utils/TrackedInteraction";
@@ -111,11 +113,8 @@ export class CharacterInteractionController {
         return;
       }
 
-      const { character: agent, characterManager: agentManager } = await getRoleplayDataFromUserId(
-        agentId
-      );
-      const { character: target, characterManager: targetManager } =
-        await getRoleplayDataFromUserId(targetId);
+      const { characterManager: agentManager } = await getRoleplayDataFromUserId(agentId);
+      const { characterManager: targetManager } = await getRoleplayDataFromUserId(targetId);
 
       const currentInteraction = this.turn.get(agentId);
       this.turn.set(
@@ -140,8 +139,8 @@ export class CharacterInteractionController {
         if (selectMenuInteractionHandler && !CharacterCombat.isButtonKind(kind)) {
           await selectMenuInteractionHandler.call(this, interaction, {
             kind,
-            agent,
-            target,
+            agent: agentManager,
+            target: targetManager,
             bodyPart,
             interactionValue,
           });
@@ -168,6 +167,11 @@ export class CharacterInteractionController {
         }
       }
     } catch (error) {
+      if (error instanceof CombatError) {
+        await interaction.message.delete().catch(() => null);
+        await interaction.deleteReply().catch(() => null);
+        await interaction.channel?.send(error.message).catch(() => null);
+      }
       handleError(interaction, error);
     }
   }
@@ -243,17 +247,24 @@ export class CharacterInteractionController {
     interaction: StringSelectMenuInteraction,
     { kind, agent, target, interactionValue }: SelectMenuInteractionParameters
   ) {
-    const currentInteraction = this.turn.get(agent.playerId);
+    const currentInteraction = this.turn.get(agent.character.playerId);
 
     const supportHandlers: Record<string, (currentInteraction: Turn | undefined) => SupportTurn> = {
-      spell: this.getSpellHelpData.bind(this, interactionValue, target.playerId),
+      spell: this.getSpellHelpData.bind(this, interactionValue, target.character.playerId),
     };
 
     const supportHandler = supportHandlers[kind];
     if (supportHandler && CharacterCombat.isSelectSupportKind(kind)) {
-      const updatedInteraction = await supportHandler(currentInteraction);
-      this.turn.set(agent.playerId, updatedInteraction);
+      const updatedInteraction = supportHandler(currentInteraction);
+      this.turn.set(agent.character.playerId, updatedInteraction);
+      const message = await this.resolveTurn(agent, target, {
+        kind,
+        action: "support",
+        targetId: target.character.playerId,
+        spellId: updatedInteraction.spellId,
+      });
       await this.sendHelpInteractionReply(interaction, kind, updatedInteraction);
+      await interaction.channel?.send(message);
     }
   }
 
@@ -261,17 +272,17 @@ export class CharacterInteractionController {
     interaction: StringSelectMenuInteraction,
     { kind, agent, target, bodyPart, interactionValue }: SelectMenuInteractionParameters
   ) {
-    const currentInteraction = this.turn.get(agent.playerId);
+    const currentInteraction = this.turn.get(agent.character.playerId);
 
     const attackHandlers: Record<string, (currentInteraction: Turn | undefined) => DuelTurn> = {
-      body: this.getBodyAttackData.bind(this, bodyPart!, target.playerId),
-      spell: this.getSpellAttackData.bind(this, interactionValue, target.playerId),
+      body: this.getBodyAttackData.bind(this, bodyPart!, target.character.playerId),
+      spell: this.getSpellAttackData.bind(this, interactionValue, target.character.playerId),
     };
 
     const attackHandler = attackHandlers[kind];
     if (attackHandler) {
       const updatedInteraction = attackHandler(currentInteraction);
-      this.turn.set(agent.playerId, updatedInteraction);
+      this.turn.set(agent.character.playerId, updatedInteraction);
       await this.sendAttackInteractionReply(interaction, kind, updatedInteraction);
     }
   }
@@ -318,7 +329,7 @@ export class CharacterInteractionController {
     };
 
     const message = messageMapping[kind];
-    return interaction.channel?.send(message);
+    return interaction.editReply(message);
   }
 
   private async sendAttackInteractionReply(
@@ -384,16 +395,23 @@ export class CharacterInteractionController {
       damage: `💥 ${agent.character.name} causou ${turnResult.damageDealt} de dano em ${target.character.name} com ${turnResult.weaponUsed}!`,
     };
 
+    const oddsMessage = `\n\n${target.character.name} tinha:
+      ${bold(turnResult.odds.block.join("/"))} de chance de bloquear o ataque;
+      ${bold(turnResult.odds.dodge.join("/"))} de chance de desviar;
+      ${bold(turnResult.odds.counter.join("/"))} de chance de contra-atacar;
+      ${bold(turnResult.odds.flee.join("/"))} de chance de fugir da batalha.
+    `;
+
     if (turnResult.defenseSuccess && turnResult.isKillingBlow) {
-      return messages.counterKill;
+      return messages.counterKill + oddsMessage;
     }
     if (turnResult.defenseSuccess) {
-      return messages[kind];
+      return messages[kind] + oddsMessage;
     }
     if (turnResult.isKillingBlow) {
-      return messages.kill;
+      return messages.kill + oddsMessage;
     }
-    return messages.damage;
+    return messages.damage + oddsMessage;
   }
 
   private getSupportResultMessage(
@@ -407,7 +425,7 @@ export class CharacterInteractionController {
       .join(", ");
     const messages: Record<string, string> = {
       sacrifice: `🛡️ ${agent.character.name} sacrificou 1/3 de sua essência espiritual para proteger ${target.character.name}!`,
-      spell: `🧙 ${agent.character.name} lançou um feitiço de buff em ${target.character.name}, recuperando ${turnResult.amount} de ${statusStringArray}!`,
+      spell: `🧙 ${agent.character.name} lançou um feitiço de buff em ${target.character.name}, fazendo-o(a) recuperar ${turnResult.amount} de ${statusStringArray}!`,
       pass: `♻️ ${agent.character.name} passou o turno!`,
     };
 

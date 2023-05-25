@@ -11,7 +11,7 @@ import { inspect } from "util";
 import { ZodError } from "zod";
 
 import deleteDiscordMessage from "./deleteDiscordMessage";
-import { BotError, PocketBaseError } from "./Errors";
+import { BotError, CombatError, PocketBaseError } from "./Errors";
 import getSafeEntries from "./getSafeEntries";
 
 export default function handleError(
@@ -53,10 +53,11 @@ export default function handleError(
     return;
   }
 
-  interaction.channel
-    ?.send(errorMessage)
-    .then((message) => {
-      deleteDiscordMessage(message, 5000);
-    })
-    .catch(() => null);
+  !(error instanceof CombatError) &&
+    interaction.channel
+      ?.send(errorMessage)
+      .then((message) => {
+        deleteDiscordMessage(message, 5000);
+      })
+      .catch(() => null);
 }

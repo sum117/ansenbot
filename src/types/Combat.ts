@@ -2,7 +2,7 @@ import type { ButtonInteraction, Snowflake, StringSelectMenuInteraction } from "
 
 import type { equipmentDictionary, statusDictionary } from "../data/translations";
 import type { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
-import type { Character, Status } from "./Character";
+import type { Status } from "./Character";
 
 export type SelectMenuAttackKind = "spell" | "body";
 export type SelectMenuSupportKind = "spell";
@@ -33,8 +33,8 @@ export type Turn = DuelTurn | SupportTurn;
 
 export interface SelectMenuInteractionParameters {
   kind: SelectMenuKind;
-  agent: Character;
-  target: Character;
+  agent: CharacterManager;
+  target: CharacterManager;
   interactionValue: string;
   bodyPart?: BodyPart;
 }
@@ -80,6 +80,12 @@ export interface AttackTurnResult {
   isKillingBlow: boolean;
   weaponUsed?: string;
   status?: Status;
+  odds: {
+    dodge: [number, number];
+    counter: [number, number];
+    block: [number, number];
+    flee: [number, number];
+  };
 }
 
 export interface SupportTurnResult {
