@@ -1,20 +1,34 @@
+import cors from "cors";
+import { ChannelType } from "discord.js";
 import express from "express";
-import { z } from "zod";
 
-import { createUpdateCharacterSchema } from "./schemas/characterSchema";
+import CharacterPost from "./lib/discord/UI/classes/CharacterPost";
+import CharacterFetcher from "./lib/pocketbase/CharacterFetcher";
+import PostFetcher from "./lib/pocketbase/PostFetcher";
+import { bot } from "./main";
 
 const server = express();
+
+server.use(cors());
 server.use(express.json());
-server.post("/character", async (req: express.Request, res: express.Response) => {
-  console.log(req.body);
+server.post("/post", async (req: express.Request, res: express.Response) => {
+  const channel = await bot.channels.fetch(req.body.channelId);
+  if (channel?.type !== ChannelType.GuildText) {
+    return res.status(400).send("Invalid channel");
+  }
   try {
-    await createUpdateCharacterSchema.parseAsync(req.body);
+    const character = await CharacterFetcher.getCharacterById(req.body.characterId);
+    const messageOptions = new CharacterPost(character).createMessageOptions({
+      to: "message",
+      embedContent: req.body.message,
+    });
+    const message = await channel.send(messageOptions);
+    message.author.id = req.body.userId;
+    const post = await PostFetcher.createPost(message);
+    return res.status(200).send(post);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: "Internal server error" });
-    }
+    console.log(error);
+    return res.status(500).send(error);
   }
 });
 
