@@ -7,7 +7,6 @@ import type {
 } from "discord.js";
 import { DiscordAPIError } from "discord.js";
 import { ClientResponseError } from "pocketbase";
-import { inspect } from "util";
 import { ZodError } from "zod";
 
 import deleteDiscordMessage from "./deleteDiscordMessage";
@@ -23,7 +22,7 @@ export default function handleError(
     | StringSelectMenuInteraction,
   error: unknown
 ): void {
-  console.error(inspect(error, false, null, true));
+  console.error(error);
   let errorMessage = "Ocorreu um erro ao executar essa ação.";
   if (error instanceof DiscordAPIError) {
     return;
@@ -47,10 +46,6 @@ export default function handleError(
 
   if (error instanceof BotError) {
     errorMessage = error.message;
-  }
-
-  if (error instanceof DiscordAPIError) {
-    return;
   }
 
   !(error instanceof CombatError) &&
