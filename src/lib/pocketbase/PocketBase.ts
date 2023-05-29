@@ -47,9 +47,12 @@ export default class PocketBase {
     record: Pick<DBRecord, "id" | "collectionId" | "collectionName">;
     thumb?: boolean;
   }): string {
-    return pb.getFileUrl(record, fileName, {
-      thumb: thumb ? "512x512" : undefined,
-    });
+    const url = new URL(process.env.POCKETBASE_IMAGE_URL ?? "");
+    url.pathname = `/api/files/${record.collectionName}/${record.id}/${fileName}`;
+    if (thumb) {
+      url.searchParams.set("thumb", "512x512");
+    }
+    return url.toString();
   }
 
   public static getEntityById<T extends Collection>({
