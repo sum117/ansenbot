@@ -13,6 +13,12 @@ export default class PostFetcher {
       filter: [`messageId="${messageId}"`, {}],
     });
   }
+  public static getPostById(postId: string): Promise<Post> {
+    return PocketBase.getEntityById<Post>({
+      entityType: "posts",
+      id: postId,
+    });
+  }
 
   public static async getLatestPostByCharacterId(characterId: string): Promise<Post> {
     const character = await PocketBase.getFirstListEntity<Character>({

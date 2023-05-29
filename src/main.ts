@@ -2,7 +2,7 @@ import "dotenv/config";
 
 import { dirname, importx } from "@discordx/importer";
 import type { Interaction } from "discord.js";
-import { IntentsBitField, Options } from "discord.js";
+import { IntentsBitField } from "discord.js";
 import { Client } from "discordx";
 import EventSource from "eventsource";
 
@@ -27,7 +27,6 @@ export const bot = new Client({
   simpleCommand: {
     prefix: "!",
   },
-  makeCache: Options.cacheEverything(),
 });
 
 bot.once("ready", async () => {

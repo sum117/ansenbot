@@ -21,7 +21,7 @@ import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
 import { EffectFetcher } from "../lib/pocketbase/EffectFetcher";
 import PocketBase from "../lib/pocketbase/PocketBase";
 import PostFetcher from "../lib/pocketbase/PostFetcher";
-import type { CharacterBody, Skills, Status } from "../types/Character";
+import type { Character, CharacterBody, Skills, Status } from "../types/Character";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import equalityPercentage from "../utils/equalityPercentage";
 import { BotError } from "../utils/Errors";
@@ -72,7 +72,10 @@ export class OnRoleplayMessage {
       }
       deleteDiscordMessage(message, 1000);
 
-      const similarMessage = await this.checkSimilarityFromPreviousMessages(message);
+      const similarMessage = await this.checkSimilarityFromPreviousMessages(
+        message,
+        currentCharacter
+      );
       if (similarMessage) {
         await this.handleSimilarMessage(similarMessage, message, messageOptions);
         return;
@@ -289,23 +292,19 @@ export class OnRoleplayMessage {
     return { message: warningMessage, updatedStatus: status };
   }
 
-  private async checkSimilarityFromPreviousMessages(message: Message) {
+  private async checkSimilarityFromPreviousMessages(message: Message, character: Character) {
+    const lastPostId = character.posts.at(-1);
+    if (!lastPostId) {
+      return;
+    }
     if (!message.inGuild()) {
       throw new BotError("A mensagem não está dentro de Ansenfall.");
     }
-    const lastMessages = await message.channel.messages.fetch({ limit: 10 });
-    return lastMessages.find((lastMessage) => {
-      const prevCharacter = lastMessage.embeds[0]?.title;
-      const prevContent = lastMessage.embeds[0]?.description;
-
-      if (!prevContent || !prevCharacter) {
-        return false;
-      }
-      const equality = equalityPercentage(prevContent, message.content);
-      if (equality > 80) {
-        return true;
-      }
-    });
+    const lastPost = await PostFetcher.getPostById(lastPostId);
+    const equality = equalityPercentage(lastPost.content, message.content);
+    if (equality > 80) {
+      return message.channel.messages.fetch(lastPost.messageId);
+    }
   }
 
   private isValidRoleplayMessage(message: Message): boolean {

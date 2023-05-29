@@ -83,7 +83,6 @@ export class CharacterTop {
       topString.push(chunk);
     });
     const topTable = table(topString, { align: ["l", "l", "l", "r"], hsep: "ㅤㅤ" });
-    console.log(topTable);
     const embed = new MultiForm({
       controller: true,
       controlFields: [
