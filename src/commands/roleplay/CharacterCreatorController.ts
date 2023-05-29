@@ -32,7 +32,6 @@ import { createUpdateCharacterSchema } from "../../schemas/characterSchema";
 import type { Character, CreateUpdateCharacter, Faction, Race, Spec } from "../../types/Character";
 import { BotError, PocketBaseError } from "../../utils/Errors";
 import getCombinedImageUrl from "../../utils/getCombinedImageUrl";
-import getPocketbaseImageUrl from "../../utils/getPocketbaseImageUrl";
 import handleError from "../../utils/handleError";
 import numberInRange from "../../utils/numberInRange";
 
@@ -374,7 +373,10 @@ export class CharacterCreatorController {
     firstEntity: Race | Faction | Spec,
     secondEntity: Race | Faction | Spec
   ): [string, string] {
-    return [getPocketbaseImageUrl(firstEntity), getPocketbaseImageUrl(secondEntity)];
+    return [
+      PocketBase.getImageUrl({ record: firstEntity, fileName: firstEntity.image }),
+      PocketBase.getImageUrl({ record: secondEntity, fileName: secondEntity.image }),
+    ];
   }
 
   private async getCreatorInstance(

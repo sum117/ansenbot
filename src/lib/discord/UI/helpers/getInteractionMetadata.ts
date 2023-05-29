@@ -3,7 +3,7 @@ import mustache from "mustache";
 
 import type { Character } from "../../../../types/Character";
 import getCombinedImageUrl from "../../../../utils/getCombinedImageUrl";
-import getPocketbaseImageUrl from "../../../../utils/getPocketbaseImageUrl";
+import PocketBase from "../../../pocketbase/PocketBase";
 import getCharEffects from "./getCharEffects";
 import getStatusBars from "./getStatusBars";
 
@@ -25,8 +25,8 @@ export default async function getInteractionMetadata(
   const render = (template: string) => mustache.render(template, view);
 
   const [attackerImage, targetImage] = [
-    getPocketbaseImageUrl(agent),
-    getPocketbaseImageUrl(target),
+    PocketBase.getImageUrl({ record: agent, fileName: agent.image }),
+    PocketBase.getImageUrl({ record: target, fileName: target.image }),
   ];
   const imageUrl = getCombinedImageUrl(targetImage, attackerImage);
   const [agentEffects, targetEffects] = await Promise.all([

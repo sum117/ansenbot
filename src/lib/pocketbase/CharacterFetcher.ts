@@ -26,7 +26,22 @@ export default class CharacterFetcher {
 
     return new Date(response.created);
   }
-
+  public static getCharacterTop({
+    page,
+    type = "level",
+  }: {
+    type: "level" | "posts";
+    page: number;
+  }): Promise<ListResult<Pick<Character, "name" | "posts" | "level" | "image" | "id">>> {
+    return PocketBase.getEntitiesByFilter<Character>({
+      entityType: "characters",
+      filter: [
+        page,
+        24,
+        { sort: `-${type}`, fields: "name,posts,level,image,id", filter: "isNPC=false" },
+      ],
+    });
+  }
   public static getAllCharacters({
     filter,
   }: {

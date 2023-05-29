@@ -40,6 +40,7 @@
     "pocketbase": "^0.15.0",
     "sharp": "^0.32.1",
     "string-progressbar": "^1.0.4",
+    "text-table": "^0.2.0",
     "ytdl-core": "github:milanbabiclibrafire/node-ytdl-core",
     "zod": "^3.21.4"
   },
@@ -59,6 +60,7 @@
     "@types/mustache": "^4.2.2",
     "@types/node": "^20.2.5",
     "@types/prettier": "^2.7.2",
+    "@types/text-table": "^0.2.2",
     "@typescript-eslint/eslint-plugin": "^5.59.7",
     "@typescript-eslint/parser": "^5.59.7",
     "eslint": "^8.41.0",

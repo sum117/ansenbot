@@ -6,6 +6,7 @@ import { defaultZodString } from "./utiltitySchemas";
 
 const createUpdateCharacterSchema = z.object(
   {
+    isNPC: z.boolean().optional(),
     name: z
       .string({
         required_error: "Você deve incluir o nome do personagem.",

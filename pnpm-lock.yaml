@@ -76,6 +76,9 @@ dependencies:
   string-progressbar:
     specifier: ^1.0.4
     version: 1.0.4
+  text-table:
+    specifier: ^0.2.0
+    version: 0.2.0
   ytdl-core:
     specifier: github:milanbabiclibrafire/node-ytdl-core
     version: github.com/milanbabiclibrafire/node-ytdl-core/e7e68b0f637e2c177faade9fa027b4e3aad232e5
@@ -129,6 +132,9 @@ devDependencies:
   '@types/prettier':
     specifier: ^2.7.2
     version: 2.7.2
+  '@types/text-table':
+    specifier: ^0.2.2
+    version: 0.2.2
   '@typescript-eslint/eslint-plugin':
     specifier: ^5.59.7
     version: 5.59.7(@typescript-eslint/parser@5.59.7)(eslint@8.41.0)(typescript@5.0.4)
@@ -1027,6 +1033,10 @@ packages:
     dependencies:
       '@types/mime': 3.0.1
       '@types/node': 20.2.5
+    dev: true
+
+  /@types/text-table@0.2.2:
+    resolution: {integrity: sha512-dGoI5Af7To0R2XE8wJuc6vwlavWARsCh3UKJPjWs1YEqGUqfgBI/j/4GX0yf19/DsDPPf0YAXWAp8psNeIehLg==}
     dev: true
 
   /@types/ws@8.5.4:
@@ -4580,7 +4590,6 @@ packages:
 
   /text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
-    dev: true
 
   /through2@4.0.2:
     resolution: {integrity: sha512-iOqSav00cVxEEICeD7TjLB1sueEL+81Wpzp2bY17uZjZN0pWZPuo4suZ/61VujxmqSGFfgOcNuTZ85QJwNZQpw==}
