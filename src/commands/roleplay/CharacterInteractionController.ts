@@ -487,7 +487,7 @@ function DeleteAfter({ deleteAgentPanel }: { deleteAgentPanel?: boolean } = {}) 
         }
       }
       await originalMethod.call(this, interaction, args);
-      deleteDiscordMessage(interaction.message, 0);
+      await deleteDiscordMessage(interaction.message, 0);
       await interaction.deleteReply().catch(() => null);
     };
 

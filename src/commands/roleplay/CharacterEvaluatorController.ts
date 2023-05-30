@@ -100,7 +100,7 @@ export class CharacterEvaluatorController {
         ),
       });
       await interaction.deleteReply().catch(() => null);
-      deleteDiscordMessage(this.interaction.message, 0);
+      await deleteDiscordMessage(this.interaction.message, 0);
     } catch (error) {
       handleError(interaction, error);
     }
@@ -136,7 +136,7 @@ export class CharacterEvaluatorController {
       mustache.render("Personagem de {{{owner}}} aprovado por {{{staff}}}", view)
     );
     await this.interaction.deleteReply().catch(() => null);
-    deleteDiscordMessage(this.interaction.message, 0);
+    await deleteDiscordMessage(this.interaction.message, 0);
     await approvedCharacterChannel.send({
       content: mustache.render("||{{{owner}}} {{{staff}}}||", view),
       embeds: [approvedCharacterEmbed],

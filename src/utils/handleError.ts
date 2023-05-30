@@ -51,8 +51,8 @@ export default function handleError(
   !(error instanceof CombatError) &&
     interaction.channel
       ?.send(errorMessage)
-      .then((message) => {
-        deleteDiscordMessage(message, 5000);
+      .then(async (message) => {
+        await deleteDiscordMessage(message, 5000);
       })
       .catch(() => null);
 }

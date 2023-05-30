@@ -109,7 +109,7 @@ export class OnImageGenerationRequest {
 
     const trackedMessage = this.pendingUserImageRequests.get(currentMessage.author.id)?.message;
     if (trackedMessage) {
-      deleteDiscordMessage(trackedMessage, 0);
+      await deleteDiscordMessage(trackedMessage, 0);
     }
 
     this.pendingUserImageRequests.delete(currentMessage.author.id);
