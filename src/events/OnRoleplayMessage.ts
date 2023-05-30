@@ -49,7 +49,9 @@ export class OnRoleplayMessage {
         return;
       }
 
-      const roleplayData = await getRoleplayDataFromUserId(message.author.id).catch(() => null);
+      const roleplayData = await getRoleplayDataFromUserId(message.author.id).catch(() => {
+        return null;
+      });
 
       if (!roleplayData) {
         return;
@@ -80,6 +82,7 @@ export class OnRoleplayMessage {
         return;
       }
 
+      void deleteDiscordMessage(message, 1000);
       await Promise.all([
         this.processExperienceGain(view, message, characterManager),
         this.applyPassiveStatusLoss(view, message, characterManager, status, skills),
@@ -88,7 +91,6 @@ export class OnRoleplayMessage {
       postMessage.author.id = message.author.id;
       postMessage.content = message.content;
       await PostFetcher.createPost(postMessage);
-      void deleteDiscordMessage(message, 1000);
     } catch (error) {
       handleError(message, error);
     }
@@ -303,7 +305,9 @@ export class OnRoleplayMessage {
     const lastPost = await PostFetcher.getPostById(lastPostId);
     const equality = equalityPercentage(lastPost.content, message.content);
     if (equality > 80) {
-      return message.channel.messages.fetch(lastPost.messageId);
+      return message.channel.messages.fetch(lastPost.messageId).catch((error) => {
+        console.error(error);
+      });
     }
   }
 

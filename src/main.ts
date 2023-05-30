@@ -64,7 +64,7 @@ async function run() {
   }
   await bot.login(process.env.DISCORD_BOT_TOKEN);
 }
+run();
 server.listen(8091, () => {
   console.log("Server started");
 });
-run();
