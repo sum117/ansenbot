@@ -25,8 +25,14 @@ export default async function getInteractionMetadata(
   const render = (template: string) => mustache.render(template, view);
 
   const [attackerImage, targetImage] = [
-    PocketBase.getImageUrl({ record: agent, fileName: agent.image }),
-    PocketBase.getImageUrl({ record: target, fileName: target.image }),
+    PocketBase.getImageUrl({ record: agent, fileName: agent.image }).replace(
+      "https://pocketbase.sumserver.xyz/api/files/",
+      ""
+    ),
+    PocketBase.getImageUrl({ record: target, fileName: target.image }).replace(
+      "https://pocketbase.sumserver.xyz/api/files/",
+      ""
+    ),
   ];
   const imageUrl = getCombinedImageUrl(targetImage, attackerImage);
   const [agentEffects, targetEffects] = await Promise.all([
