@@ -45,7 +45,7 @@ export class OnRoleplayMessage {
         message.content.startsWith("))");
 
       if (isOffTopic) {
-        await deleteDiscordMessage(message, 60_000);
+        void deleteDiscordMessage(message, 60_000);
         return;
       }
 
@@ -76,7 +76,7 @@ export class OnRoleplayMessage {
       );
       if (similarMessage) {
         await this.handleSimilarMessage(similarMessage, message, messageOptions);
-        await deleteDiscordMessage(message, 1000);
+        void deleteDiscordMessage(message, 1000);
         return;
       }
 
@@ -88,7 +88,7 @@ export class OnRoleplayMessage {
       postMessage.author.id = message.author.id;
       postMessage.content = message.content;
       await PostFetcher.createPost(postMessage);
-      await deleteDiscordMessage(message, 1000);
+      void deleteDiscordMessage(message, 1000);
     } catch (error) {
       handleError(message, error);
     }
