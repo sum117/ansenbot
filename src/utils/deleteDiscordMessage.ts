@@ -1,7 +1,7 @@
 import type { Message } from "discord.js";
 
 export default function deleteDiscordMessage(message: Message, timeout: number): Promise<void> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       message
         .delete()
@@ -9,7 +9,8 @@ export default function deleteDiscordMessage(message: Message, timeout: number):
           resolve();
         })
         .catch((error) => {
-          reject("Não foi possível deletar a mensagem: " + error);
+          console.error(error);
+          resolve();
         });
     }, timeout);
   });
