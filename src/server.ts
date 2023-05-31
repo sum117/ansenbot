@@ -11,6 +11,7 @@ const server = express();
 
 server.use(cors());
 server.use(express.json());
+
 server.post("/post", async (req: express.Request, res: express.Response) => {
   const channel = await bot.channels.fetch(req.body.channelId);
   if (channel?.type !== ChannelType.GuildText) {
