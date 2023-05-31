@@ -25,10 +25,10 @@ server.post("/post", async (req: express.Request, res: express.Response) => {
     const message = await channel.send(messageOptions);
     message.author.id = req.body.userId;
     const post = await PostFetcher.createPost(message);
-    return res.status(200).send(post);
+    return res.status(200).send(JSON.stringify(post));
   } catch (error) {
     console.log(error);
-    return res.status(500).send(error);
+    return res.status(500).send(JSON.stringify(error));
   }
 });
 
