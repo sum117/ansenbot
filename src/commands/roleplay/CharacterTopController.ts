@@ -13,7 +13,7 @@ export const CHARACTER_TOP_ID_REGEX =
   /character:top:(?<type>level|posts):(?<page>\d+):(?<direction>next|previous)/;
 
 @Discord()
-export class CharacterTop {
+export class CharacterTopController {
   @Slash({ name: "character-top", description: "Mostra o top de personagens do servidor." })
   async main(interaction: ChatInputCommandInteraction): Promise<void> {
     try {

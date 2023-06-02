@@ -211,7 +211,7 @@ export const BATTLE_INTERACTION_ID_REGEX =
   /battle:(?<action>\w+):(?<kind>\w+):(?<agentId>\d+):(?<targetId>\d+)/;
 
 export const INVENTORY_REGEX =
-  /character:(inventory|item):(browse|use|discard|open|equip|info):(\w+):\d+(:\d+:(previous|next|null))?/;
+  /character:(inventory|item):(browse|use|discard|open|equip|info|give):(\w+):\d+(:\d+:(previous|next|null))?/;
 
 export const CHARACTER_LEVELING_REGEX =
   /^character:leveling:(?<playerId>\d+):((?<skillId>\w+):)?(?<action>previous|next|level-one-time|level-ten-times|open)$/;

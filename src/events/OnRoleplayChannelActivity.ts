@@ -11,19 +11,19 @@ import { ChannelType } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On, Once } from "discordx";
 
-import config from "../../../config.json" assert { type: "json" };
-import channelPlaceholderDismissButton from "../../lib/discord/UI/channel/channelPlaceholderDismissButton";
-import { channelPlaceHolderEmbed } from "../../lib/discord/UI/channel/channelPlaceholderEmbed";
-import { ChannelFetcher } from "../../lib/pocketbase/ChannelFetcher";
-import type { Channel } from "../../types/Channel";
-import deleteDiscordMessage from "../../utils/deleteDiscordMessage";
-import handleError from "../../utils/handleError";
+import config from "../../config.json" assert { type: "json" };
+import channelPlaceholderDismissButton from "../lib/discord/UI/channel/channelPlaceholderDismissButton";
+import { channelPlaceHolderEmbed } from "../lib/discord/UI/channel/channelPlaceholderEmbed";
+import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
+import type { Channel } from "../types/Channel";
+import deleteDiscordMessage from "../utils/deleteDiscordMessage";
+import handleError from "../utils/handleError";
 
 @Discord()
 export class OnRoleplayChannelActivity {
   private _presentationMessages: Map<Snowflake, Channel> = new Map();
-  private LoopInterval = 5 * 60 * 1000;
-  private MaxInactiveTime = 60 * 60 * 1000;
+  private LoopInterval = 2 * 60 * 60 * 1000;
+  private MaxInactiveTime = 4 * 60 * 60 * 1000;
 
   @Once({ event: "ready" })
   main([client]: ArgsOf<"ready">): void {

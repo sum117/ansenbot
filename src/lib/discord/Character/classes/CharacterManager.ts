@@ -26,13 +26,22 @@ import { BotError } from "../../../../utils/Errors";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import removePocketbaseConstants from "../../../../utils/removePocketbaseConstants";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
+import { ItemFetcher } from "../../../pocketbase/ItemFetcher";
 import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
 import PocketBase from "../../../pocketbase/PocketBase";
 import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
 import AnsenfallLeveling from "../helpers/ansenfallLeveling";
 import getMaxStatus from "../helpers/getMaxStatus";
 
+type InventoryKeys = "consumables" | "equipments" | "spells";
+
 export class CharacterManager {
+  private readonly itemRefExpandKeys = {
+    spells: "spells(item)",
+    equipments: "equipments(item)",
+    consumables: "consumables(item)",
+  } as const;
+
   public constructor(public character: Character) {}
 
   async use(consumableId: Item["id"]): Promise<string> {
@@ -61,11 +70,100 @@ export class CharacterManager {
     );
   }
 
+  async pay(amount: number, targetManager: CharacterManager): Promise<string> {
+    const characterStatus = await this.getStatuses(this.character.status);
+    const targetCharacterStatus = await this.getStatuses(targetManager.character.status);
+    if (characterStatus.spirit < amount) {
+      throw new BotError(
+        mustache.render(
+          "Você não possui espírito suficiente para pagar {{{amount}}} de espírito.",
+          { amount }
+        )
+      );
+    }
+    if (targetManager.character.id === this.character.id) {
+      throw new BotError("Você não pode pagar a si mesmo.");
+    }
+
+    characterStatus.spirit -= amount;
+    targetCharacterStatus.spirit += amount;
+
+    await Promise.all([
+      this.setStatus(characterStatus),
+      targetManager.setStatus(targetCharacterStatus),
+    ]);
+
+    return mustache.render(
+      "✅ {{{character}}} pagou **{{{amount}}}** lascas espirituais para {{{targetCharacter}}}.",
+      {
+        character: this.character.name,
+        amount,
+        targetCharacter: targetManager.character.name,
+      }
+    );
+  }
+  async give(
+    itemId: Item["id"],
+    quantity: number,
+    targetManager: CharacterManager
+  ): Promise<string> {
+    if (quantity <= 0) {
+      throw new BotError("Você não pode dar uma quantidade menor ou igual a 0.");
+    }
+    const item = this.getParsedItem(itemId);
+    if (item.quantity < quantity || item.quantity <= 0) {
+      throw new BotError(
+        mustache.render(
+          "Você não possui a quantidade ({{{quantity}}}) especificada de {{{itemName}}} para dar.",
+          { quantity, itemName: item.expand.item.name }
+        )
+      );
+    }
+    item.quantity -= quantity;
+
+    const targetInventory = targetManager.getInventory();
+    const itemRef = await ItemFetcher.getItemWithRole(item.item);
+    const targetItem = this.findInventoryItemRef(targetInventory, item);
+
+    if (!targetItem) {
+      await this.addMultipleInventoryItems(quantity, targetManager, itemRef);
+    } else {
+      targetItem.quantity += quantity;
+      await targetManager.setInventoryItem(targetItem);
+    }
+
+    await this.setInventoryItem(item);
+
+    return mustache.render(
+      "✅ {{{character}}} deu **{{{quantity}}}** de {{{item}}} para {{{targetCharacter}}}.",
+      {
+        character: this.character.name,
+        quantity,
+        item: item.expand.item.name,
+        targetCharacter: targetManager.character.name,
+      }
+    );
+  }
+
+  private async addMultipleInventoryItems(
+    quantity: number,
+    targetManager: CharacterManager,
+    itemRef: ItemWithRole
+  ) {
+    await new Promise((resolve, reject) => {
+      for (let i = 0; i < quantity; i++) {
+        targetManager
+          .addInventoryItem(itemRef)
+          .then(() => resolve(true))
+          .catch((error) => {
+            reject(error);
+          });
+      }
+    });
+  }
+
   async discard(itemId: Item["id"]): Promise<string> {
-    const item = consumableSchema
-      .or(equipmentSchema)
-      .or(spellSchema)
-      .parse(await this.getInventoryItem(itemId));
+    const item = this.getParsedItem(itemId);
     item.quantity -= 1;
     await this.setInventoryItem(item);
     return mustache.render("{{{author}}}, {{{character}}} descartou 1 de {{{item}}}.", {
@@ -81,18 +179,6 @@ export class CharacterManager {
     characterStatus.hunger -= hours * 10;
     characterStatus.void += hours * 10;
     characterStatus.sleep += hours;
-    await this.setStatus(characterStatus);
-  }
-
-  async heal(amount: number): Promise<void> {
-    const characterStatus = await this.getStatuses(this.character.status);
-    characterStatus.health += amount;
-    await this.setStatus(characterStatus);
-  }
-
-  async takeDamage(damage: number): Promise<void> {
-    const characterStatus = await this.getStatuses(this.character.status);
-    characterStatus.health -= damage;
     await this.setStatus(characterStatus);
   }
 
@@ -229,36 +315,45 @@ export class CharacterManager {
     });
   }
 
+  private findInventoryItemRef(targetInventory: Inventory, item: Item) {
+    const inventory = targetInventory.expand[item.collectionName as InventoryKeys];
+    if (!inventory) {
+      return;
+    }
+    for (const itemToTrade of inventory) {
+      if (itemToTrade.item === item.item) {
+        return itemToTrade;
+      }
+    }
+  }
+
   public async addInventoryItem(itemRef: ItemWithRole): Promise<true> {
     const inventory = this.getInventory();
     const itemType = (itemRef.type + "s") as "consumables" | "equipments" | "spells";
-    const map = {
-      spells: "spells(item)",
-      equipments: "equipments(item)",
-      consumables: "consumables(item)",
-    } as const;
 
-    const item = itemRef.expand?.[map[itemType]].filter((item) => item.id === item.id)[0];
+    const item = itemRef.expand?.[this.itemRefExpandKeys[itemType]].find(
+      (item) => item.item === itemRef.id
+    );
     if (!item) {
-      throw new BotError("Item não encontrado no inventário.");
+      throw new BotError("Item não encontrado no sistema.");
     }
 
-    const isAlreadyInInventory = inventory[itemType].includes(itemRef.id);
+    const isAlreadyInInventory = inventory[itemType].includes(item.id);
     if (isAlreadyInInventory) {
       item.quantity += 1;
       await this.setInventoryItem(item);
       return true;
     }
-
+    const newItem = await ItemFetcher.createItemClone({ ...item, quantity: 1, id: "" });
     switch (itemRef.type) {
       case "consumable":
-        inventory.consumables.push(item.id);
+        inventory.consumables.push(newItem.id);
         break;
       case "equipment":
-        inventory.equipments.push(item.id);
+        inventory.equipments.push(newItem.id);
         break;
       case "spell":
-        inventory.spells.push(item.id);
+        inventory.spells.push(newItem.id);
         break;
     }
 
@@ -408,5 +503,12 @@ export class CharacterManager {
         `Você não possui os requisitos necessários para equipar este item. Requisitos: ${missingRequirementsString}`
       );
     }
+  }
+
+  private getParsedItem(itemId: Item["id"]) {
+    return consumableSchema
+      .or(equipmentSchema)
+      .or(spellSchema)
+      .parse(this.getInventoryItem(itemId));
   }
 }
