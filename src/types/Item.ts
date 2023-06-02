@@ -6,6 +6,7 @@ import type {
   consumableSchema,
   equipmentSchema,
   itemSchema,
+  recipeSchema,
   spellSchema,
 } from "../schemas/characterSchema";
 import type { CreateData } from "./PocketBaseCRUD";
@@ -13,7 +14,7 @@ import type { CreateData } from "./PocketBaseCRUD";
 export type ConsumableItem = z.infer<typeof consumableSchema>;
 export type EquipmentItem = z.infer<typeof equipmentSchema>;
 export type SpellItem = z.infer<typeof spellSchema>;
-
+export type Recipe = z.infer<typeof recipeSchema>;
 export type BaseItem = z.infer<typeof itemSchema>;
 
 export type ItemCollection = `${"consumables" | "equipments" | "spells"}(item)`;

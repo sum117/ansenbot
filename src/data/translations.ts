@@ -20,6 +20,12 @@ export const statusDictionary = {
   sleep: "<:sle:1107400296205930578> Sono",
   void: "<:ve:1107402190001274901> Vazio",
   despair: "<:de:1107400304078639165> Desespero",
+  herbs: "🌿 Ervas",
+  blood: "🩸 Sangue",
+  salt: "🧂 Sal",
+  sugar: "🍬 Açúcar",
+  meat: "🍖 Carne",
+  vegetables: "🫑 Vegetais",
 } as const;
 
 export const statesDictionary = {

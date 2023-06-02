@@ -53,4 +53,5 @@ export type DeleteEntityParams = DeleteEntityParamsWithId | DeleteEntityParamsWi
 export type GetAllEntitiesParams = {
   entityType: keyof typeof COLLECTIONS;
   page?: number;
+  quantity?: number;
 };
