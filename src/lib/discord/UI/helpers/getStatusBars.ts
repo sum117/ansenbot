@@ -16,7 +16,7 @@ function createStatusBar(
   color: string
 ): string {
   return `${emoji} ${progressBar
-    .filledBar(maxStatus, currentStatus, 4, EMPTY_BAR_EMOJI, color)
+    .filledBar(maxStatus, Math.min(maxStatus, currentStatus), 4, EMPTY_BAR_EMOJI, color)
     .shift()} ${Math.floor(currentStatus)}/${Math.floor(maxStatus)}`;
 }
 

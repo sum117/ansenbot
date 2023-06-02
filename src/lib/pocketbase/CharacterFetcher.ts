@@ -3,6 +3,7 @@ import type { Snowflake } from "discord.js";
 import type { ListResult, RecordFullListQueryParams } from "pocketbase";
 
 import { RELATION_FIELD_NAMES, STATUS_GAIN_PER_LEVEL } from "../../data/constants";
+import { craftingMaterialsSchema } from "../../schemas/characterSchema";
 import type { Character, CharacterBody, Inventory, Skills, Status } from "../../types/Character";
 import type { CreateData, PocketBaseConstants } from "../../types/PocketBaseCRUD";
 import { PocketBaseError } from "../../utils/Errors";
@@ -174,6 +175,7 @@ export default class CharacterFetcher {
       startingSkills.items[1]
     );
 
+    const baseMaterials = craftingMaterialsSchema.parse({});
     const [baseSkills, baseStatus, body, inventory, player] = await Promise.all([
       PocketBase.createEntity<Skills>({
         entityData: skills,
@@ -191,6 +193,7 @@ export default class CharacterFetcher {
           sleep: 100,
           effects: [],
           immune: [],
+          ...baseMaterials,
         },
         entityType: "status",
       }),

@@ -23,8 +23,7 @@ import type { BodyPart } from "../../../../types/Combat";
 import type { EquipmentItem, Item, ItemWithRole, SpellItem } from "../../../../types/Item";
 import type { Properties } from "../../../../types/Utils";
 import { BotError } from "../../../../utils/Errors";
-import getSafeEntries from "../../../../utils/getSafeEntries";
-import removePocketbaseConstants from "../../../../utils/removePocketbaseConstants";
+import getSafeKeys from "../../../../utils/getSafeKeys";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import { ItemFetcher } from "../../../pocketbase/ItemFetcher";
 import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
@@ -269,18 +268,16 @@ export class CharacterManager {
 
   async setStatus(status: Status): Promise<Status> {
     const maxStatuses = getMaxStatus(this.character.expand.skills);
-    for (const [key, value] of getSafeEntries(removePocketbaseConstants(status))) {
-      if (typeof value !== "number" || key === "immune" || key === "effects" || key === "spirit") {
-        continue;
-      }
 
-      const skill = STATUS_SKILLS_RELATION[key];
+    for (const statusSkillRelKey of getSafeKeys(STATUS_SKILLS_RELATION)) {
+      const skill = STATUS_SKILLS_RELATION[statusSkillRelKey];
       const maxStatus = maxStatuses[skill];
-
+      const value = status[statusSkillRelKey];
       if (value > maxStatus) {
-        status[key] = maxStatus;
+        status[statusSkillRelKey] = maxStatus;
       }
     }
+
     const updatedStatus = PocketBase.updateEntity<Status>({
       entityType: "status",
       entityData: status,

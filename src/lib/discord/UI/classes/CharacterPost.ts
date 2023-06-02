@@ -91,6 +91,11 @@ export default class CharacterPost {
           .setLabel("Skills")
           .setEmoji("📚")
           .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+          .setCustomId(`character:crafting:open:null:${this.character.playerId}:1`)
+          .setLabel("Produção")
+          .setEmoji("🔨")
+          .setStyle(ButtonStyle.Primary),
       ]),
     ];
 

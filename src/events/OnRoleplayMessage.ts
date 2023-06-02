@@ -2,10 +2,12 @@ import type { BaseMessageOptions, ButtonInteraction, Message } from "discord.js"
 import { AttachmentBuilder, ChannelType, EmbedBuilder, userMention } from "discord.js";
 import type { ArgsOf } from "discordx";
 import { ButtonComponent, Discord, On } from "discordx";
+import random from "lodash.random";
 import mustache from "mustache";
 
 import {
   ENDURANCE_GAIN_PER_SAFE_TICK_MULTIPLIER,
+  MATERIAL_GAIN_PER_TICK_RANGE,
   SPIRIT_GAIN_PER_TICK,
   STATUS_SKILLS_RELATION,
 } from "../data/constants";
@@ -21,11 +23,13 @@ import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
 import { EffectFetcher } from "../lib/pocketbase/EffectFetcher";
 import PocketBase from "../lib/pocketbase/PocketBase";
 import PostFetcher from "../lib/pocketbase/PostFetcher";
+import { craftingMaterialsSchema } from "../schemas/characterSchema";
 import type { Character, CharacterBody, Skills, Status } from "../types/Character";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import equalityPercentage from "../utils/equalityPercentage";
 import { BotError } from "../utils/Errors";
 import getSafeEntries from "../utils/getSafeEntries";
+import getSafeKeys from "../utils/getSafeKeys";
 import handleError from "../utils/handleError";
 
 @Discord()
@@ -85,7 +89,7 @@ export class OnRoleplayMessage {
       void deleteDiscordMessage(message, 1000);
       await Promise.all([
         this.processExperienceGain(view, message, characterManager),
-        this.applyPassiveStatusLoss(view, message, characterManager, status, skills),
+        this.applyPassiveStatusGainLoss(view, message, characterManager, status, skills),
       ]);
       const postMessage = await message.channel.send(messageOptions);
       postMessage.author.id = message.author.id;
@@ -196,7 +200,7 @@ export class OnRoleplayMessage {
     }
   }
 
-  private async applyPassiveStatusLoss(
+  private async applyPassiveStatusGainLoss(
     view: Record<string, string | number>,
     message: Message,
     characterManager: CharacterManager,
@@ -223,6 +227,10 @@ export class OnRoleplayMessage {
       status.effects = [];
     }
     if (hasSpirit) {
+      const resources = getSafeKeys(craftingMaterialsSchema.keyof().enum);
+      const randomResource = resources[random(0, resources.length - 1)];
+      const randomAmount = random(...MATERIAL_GAIN_PER_TICK_RANGE);
+      status[randomResource] += randomAmount;
       status.spirit += statusTick * SPIRIT_GAIN_PER_TICK;
     }
 

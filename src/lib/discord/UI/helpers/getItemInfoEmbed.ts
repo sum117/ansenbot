@@ -36,7 +36,7 @@ export default function getItemInfoEmbed(
     ];
     const filteredExpanded = expanded.find((item) => itemsList.includes(item.id));
     const fieldInfo: Array<string> = [];
-    const keysBlacklist = ["item", "expand", "isCooked", "isPoisoned", "quantity", "isEquipped"];
+    const keysBlacklist = ["item", "expand", "quantity", "isEquipped"];
     const isBlacklisted = (key: string): key is (typeof keysBlacklist)[number] =>
       keysBlacklist.includes(key);
 
@@ -75,7 +75,6 @@ export default function getItemInfoEmbed(
         }
         fields.push({ name: "Informações", value: fieldInfo.join("\n"), inline: true });
         fields.push({ name: "Quantidade", value: consumable.quantity.toString(), inline: true });
-        fields.push({ name: "Cozido", value: consumable.isCooked ? "Sim" : "Não", inline: true });
 
         break;
       }
