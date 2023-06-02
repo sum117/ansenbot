@@ -15,10 +15,11 @@ import type {
   Spec,
   Status,
 } from "./Character";
-import type { BaseItem, Item } from "./Item";
+import type { BaseItem, Item, Recipe } from "./Item";
 import type { Form } from "./MultiForm";
 
 export type Collection =
+  | Recipe
   | Character
   | Faction
   | Memory

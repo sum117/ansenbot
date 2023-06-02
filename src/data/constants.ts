@@ -3,6 +3,7 @@ import type { StatusBar } from "../types/Character";
 export const SPINNER_EMOJI = "<a:spinner:1094479348037324820>";
 
 export const COLLECTIONS = {
+  recipes: "recipes",
   characters: "characters",
   posts: "posts",
   factions: "factions",
@@ -108,7 +109,17 @@ export const STATUS_NAMES = {
   void: "Vazio",
   stamina: "Energia",
   despair: "Desespero",
+  mana: "Mana",
 } as const;
+
+export const MATERIALS_NAMES = {
+  herbs: "Ervas",
+  blood: "Sangue",
+  salt: "Sal",
+  sugar: "Açúcar",
+  meat: "Carne",
+  vegetables: "Vegetais",
+};
 
 export const ITEM_TYPES_EMOJIS = {
   consumable: "<:consumableemoji:1110956925660692632>",
@@ -194,6 +205,7 @@ export const STATUS_GIVEN_PER_RARITY_RANGE = {
   ssr: [4, 6],
 };
 export const SPIRIT_GAIN_PER_TICK = 125;
+export const MATERIAL_GAIN_PER_TICK_RANGE = [1, 3] as const;
 export const ENDURANCE_GAIN_PER_SAFE_TICK_MULTIPLIER = 2;
 
 export const RARITY_IMAGES = {
@@ -213,5 +225,7 @@ export const BATTLE_INTERACTION_ID_REGEX =
 export const INVENTORY_REGEX =
   /character:(inventory|item):(browse|use|discard|open|equip|info|give):(\w+):\d+(:\d+:(previous|next|null))?/;
 
+export const CRAFTING_REGEX =
+  /character:crafting:(?<action>craft|next|previous|open|info):(?<recipeId>\w+):(?<playerId>\d+):(?<page>(\d+))?/;
 export const CHARACTER_LEVELING_REGEX =
   /^character:leveling:(?<playerId>\d+):((?<skillId>\w+):)?(?<action>previous|next|level-one-time|level-ten-times|open)$/;

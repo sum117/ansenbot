@@ -95,7 +95,7 @@ const createUpdateCharacterSchema = z.object(
       required_error: "Houve um erro ao criar os pontos de habilidade do personagem.",
     }),
     ascendedSkills: z.array(defaultZodString, {
-      required_error: "Houve um erro ao criar as habilidades ascendentes do persongem.",
+      required_error: "Houve um erro ao criar as habilidades ascendentes do personagem.",
     }),
     skillTraits: z.array(
       z.string({
@@ -136,15 +136,45 @@ const itemSchema = baseSchema.extend({
   type: z.enum(["consumable", "spell", "equipment"]),
 });
 
+const consumableTypeSchema = z.enum(["food", "alchemy"]);
+
+const craftingMaterialsSchema = z.object({
+  herbs: z.number().default(0),
+  vegetables: z.number().default(0),
+  meat: z.number().default(0),
+  blood: z.number().default(0),
+  sugar: z.number().default(0),
+  salt: z.number().default(0),
+});
+
+const recipeSchema = baseSchema
+  .extend({
+    item: defaultZodString,
+    type: consumableTypeSchema,
+    hunger: z.number(),
+    health: z.number(),
+    mana: z.number(),
+    sleep: z.number(),
+    stamina: z.number(),
+    void: z.number(),
+    despair: z.number(),
+    cookingLevel: z.number(),
+    alchemyLevel: z.number(),
+    darknessLevel: z.number(),
+    orderLevel: z.number(),
+  })
+  .extend(craftingMaterialsSchema.shape);
+
 const consumableSchema = baseSchema.extend({
   item: defaultZodString,
   quantity: z.number(),
   hunger: z.number(),
   health: z.number(),
+  mana: z.number(),
+  sleep: z.number(),
   stamina: z.number(),
   void: z.number(),
-  isCooked: z.boolean(),
-  isPoisoned: z.boolean(),
+  type: consumableTypeSchema,
   expand: z.object(
     {
       item: itemSchema.extend({
@@ -176,6 +206,7 @@ const statusNameSchema = z.enum([
   "void",
   "despair",
   "spirit",
+  "mana",
 ]);
 
 const spellSchema = baseSchema
@@ -331,18 +362,20 @@ const specSchema = baseSchema.extend({
   description: defaultZodString,
   image: defaultZodString,
 });
-const statusSchema = baseSchema.extend({
-  health: z.number(),
-  stamina: z.number(),
-  spirit: z.number(),
-  hunger: z.number(),
-  mana: z.number(),
-  sleep: z.number(),
-  void: z.number(),
-  despair: z.number(),
-  immune: z.array(defaultZodString),
-  effects: z.array(defaultZodString),
-});
+const statusSchema = baseSchema
+  .extend({
+    health: z.number(),
+    stamina: z.number(),
+    spirit: z.number(),
+    hunger: z.number(),
+    mana: z.number(),
+    sleep: z.number(),
+    void: z.number(),
+    despair: z.number(),
+    immune: z.array(defaultZodString),
+    effects: z.array(defaultZodString),
+  })
+  .extend(craftingMaterialsSchema.shape);
 
 const destinyMaidenSchema = baseSchema.extend({
   name: defaultZodString,
@@ -388,6 +421,7 @@ export {
   beastsSchema,
   bodySchema,
   consumableSchema,
+  craftingMaterialsSchema,
   createUpdateCharacterSchema,
   destinyMaidenSchema,
   effectSchema,
@@ -400,6 +434,7 @@ export {
   playerSchema,
   postSchema,
   raceSchema,
+  recipeSchema,
   skillsSchema,
   specSchema,
   spellSchema,
