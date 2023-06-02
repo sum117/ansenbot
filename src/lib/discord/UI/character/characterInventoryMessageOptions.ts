@@ -79,6 +79,10 @@ export default function characterInventoryMessageOptions({
       .setLabel("Página Anterior")
       .setStyle(ButtonStyle.Secondary),
     new ButtonBuilder()
+      .setLabel("Dar")
+      .setCustomId(`character:inventory:give:${selectedItemId}:${character.playerId}:null:null`)
+      .setStyle(ButtonStyle.Success),
+    new ButtonBuilder()
       .setCustomId(
         `character:inventory:browse:${selectedItemId}:${character.playerId}:${nextPage}:next`
       )

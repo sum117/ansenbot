@@ -13,6 +13,17 @@ import server from "./server";
 
 global.EventSource = EventSource as any;
 
+// For testing purposes.
+// const isBotOwner: GuardFunction<Interaction | Message> = async (
+//   interaction: Message | Interaction,
+//   _client,
+//   next
+// ) => {
+//   if (interaction.member?.user.id === "969062359442280548") {
+//     await next();
+//   }
+// };
+
 export const bot = new Client({
   intents: [
     IntentsBitField.Flags.Guilds,
@@ -22,7 +33,7 @@ export const bot = new Client({
     IntentsBitField.Flags.GuildVoiceStates,
     IntentsBitField.Flags.MessageContent,
   ],
-
+  // guards: [isBotOwner],
   silent: false,
   simpleCommand: {
     prefix: "!",

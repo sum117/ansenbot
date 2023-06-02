@@ -1,5 +1,5 @@
+import type { COLLECTIONS } from "../../data/constants";
 import type {
-  BaseItem,
   EquipmentItem,
   GachaItemBuilderResponse,
   Item,
@@ -41,6 +41,13 @@ export class ItemFetcher {
     return ItemFetcher.getItemWithRole(createdItemRef.id);
   }
 
+  public static createItemClone(data: Item): Promise<Item> {
+    return PocketBase.createEntity<Item>({
+      entityType: data.collectionName as keyof typeof COLLECTIONS,
+      entityData: data,
+    });
+  }
+
   public static isGachaItemBuilderResponse(
     item: Item | CreateData<Item> | GachaItemBuilderResponse
   ): item is GachaItemBuilderResponse {
@@ -63,10 +70,6 @@ export class ItemFetcher {
   }
   public static createSpell<T extends SpellItem>(item: T): Promise<T> {
     return PocketBase.createEntity<T>({ entityType: "spells", entityData: item });
-  }
-
-  public static getItemById<T extends BaseItem>(id: Item["id"]): Promise<T> {
-    return PocketBase.getEntityById<T>({ entityType: "items", id: id });
   }
 
   public static getSpell<T extends SpellItem>(id: SpellItem["id"]): Promise<T> {
