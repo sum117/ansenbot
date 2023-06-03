@@ -74,7 +74,7 @@ export class CharacterManager {
   async craft(recipeId: Recipe["id"]): Promise<string> {
     const recipe = await RecipeFetcher.getRecipeById(recipeId);
     const levels = getRecipeRequiredLevels(recipe);
-
+    const status = this.character.expand.status;
     const missingMaterials: Array<string> = [];
     const missingLevels: Array<string> = [];
     getSafeKeys(levels).forEach((key) => {
@@ -91,7 +91,7 @@ export class CharacterManager {
     });
     getSafeKeys(MATERIALS_NAMES).forEach((key) => {
       const cost = recipe[key];
-      const currency = this.character.expand.status[key];
+      const currency = status[key];
       if (cost > currency) {
         missingMaterials.push(
           mustache.render("**{{{cost}}}** de **{{{material}}}**", {
@@ -100,7 +100,7 @@ export class CharacterManager {
           })
         );
       } else {
-        this.character.expand.status[key] -= cost;
+        status[key] -= cost;
       }
     });
 
@@ -128,6 +128,8 @@ export class CharacterManager {
       }
     );
 
+    await this.setStatus(status);
+
     if (inventoryItem) {
       inventoryItem.quantity += 1;
       await this.setInventoryItem(inventoryItem);
@@ -138,7 +140,6 @@ export class CharacterManager {
     const item = await ItemFetcher.createConsumable({ ...recipe, quantity: 1 });
     inventory.consumables.push(item.id);
     await PocketBase.updateEntity({ entityType: "inventory", entityData: inventory });
-    await this.setStatus(this.character.expand.status);
     return successMessage;
   }
   async pay(amount: number, targetManager: CharacterManager): Promise<string> {
