@@ -138,6 +138,7 @@ export class CharacterManager {
     const item = await ItemFetcher.createConsumable({ ...recipe, quantity: 1 });
     inventory.consumables.push(item.id);
     await PocketBase.updateEntity({ entityType: "inventory", entityData: inventory });
+    await this.setStatus(this.character.expand.status);
     return successMessage;
   }
   async pay(amount: number, targetManager: CharacterManager): Promise<string> {
