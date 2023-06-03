@@ -2,7 +2,7 @@ import { userMention } from "discord.js";
 import mustache from "mustache";
 
 import type { COLLECTIONS } from "../../../../data/constants";
-import { STATUS_SKILLS_RELATION } from "../../../../data/constants";
+import { MATERIALS_NAMES, STATUS_SKILLS_RELATION } from "../../../../data/constants";
 import type { equipmentDictionary } from "../../../../data/translations";
 import { skillsDictionary } from "../../../../data/translations";
 import {
@@ -20,7 +20,7 @@ import type {
   Status,
 } from "../../../../types/Character";
 import type { BodyPart } from "../../../../types/Combat";
-import type { EquipmentItem, Item, ItemWithRole, SpellItem } from "../../../../types/Item";
+import type { EquipmentItem, Item, ItemWithRole, Recipe, SpellItem } from "../../../../types/Item";
 import type { Properties } from "../../../../types/Utils";
 import { BotError } from "../../../../utils/Errors";
 import getSafeKeys from "../../../../utils/getSafeKeys";
@@ -28,9 +28,11 @@ import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 import { ItemFetcher } from "../../../pocketbase/ItemFetcher";
 import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
 import PocketBase from "../../../pocketbase/PocketBase";
+import { RecipeFetcher } from "../../../pocketbase/RecipeFetcher";
 import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
 import AnsenfallLeveling from "../helpers/ansenfallLeveling";
 import getMaxStatus from "../helpers/getMaxStatus";
+import getRecipeRequiredLevels from "../helpers/getRecipeRequiredLevels";
 
 type InventoryKeys = "consumables" | "equipments" | "spells";
 
@@ -69,6 +71,75 @@ export class CharacterManager {
     );
   }
 
+  async craft(recipeId: Recipe["id"]): Promise<string> {
+    const recipe = await RecipeFetcher.getRecipeById(recipeId);
+    const levels = getRecipeRequiredLevels(recipe);
+
+    const missingMaterials: Array<string> = [];
+    const missingLevels: Array<string> = [];
+    getSafeKeys(levels).forEach((key) => {
+      const level = levels[key];
+      const skill = this.character.expand.skills[key];
+      if (level > skill) {
+        missingLevels.push(
+          mustache.render("**{{{level}}}** de **{{{skill}}}**", {
+            level,
+            skill: skillsDictionary[key],
+          })
+        );
+      }
+    });
+    getSafeKeys(MATERIALS_NAMES).forEach((key) => {
+      const cost = recipe[key];
+      const currency = this.character.expand.status[key];
+      if (cost > currency) {
+        missingMaterials.push(
+          mustache.render("**{{{cost}}}** de **{{{material}}}**", {
+            cost,
+            material: MATERIALS_NAMES[key],
+          })
+        );
+      } else {
+        this.character.expand.status[key] -= cost;
+      }
+    });
+
+    let errorMessage = "";
+    if (missingMaterials.length) {
+      errorMessage += mustache.render("Você não possui {{{missingMaterials}}}.\n", {
+        missingMaterials: missingMaterials.join(", "),
+      });
+    }
+    if (missingLevels.length) {
+      errorMessage += mustache.render("Você não possui {{{missingLevels}}}.", {
+        missingLevels: missingLevels.join(", "),
+      });
+    }
+    if (errorMessage) {
+      throw new BotError(errorMessage);
+    }
+    const itemRef = await ItemFetcher.getItemWithRole(recipe.item);
+    const inventoryItem = this.findInventoryItemRef(this.getInventory(), itemRef);
+    const successMessage = mustache.render(
+      "✅ {{{character}}} criou {{{item}}} e adicionou ao seu inventário.",
+      {
+        character: this.character.name,
+        item: itemRef.name,
+      }
+    );
+
+    if (inventoryItem) {
+      inventoryItem.quantity += 1;
+      await this.setInventoryItem(inventoryItem);
+      return successMessage;
+    }
+
+    const inventory = this.getInventory();
+    const item = await ItemFetcher.createConsumable({ ...recipe, quantity: 1 });
+    inventory.consumables.push(item.id);
+    await PocketBase.updateEntity({ entityType: "inventory", entityData: inventory });
+    return successMessage;
+  }
   async pay(amount: number, targetManager: CharacterManager): Promise<string> {
     const characterStatus = await this.getStatuses(this.character.status);
     const targetCharacterStatus = await this.getStatuses(targetManager.character.status);
@@ -152,7 +223,7 @@ export class CharacterManager {
     await new Promise((resolve, reject) => {
       for (let i = 0; i < quantity; i++) {
         targetManager
-          .addInventoryItem(itemRef)
+          .addInventoryItemFromExisting(itemRef)
           .then(() => resolve(true))
           .catch((error) => {
             reject(error);
@@ -312,19 +383,48 @@ export class CharacterManager {
     });
   }
 
-  private findInventoryItemRef(targetInventory: Inventory, item: Item) {
-    const inventory = targetInventory.expand[item.collectionName as InventoryKeys];
-    if (!inventory) {
-      return;
-    }
-    for (const itemToTrade of inventory) {
-      if (itemToTrade.item === item.item) {
-        return itemToTrade;
+  private findInventoryItemRef(targetInventory: Inventory, item: ItemWithRole): Item | undefined;
+  private findInventoryItemRef(targetInventory: Inventory, item: Item): Item | undefined;
+  private findInventoryItemRef(
+    targetInventory: Inventory,
+    item: Item | ItemWithRole
+  ): Item | undefined {
+    const isItemReference = (item: Item | ItemWithRole): item is ItemWithRole => {
+      return item.collectionName === "items";
+    };
+    if (!isItemReference(item)) {
+      const inventory = targetInventory.expand[item.collectionName as InventoryKeys];
+      if (!inventory) {
+        return;
+      }
+      for (const itemToTrade of inventory) {
+        if (itemToTrade.item === item.item) {
+          return itemToTrade;
+        }
+      }
+    } else {
+      const itemType = (item.type + "s") as "consumables" | "equipments" | "spells";
+      const indexKey = this.itemRefExpandKeys[itemType];
+
+      const existingItem = item.expand?.[indexKey][0];
+      if (!existingItem) {
+        return;
+      }
+
+      const inventory = targetInventory.expand[existingItem.collectionName as InventoryKeys];
+      if (!inventory) {
+        return;
+      }
+
+      for (const itemToTrade of inventory) {
+        if (itemToTrade.item === item.id) {
+          return itemToTrade;
+        }
       }
     }
   }
 
-  public async addInventoryItem(itemRef: ItemWithRole): Promise<true> {
+  public async addInventoryItemFromExisting(itemRef: ItemWithRole): Promise<true> {
     const inventory = this.getInventory();
     const itemType = (itemRef.type + "s") as "consumables" | "equipments" | "spells";
 

@@ -1,12 +1,8 @@
 import mustache from "mustache";
 
-import type { ItemWithRole, Recipe } from "../../../../types/Item";
+import type { RecipeWithItem } from "../../../../types/Item";
 
-export default function formatRecipe(
-  itemRef: ItemWithRole,
-  recipe: Recipe,
-  isCurrent = false
-): string {
+export default function formatRecipe(recipe: RecipeWithItem, isCurrent = false): string {
   const templateArgs = [];
   templateArgs.push(
     " | {{{cookingLevel}}} {{{alchemyLevel}}} {{{darknessLevel}}} {{{orderLevel}}}"
@@ -19,7 +15,7 @@ export default function formatRecipe(
   }
 
   return mustache.render(templateArgs.join(" "), {
-    name: itemRef.name,
+    name: recipe.expand.item.name,
     cookingLevel: recipe.cookingLevel ? `🍳 ${recipe.cookingLevel}` : undefined,
     alchemyLevel: recipe.alchemyLevel ? `🧪 ${recipe.alchemyLevel}` : undefined,
     darknessLevel: recipe.darknessLevel ? `🌑 ${recipe.darknessLevel}` : undefined,

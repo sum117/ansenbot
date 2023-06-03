@@ -160,6 +160,8 @@ export const SKILLS_EMOJIS = {
   stealth: "👻",
   strength: "💪",
   vigor: "🏃‍♂️",
+  alchemy: "🧪",
+  cooking: "🍳",
 } as const;
 export const ITEM_ACTIONS = {
   equipment: "Equipar",
@@ -226,6 +228,6 @@ export const INVENTORY_REGEX =
   /character:(inventory|item):(browse|use|discard|open|equip|info|give):(\w+):\d+(:\d+:(previous|next|null))?/;
 
 export const CRAFTING_REGEX =
-  /character:crafting:(?<action>craft|next|previous|open|info):(?<recipeId>\w+):(?<playerId>\d+):(?<page>(\d+))?/;
+  /character:crafting:(?<action>craft|next|previous|nextPage|previousPage|open|info):(?<recipeId>\w+):(?<playerId>\d+):(?<page>(\d+))?/;
 export const CHARACTER_LEVELING_REGEX =
   /^character:leveling:(?<playerId>\d+):((?<skillId>\w+):)?(?<action>previous|next|level-one-time|level-ten-times|open)$/;

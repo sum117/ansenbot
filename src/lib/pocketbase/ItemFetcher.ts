@@ -1,5 +1,6 @@
 import type { COLLECTIONS } from "../../data/constants";
 import type {
+  ConsumableItem,
   EquipmentItem,
   GachaItemBuilderResponse,
   Item,
@@ -10,7 +11,7 @@ import type { CreateData } from "../../types/PocketBaseCRUD";
 import PocketBase from "./PocketBase";
 
 export class ItemFetcher {
-  public static async createItem<T extends GachaItemBuilderResponse>(
+  public static async createItemWithRef<T extends GachaItemBuilderResponse>(
     gachaResponse: T
   ): Promise<ItemWithRole | undefined> {
     const createdItemRef = await PocketBase.createEntity({
@@ -63,6 +64,10 @@ export class ItemFetcher {
     item: Item | CreateData<Item> | GachaItemBuilderResponse
   ): item is EquipmentItem {
     return "isWeapon" in item;
+  }
+
+  public static createConsumable<T extends ConsumableItem>(item: CreateData<T>): Promise<T> {
+    return PocketBase.createEntity<T>({ entityType: "consumables", entityData: item });
   }
 
   public static createEquipment<T extends EquipmentItem>(item: T): Promise<T> {

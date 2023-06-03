@@ -85,8 +85,11 @@ export default class PocketBase {
     entityType,
     page = 1,
     quantity = 24,
+    expandFields,
   }: GetAllEntitiesParams): Promise<ListResult<T>> {
-    return pb.collection(COLLECTIONS[entityType]).getList<T>(page, quantity);
+    return pb.collection(COLLECTIONS[entityType]).getList<T>(page, quantity, {
+      expand: expandFields ? expandFields.join(",") : undefined,
+    });
   }
 
   public static getFirstListEntity<T extends Collection>({
