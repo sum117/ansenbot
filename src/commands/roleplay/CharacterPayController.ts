@@ -21,6 +21,9 @@ export class CharacterPayController {
     interaction: ChatInputCommandInteraction
   ): Promise<void> {
     try {
+      if (typeof amount !== "number" || amount <= 0) {
+        amount = 1;
+      }
       await interaction.deferReply();
       const { characterManager: agentManager } = await getRoleplayDataFromUserId(
         interaction.user.id
