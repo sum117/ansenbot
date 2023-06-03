@@ -1,22 +1,24 @@
 import { ButtonBuilder, ButtonStyle } from "discord.js";
 import type { ListResult } from "pocketbase";
 
-import type { ItemWithRole, Recipe } from "../../../../types/Item";
+import { MATERIALS_NAMES } from "../../../../data/constants";
+import type { RecipeWithItem } from "../../../../types/Item";
+import getSafeEntries from "../../../../utils/getSafeEntries";
+import type { CharacterManager } from "../../Character/classes/CharacterManager";
 import MultiForm from "../classes/MultiForm";
 import formatRecipe from "../helpers/formatRecipe";
 
 export default function characterRecipeBrowserMessageOptions(
-  recipes: ListResult<Recipe>,
-  itemRef: ItemWithRole,
-  recipeId: string,
-  previousRecipe: Recipe,
+  recipes: ListResult<RecipeWithItem>,
+  characterManager: CharacterManager,
+  previousRecipe: RecipeWithItem,
   playerId: string,
   page: string,
-  currentRecipe: Recipe,
-  nextRecipe: Recipe
+  currentRecipe: RecipeWithItem,
+  nextRecipe: RecipeWithItem
 ): MultiForm {
   const formattedRecipes = recipes.items.map((recipe) =>
-    formatRecipe(itemRef, recipe, recipe.id === recipeId)
+    formatRecipe(recipe, recipe.id === currentRecipe.id)
   );
   const fields = [
     new ButtonBuilder()
@@ -43,7 +45,7 @@ export default function characterRecipeBrowserMessageOptions(
   const controlFields = [
     new ButtonBuilder()
       .setCustomId(
-        `character:crafting:browse:${currentRecipe.id}:${playerId}:${Math.min(
+        `character:crafting:previousPage:${currentRecipe.id}:${playerId}:${Math.min(
           recipes.page - 1,
           recipes.totalPages
         )}`
@@ -53,7 +55,7 @@ export default function characterRecipeBrowserMessageOptions(
       .setEmoji("⏪"),
     new ButtonBuilder()
       .setCustomId(
-        `character:crafting:browse:${currentRecipe.id}:${playerId}:${Math.min(
+        `character:crafting:nextPage:${currentRecipe.id}:${playerId}:${Math.min(
           recipes.page + 1,
           recipes.totalPages
         )}`
@@ -62,9 +64,16 @@ export default function characterRecipeBrowserMessageOptions(
       .setStyle(ButtonStyle.Secondary)
       .setEmoji("⏩"),
   ];
+  const materials = getSafeEntries(MATERIALS_NAMES).map(
+    ([key, value]) => `${value}: ${characterManager.character.expand.status[key]}`
+  );
+  materials.unshift("Seus materiais:");
+
   return new MultiForm({
     title: "Produção de Consumíveis",
-    description: ["Selecione um item para produzir."].concat(formattedRecipes).join("\n"),
+    description: ["Selecione um item para produzir."]
+      .concat(materials.join("\n"), formattedRecipes.join("\n"))
+      .join("\n\n"),
     controller: true,
     controlFields,
     fields,

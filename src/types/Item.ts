@@ -24,6 +24,7 @@ export type ItemWithRole = BaseItem & {
   };
 };
 
+export type RecipeWithItem = Recipe & { expand: { item: BaseItem } };
 export type Item = ConsumableItem | EquipmentItem | SpellItem;
 export type ItemRarity = "n" | "r" | "sr" | "ssr";
 export type ItemRequirementsProps = {

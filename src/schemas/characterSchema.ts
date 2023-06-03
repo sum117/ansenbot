@@ -127,6 +127,8 @@ const skillsSchema = baseSchema.extend({
   discovery: z.number(),
   stealth: z.number(),
   charisma: z.number(),
+  alchemy: z.number(),
+  cooking: z.number(),
   expand: z.object({}).optional(),
 });
 
@@ -196,6 +198,8 @@ const skillNameSchema = z.enum([
   "strength",
   "dexterity",
   "vigor",
+  "alchemy",
+  "cooking",
 ]);
 
 const statusNameSchema = z.enum([

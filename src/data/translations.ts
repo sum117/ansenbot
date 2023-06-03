@@ -9,6 +9,8 @@ export const skillsDictionary = {
   stealth: "👻 Furtividade",
   strength: "💪 Força",
   vigor: "🏃‍♂️ Vigor",
+  alchemy: "🧪 Alquimia",
+  cooking: "🍳 Culinária",
 } as const;
 
 export const statusDictionary = {

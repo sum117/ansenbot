@@ -54,4 +54,5 @@ export type GetAllEntitiesParams = {
   entityType: keyof typeof COLLECTIONS;
   page?: number;
   quantity?: number;
+  expandFields?: Array<string>;
 };

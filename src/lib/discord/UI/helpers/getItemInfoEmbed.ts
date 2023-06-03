@@ -36,7 +36,7 @@ export default function getItemInfoEmbed(
     ];
     const filteredExpanded = expanded.find((item) => itemsList.includes(item.id));
     const fieldInfo: Array<string> = [];
-    const keysBlacklist = ["item", "expand", "quantity", "isEquipped"];
+    const keysBlacklist = ["item", "expand", "quantity", "isEquipped", "type"];
     const isBlacklisted = (key: string): key is (typeof keysBlacklist)[number] =>
       keysBlacklist.includes(key);
 

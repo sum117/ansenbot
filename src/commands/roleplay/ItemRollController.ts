@@ -80,7 +80,7 @@ export class ItemRollController {
       }
       await interaction.deferReply();
 
-      const createdItem = await ItemFetcher.createItem({
+      const createdItem = await ItemFetcher.createItemWithRef({
         ...itemRef,
         name,
         description,
@@ -93,7 +93,7 @@ export class ItemRollController {
       }
 
       const { characterManager } = await getRoleplayDataFromUserId(interaction.user.id);
-      await characterManager.addInventoryItem(createdItem);
+      await characterManager.addInventoryItemFromExisting(createdItem);
       const embed = getItemInfoEmbed(createdItem, characterManager);
       await interaction.editReply({
         content: `💠 Parabéns! Você conseguiu um novo item: **${name}**`,
@@ -104,12 +104,11 @@ export class ItemRollController {
     }
   }
 
-  private async generateRollMessage(
+  private generateRollMessage(
     interaction: ChatInputCommandInteraction | ButtonInteraction
   ): Promise<MultiForm> {
     const itemPromise = this.gachaItemBuilder.roll(interaction.user.id);
-    const messageOptions = await gachaItemsMessageOptions(interaction.user.id, itemPromise);
-    return messageOptions;
+    return gachaItemsMessageOptions(interaction.user.id, itemPromise);
   }
   private getInteractionParam({ customId }: ButtonInteraction): GachaParam {
     const param =
