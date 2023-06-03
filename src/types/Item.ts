@@ -20,7 +20,7 @@ export type BaseItem = z.infer<typeof itemSchema>;
 export type ItemCollection = `${"consumables" | "equipments" | "spells"}(item)`;
 export type ItemWithRole = BaseItem & {
   expand?: {
-    [K in ItemCollection]: Array<Item>;
+    [K in ItemCollection]?: Array<Item>;
   };
 };
 

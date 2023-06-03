@@ -408,7 +408,7 @@ export class CharacterManager {
       const itemType = (item.type + "s") as "consumables" | "equipments" | "spells";
       const indexKey = this.itemRefExpandKeys[itemType];
 
-      const existingItem = item.expand?.[indexKey][0];
+      const existingItem = item.expand?.[indexKey]?.[0];
       if (!existingItem) {
         return;
       }
@@ -430,7 +430,7 @@ export class CharacterManager {
     const inventory = this.getInventory();
     const itemType = (itemRef.type + "s") as "consumables" | "equipments" | "spells";
 
-    const item = itemRef.expand?.[this.itemRefExpandKeys[itemType]].find(
+    const item = itemRef.expand?.[this.itemRefExpandKeys[itemType]]?.find(
       (item) => item.item === itemRef.id
     );
     if (!item) {
