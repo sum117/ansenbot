@@ -34,7 +34,7 @@ export default function getItemInfoEmbed(
       ...charInventory.equipments,
       ...charInventory.spells,
     ];
-    const filteredExpanded = expanded.find((item) => itemsList.includes(item.id));
+    const filteredExpanded = expanded?.find((item) => itemsList.includes(item.id));
     const fieldInfo: Array<string> = [];
     const keysBlacklist = ["item", "expand", "quantity", "isEquipped", "type"];
     const isBlacklisted = (key: string): key is (typeof keysBlacklist)[number] =>
@@ -80,7 +80,7 @@ export default function getItemInfoEmbed(
       }
 
       case "equipment": {
-        const equipment = equipmentSchema.omit({ expand: true }).parse(expanded[0]);
+        const equipment = equipmentSchema.omit({ expand: true }).parse(expanded?.[0]);
         fields.push({
           name: "Equipado",
           value: equipment.isEquipped ? "Sim" : "Não",
@@ -93,7 +93,7 @@ export default function getItemInfoEmbed(
       }
 
       case "spell": {
-        const spell = spellSchema.omit({ expand: true }).parse(expanded[0]);
+        const spell = spellSchema.omit({ expand: true }).parse(expanded?.[0]);
         fields.push({ name: "Quantidade", value: spell.quantity.toString(), inline: true });
         fields.push({ name: "Equipado", value: spell.isEquipped ? "Sim" : "Não", inline: true });
         fields = fields.concat(getRequirementsInfoFields(getRequirementFieldsProps(spell)));
