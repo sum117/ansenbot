@@ -142,10 +142,14 @@ export class CharacterManager {
     await PocketBase.updateEntity({ entityType: "inventory", entityData: inventory });
     return successMessage;
   }
-  async pay(amount: number, targetManager: CharacterManager): Promise<string> {
+  async pay(
+    resource: keyof typeof MATERIALS_NAMES | "spirit",
+    amount: number,
+    targetManager: CharacterManager
+  ): Promise<string> {
     const characterStatus = await this.getStatuses(this.character.status);
     const targetCharacterStatus = await this.getStatuses(targetManager.character.status);
-    if (characterStatus.spirit < amount) {
+    if (characterStatus[resource] < amount) {
       throw new BotError(
         mustache.render(
           "Você não possui espírito suficiente para pagar {{{amount}}} de espírito.",
@@ -157,8 +161,8 @@ export class CharacterManager {
       throw new BotError("Você não pode pagar a si mesmo.");
     }
 
-    characterStatus.spirit -= amount;
-    targetCharacterStatus.spirit += amount;
+    characterStatus[resource] -= amount;
+    targetCharacterStatus[resource] += amount;
 
     await Promise.all([
       this.setStatus(characterStatus),
@@ -166,10 +170,11 @@ export class CharacterManager {
     ]);
 
     return mustache.render(
-      "✅ {{{character}}} pagou **{{{amount}}}** lascas espirituais para {{{targetCharacter}}}.",
+      "✅ {{{character}}} pagou **{{{amount}}}** de {{{resource}}} para {{{targetCharacter}}}.",
       {
         character: this.character.name,
         amount,
+        resource: resource === "spirit" ? "Lascas Espirituais" : MATERIALS_NAMES[resource],
         targetCharacter: targetManager.character.name,
       }
     );
