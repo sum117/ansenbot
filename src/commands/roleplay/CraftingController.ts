@@ -1,32 +1,19 @@
 import type { ButtonInteraction } from "discord.js";
 import { EmbedBuilder } from "discord.js";
 import { ButtonComponent, Discord } from "discordx";
-import type { ListResult } from "pocketbase";
 
 import { CRAFTING_REGEX, MATERIALS_NAMES } from "../../data/constants";
 import { skillsDictionary } from "../../data/translations";
-import type { CharacterManager } from "../../lib/discord/Character/classes/CharacterManager";
 import getRecipeRequiredLevels from "../../lib/discord/Character/helpers/getRecipeRequiredLevels";
 import getRecipeRequiredMaterials from "../../lib/discord/Character/helpers/getRecipeRequiredMaterials";
 import getRoleplayDataFromUserId from "../../lib/discord/Character/helpers/getRoleplayDataFromUserId";
 import characterRecipeBrowserMessageOptions from "../../lib/discord/UI/character/characterRecipeBrowserMessageOptions";
 import { ItemFetcher } from "../../lib/pocketbase/ItemFetcher";
 import { RecipeFetcher } from "../../lib/pocketbase/RecipeFetcher";
-import type { ItemWithRole, RecipeWithItem } from "../../types/Item";
+import type { CraftingButtonHandler } from "../../types/Item";
 import getSafeEntries from "../../utils/getSafeEntries";
 import handleError from "../../utils/handleError";
 
-type CraftingButtonHandler = {
-  interaction: ButtonInteraction;
-  characterManager: CharacterManager;
-  playerId: string;
-  itemRef: ItemWithRole;
-  page: string;
-  recipes: ListResult<RecipeWithItem>;
-  previousRecipe: RecipeWithItem;
-  currentRecipe: RecipeWithItem;
-  nextRecipe: RecipeWithItem;
-};
 @Discord()
 export class CraftingController {
   @ButtonComponent({ id: CRAFTING_REGEX })

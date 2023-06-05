@@ -219,14 +219,14 @@ export const RARITY_IMAGES = {
 export const GACHA_MODAL_ID_REGEX = /^gacha:item:modal(:(?<param>\w+))?$/;
 export const GACHA_ID_PREFIX = "gacha:item";
 export const GACHA_ID_REGEX = /gacha:item:(?<param>\w+)/;
+export const CHARACTER_TOP_ID_REGEX =
+  /character:top:(?<type>level|posts):(?<page>\d+):(?<direction>next|previous)/;
 export const CHARACTER_INTERACTION_ID_REGEX =
   /character:interaction:(?<action>\w+):(?<agentId>(\d+|null)):(?<targetId>\d+)/;
 export const BATTLE_INTERACTION_ID_REGEX =
   /battle:(?<action>\w+):(?<kind>\w+):(?<agentId>\d+):(?<targetId>\d+)/;
-
 export const INVENTORY_REGEX =
   /character:(inventory|item):(browse|use|discard|open|equip|info|give):(\w+):\d+(:\d+:(previous|next|null))?/;
-
 export const CRAFTING_REGEX =
   /character:crafting:(?<action>craft|next|previous|nextPage|previousPage|open|info):(?<recipeId>\w+):(?<playerId>\d+):(?<page>(\d+))?/;
 export const CHARACTER_LEVELING_REGEX =

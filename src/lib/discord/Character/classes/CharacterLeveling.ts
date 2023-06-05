@@ -1,15 +1,6 @@
-import type { Character, Skills } from "../../../../types/Character";
+import type { Character, SanitizedSkill, Skills } from "../../../../types/Character";
 import type { PocketBaseConstants } from "../../../../types/PocketBaseCRUD";
 
-export type TCharacterLeveling = {
-  level?: number;
-  xp?: number;
-  characterSpareSkillPoints?: number;
-  characterAscendedSkills?: string[];
-  skillTraits?: string[];
-};
-
-type SanitizedSkill = Partial<Omit<Skills, keyof PocketBaseConstants | "character" | "expand">>;
 export class CharacterLeveling {
   public characterLevel: number;
   public characterSpareSkillPoints: number;

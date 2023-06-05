@@ -8,15 +8,12 @@ import type { CharacterLevelingFormOptions } from "../../lib/discord/UI/characte
 import { characterLevelingForm } from "../../lib/discord/UI/character/characterLevelingForm";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import { skillsSchema } from "../../schemas/characterSchema";
-import type { Character, Skills } from "../../types/Character";
-import type { PocketBaseConstants } from "../../types/PocketBaseCRUD";
+import type { Character, SkillKey } from "../../types/Character";
 import { pocketbaseConstants } from "../../types/PocketBaseCRUD";
 import { BotError } from "../../utils/Errors";
 import getSafeEntries from "../../utils/getSafeEntries";
 import handleError from "../../utils/handleError";
 import TrackedInteraction from "../../utils/TrackedInteraction";
-
-type SkillKey = keyof Omit<Skills, keyof PocketBaseConstants | "expand">;
 
 @Discord()
 export class CharacterLevelingController {

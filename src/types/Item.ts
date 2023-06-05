@@ -1,7 +1,10 @@
+import type { ButtonInteraction } from "discord.js";
+import type { ListResult } from "pocketbase";
 import type { z } from "zod";
 
 import type { ITEM_TYPES } from "../data/constants";
 import type { skillsDictionary } from "../data/translations";
+import type { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
 import type {
   consumableSchema,
   equipmentSchema,
@@ -45,5 +48,16 @@ export type GachaItemBuilderResponse = {
   requirements: PartialRequirements;
   name?: string;
   description?: string;
+};
+export type CraftingButtonHandler = {
+  interaction: ButtonInteraction;
+  characterManager: CharacterManager;
+  playerId: string;
+  itemRef: ItemWithRole;
+  page: string;
+  recipes: ListResult<RecipeWithItem>;
+  previousRecipe: RecipeWithItem;
+  currentRecipe: RecipeWithItem;
+  nextRecipe: RecipeWithItem;
 };
 export type GachaParam = "reroll" | "keep" | "modal";

@@ -4,13 +4,11 @@ import { ButtonComponent, Discord, Slash } from "discordx";
 import mustache from "mustache";
 import table from "text-table";
 
+import { CHARACTER_TOP_ID_REGEX } from "../../data/constants";
 import MultiForm from "../../lib/discord/UI/classes/MultiForm";
 import CharacterFetcher from "../../lib/pocketbase/CharacterFetcher";
 import PocketBase from "../../lib/pocketbase/PocketBase";
 import handleError from "../../utils/handleError";
-
-export const CHARACTER_TOP_ID_REGEX =
-  /character:top:(?<type>level|posts):(?<page>\d+):(?<direction>next|previous)/;
 
 @Discord()
 export class CharacterTopController {

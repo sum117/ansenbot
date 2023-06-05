@@ -16,6 +16,7 @@ import type {
   CharacterBody,
   Effect,
   Inventory,
+  InventoryKeys,
   Memory,
   Status,
 } from "../../../../types/Character";
@@ -33,8 +34,6 @@ import { SkillsFetcher } from "../../../pocketbase/SkillsFetcher";
 import AnsenfallLeveling from "../helpers/ansenfallLeveling";
 import getMaxStatus from "../helpers/getMaxStatus";
 import getRecipeRequiredLevels from "../helpers/getRecipeRequiredLevels";
-
-type InventoryKeys = "consumables" | "equipments" | "spells";
 
 export class CharacterManager {
   private readonly itemRefExpandKeys = {
