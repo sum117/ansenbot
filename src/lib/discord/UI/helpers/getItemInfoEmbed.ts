@@ -52,6 +52,8 @@ export default function getItemInfoEmbed(
         stealth: item.stealth,
         vigor: item.vigor,
         charisma: item.charisma,
+        cooking: item.cooking,
+        alchemy: item.alchemy,
       },
       multiplier: item.multiplier,
       quotient: item.quotient,
