@@ -176,6 +176,7 @@ const consumableSchema = baseSchema.extend({
   sleep: z.number(),
   stamina: z.number(),
   void: z.number(),
+  despair: z.number(),
   type: consumableTypeSchema,
   expand: z.object(
     {

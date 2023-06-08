@@ -2,7 +2,7 @@ import { userMention } from "discord.js";
 import mustache from "mustache";
 
 import type { COLLECTIONS } from "../../../../data/constants";
-import { MATERIALS_NAMES, STATUS_SKILLS_RELATION } from "../../../../data/constants";
+import { MATERIALS_NAMES, STATUS_NAMES, STATUS_SKILLS_RELATION } from "../../../../data/constants";
 import type { equipmentDictionary } from "../../../../data/translations";
 import { skillsDictionary } from "../../../../data/translations";
 import {
@@ -47,26 +47,29 @@ export class CharacterManager {
   async use(consumableId: Item["id"]): Promise<string> {
     const consumableItem = consumableSchema.parse(this.getInventoryItem(consumableId));
     const characterStatus = await this.getStatuses(this.character.status);
-    const view = {
-      character: this.character.name,
-      item: consumableItem.expand.item.name,
-      author: userMention(this.character.playerId),
-      hunger: consumableItem.hunger,
-      health: consumableItem.health,
-      stamina: consumableItem.stamina,
-      void: consumableItem.void,
+
+    const formattedReplenishFeedback = () => {
+      const listFmt = new Intl.ListFormat("pt-BR", { style: "long", type: "conjunction" });
+      const items = getSafeKeys(STATUS_NAMES)
+        .filter((status) => consumableItem[status] > 0)
+        .map((status) => `**${consumableItem[status]}** de **${STATUS_NAMES[status]}**`);
+      return listFmt.format(items);
     };
 
     consumableItem.quantity -= 1;
-    characterStatus.health += consumableItem.health;
-    characterStatus.stamina += consumableItem.stamina;
-    characterStatus.hunger += consumableItem.hunger;
-    characterStatus.void += consumableItem.void;
+    for (const status of getSafeKeys(STATUS_NAMES)) {
+      characterStatus[status] += consumableItem[status];
+    }
 
     await Promise.all([this.setInventoryItem(consumableItem), this.setStatus(characterStatus)]);
     return mustache.render(
-      "✅ {{{author}}}, {{{character}}} usou {{{item}}} e recuperou {{{health}}} de vida, {{{stamina}}} de estamina, {{{hunger}}} de fome e {{{void}}} de vazio.",
-      view
+      "✅ {{{author}}}, {{{character}}} usou {{{item}}} e recuperou {{{status}}}",
+      {
+        character: this.character.name,
+        item: consumableItem.expand.item.name,
+        author: userMention(this.character.playerId),
+        status: formattedReplenishFeedback(),
+      }
     );
   }
 
