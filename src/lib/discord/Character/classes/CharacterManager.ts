@@ -505,7 +505,7 @@ export class CharacterManager {
 
     if (previousItems.includes(equipment.id)) {
       return this.unequipItem(equipment, body, slot);
-    } else if (previousItems.length && slot !== "rings") {
+    } else if (previousItems.length && slot !== "rings" && slot !== "spells") {
       return this.swapEquippedItem(equipment, body, slot, previousItems);
     } else {
       return this.equipNewItem(equipment, body, slot);
