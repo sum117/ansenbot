@@ -174,7 +174,15 @@ export const ITEM_ACTIONS_CUSTOM_IDS = {
   consumable: "use",
 } as const;
 export const PAGE_SIZE = 5;
-export const STATUS_GAIN_PER_LEVEL = 10 as const;
+export const STATUS_GAIN_PER_LEVEL: Record<keyof typeof STATUS_NAMES, number> = {
+  health: 30,
+  sleep: 10,
+  despair: 10,
+  hunger: 10,
+  mana: 10,
+  stamina: 10,
+  void: 10,
+};
 
 export const MANA_COST_MULTIPLIER = 2;
 export const STAMINA_COST_MULTIPLIER = 1.3;
