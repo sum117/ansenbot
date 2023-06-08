@@ -1,9 +1,10 @@
+import dedent from "dedent";
 import type { ButtonInteraction, Snowflake, StringSelectMenuInteraction } from "discord.js";
 import { bold } from "discord.js";
 import { ButtonComponent, Discord, SelectMenuComponent } from "discordx";
 
 import { BATTLE_INTERACTION_ID_REGEX, CHARACTER_INTERACTION_ID_REGEX } from "../../data/constants";
-import { equipmentDictionary, statusDictionary } from "../../data/translations";
+import { equipmentDictionary, skillsDictionary, statusDictionary } from "../../data/translations";
 import CharacterCombat from "../../lib/discord/Character/classes/CharacterCombat";
 import type { CharacterManager } from "../../lib/discord/Character/classes/CharacterManager";
 import getRoleplayDataFromUserId from "../../lib/discord/Character/helpers/getRoleplayDataFromUserId";
@@ -13,6 +14,7 @@ import battleInteractionSupportForm from "../../lib/discord/UI/battle/battleInte
 import characterInteractionForm from "../../lib/discord/UI/character/characterInteractionForm";
 import type MultiForm from "../../lib/discord/UI/classes/MultiForm";
 import { ItemFetcher } from "../../lib/pocketbase/ItemFetcher";
+import type { SkillKey } from "../../types/Character";
 import type {
   AttackTurnResult,
   BaseTurn,
@@ -385,7 +387,7 @@ export class CharacterInteractionController {
     agent: CharacterManager,
     target: CharacterManager
   ): string {
-    const messages: Record<string, string> = {
+    const kindMessages: Record<string, string> = {
       dodge: `🦵 ${target.character.name} desviou do ataque de ${agent.character.name}, ignorando 75% do dano, perdendo apenas ${turnResult.damageDealt}!`,
       counter: `🤺 ${target.character.name} contra-atacou ${agent.character.name} com sucesso, causando ${turnResult.damageDealt} de dano!`,
       block: `🛡️ ${target.character.name} bloqueou o ataque de ${agent.character.name} com sucesso, ignorando 100% do dano!`,
@@ -395,23 +397,27 @@ export class CharacterInteractionController {
       damage: `💥 ${agent.character.name} causou ${turnResult.damageDealt} de dano em ${target.character.name} com ${turnResult.weaponUsed}!`,
     };
 
-    const oddsMessage = `\n\n${target.character.name} tinha:
-      ${bold(turnResult.odds.block.join("/"))} de chance de bloquear o ataque;
-      ${bold(turnResult.odds.dodge.join("/"))} de chance de desviar;
-      ${bold(turnResult.odds.counter.join("/"))} de chance de contra-atacar;
-      ${bold(turnResult.odds.flee.join("/"))} de chance de fugir da batalha.
-    `;
+    const equipmentTypesMessage = turnResult.equipmentTypes
+      .filter((type): type is SkillKey => Boolean(type))
+      .map((type) => skillsDictionary[type])
+      .join(" **VS** ");
+
+    const oddsMessage = dedent`\n\n# ${equipmentTypesMessage}\n\n${target.character.name} tinha:
+    - ${bold(turnResult.odds.block.join("/"))} de chance de bloquear o ataque;
+    - ${bold(turnResult.odds.dodge.join("/"))} de chance de desviar;
+    - ${bold(turnResult.odds.counter.join("/"))} de chance de contra-atacar;
+    - ${bold(turnResult.odds.flee.join("/"))} de chance de fugir da batalha.`;
 
     if (turnResult.defenseSuccess && turnResult.isKillingBlow) {
-      return messages.counterKill + oddsMessage;
+      return kindMessages.counterKill + oddsMessage;
     }
     if (turnResult.defenseSuccess) {
-      return messages[kind] + oddsMessage;
+      return kindMessages[kind] + oddsMessage;
     }
     if (turnResult.isKillingBlow) {
-      return messages.kill + oddsMessage;
+      return kindMessages.kill + oddsMessage;
     }
-    return messages.damage + oddsMessage;
+    return kindMessages.damage + oddsMessage;
   }
 
   private getSupportResultMessage(

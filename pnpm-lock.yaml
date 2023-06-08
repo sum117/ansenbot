@@ -19,6 +19,9 @@ dependencies:
   cors:
     specifier: ^2.8.5
     version: 2.8.5
+  dedent:
+    specifier: ^0.7.0
+    version: 0.7.0
   discord.js:
     specifier: ^14.11.0
     version: 14.11.0
@@ -99,6 +102,9 @@ devDependencies:
   '@types/cors':
     specifier: ^2.8.13
     version: 2.8.13
+  '@types/dedent':
+    specifier: ^0.7.0
+    version: 0.7.0
   '@types/eventsource':
     specifier: ^1.1.11
     version: 1.1.11
@@ -898,6 +904,10 @@ packages:
     resolution: {integrity: sha512-RG8AStHlUiV5ysZQKq97copd2UmVYw3/pRMLefISZ3S1hK104Cwm7iLQ3fTKx+lsUH2CE8FlLaYeEA2LSeqYUA==}
     dependencies:
       '@types/node': 20.2.5
+    dev: true
+
+  /@types/dedent@0.7.0:
+    resolution: {integrity: sha512-EGlKlgMhnLt/cM4DbUSafFdrkeJoC9Mvnj0PUCU7tFmTjMjNRT957kXCx0wYm3JuEq4o4ZsS5vG+NlkM2DMd2A==}
     dev: true
 
   /@types/eventsource@1.1.11:
@@ -1862,6 +1872,10 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       mimic-response: 3.1.0
+    dev: false
+
+  /dedent@0.7.0:
+    resolution: {integrity: sha512-Q6fKUPqnAHAyhiUgFU7BUzLiv0kd8saH9al7tnu5Q/okj6dnupxyTgFIBjVzJATdfIAm9NAsvXNzjaKa+bxVyA==}
     dev: false
 
   /deep-extend@0.6.0:

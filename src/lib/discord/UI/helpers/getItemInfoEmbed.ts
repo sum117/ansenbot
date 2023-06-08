@@ -1,5 +1,4 @@
 import { EmbedBuilder } from "discord.js";
-import { inspect } from "util";
 
 import { STATUS_NAMES } from "../../../../data/constants";
 import { itemTypesDictionary } from "../../../../data/translations";
@@ -103,7 +102,6 @@ export default function getItemInfoEmbed(
       }
     }
   }
-  console.log(inspect(fields, false, 10, true));
   return new EmbedBuilder()
     .setTitle(item.name)
     .setDescription(item.description)

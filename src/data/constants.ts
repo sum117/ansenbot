@@ -1,4 +1,4 @@
-import type { StatusBar } from "../types/Character";
+import type { SkillKey, StatusBar } from "../types/Character";
 
 export const SPINNER_EMOJI = "<a:spinner:1094479348037324820>";
 
@@ -199,6 +199,38 @@ export const REQUIREMENT_RANGES = {
   sr: [26, 60],
   ssr: [61, 99],
 } as const;
+
+export const EFFICIENCY_MAP: Record<SkillKey, SkillKey> = {
+  // key is stronger than value
+  darkness: "intelligence",
+  order: "darkness",
+  charisma: "stealth",
+  intelligence: "charisma",
+  discovery: "stealth",
+  stealth: "order",
+  fortitude: "strength",
+  alchemy: "cooking",
+  dexterity: "vigor",
+  vigor: "fortitude",
+  strength: "dexterity",
+  cooking: "charisma",
+} as const;
+
+export const EFFICIENCY_WEIGHT: Record<SkillKey, number> = {
+  darkness: 1.5,
+  order: 1.5,
+  charisma: 1.5,
+  intelligence: 1.5,
+  discovery: 1.5,
+  stealth: 1.5,
+  fortitude: 1.5,
+  alchemy: 1.5,
+  dexterity: 1.5,
+  vigor: 1.5,
+  strength: 1.5,
+  cooking: 1.5,
+} as const;
+export const DAMAGE_NEGATION_MAX_AMOUNT_PERCENTAGE = 0.75;
 
 export const STATUS_GIVEN_PER_RARITY_RANGE = {
   n: [1, 2],

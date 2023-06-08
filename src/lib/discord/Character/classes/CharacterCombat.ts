@@ -1,5 +1,10 @@
 import random from "lodash.random";
 
+import {
+  DAMAGE_NEGATION_MAX_AMOUNT_PERCENTAGE,
+  EFFICIENCY_MAP,
+  EFFICIENCY_WEIGHT,
+} from "../../../../data/constants";
 import type { skillsDictionary } from "../../../../data/translations";
 import { statusDictionary } from "../../../../data/translations";
 import { equipmentSchema, spellSchema } from "../../../../schemas/characterSchema";
@@ -11,6 +16,7 @@ import type {
   ButtonKind,
   ButtonSupportKind,
   DuelTurn,
+  ResolvedSupportTurn,
   SelectMenuKind,
   SelectMenuSupportKind,
   SupportTurn,
@@ -18,55 +24,19 @@ import type {
   Turn,
   TurnResult,
 } from "../../../../types/Combat";
+import {
+  AgentDamageReductionFactor,
+  AgentSkillWeightDivisor,
+  TargetDefenseReductionFactor,
+  TargetFailedDefenseReductionFactor,
+  TargetSkillWeightDivisor,
+  TargetSkillWeightMultiplier,
+} from "../../../../types/Combat";
 import type { EquipmentItem, SpellItem } from "../../../../types/Item";
 import { CombatError } from "../../../../utils/Errors";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import { ItemFetcher } from "../../../pocketbase/ItemFetcher";
 import type { CharacterManager } from "./CharacterManager";
-
-export interface ResolvedSupportTurn {
-  statusesReplenished: Array<keyof typeof statusDictionary>;
-  amount: number;
-  status: Status;
-}
-
-enum AgentDamageReductionFactor {
-  Dodge = 0.25,
-  Block = 0,
-  Flee = 0,
-  Sacrifice = 3,
-}
-
-enum TargetDefenseReductionFactor {
-  Stamina = 0.05,
-  Block = 0.1,
-  Flee = 0.15,
-  Counter = 0.1,
-}
-
-enum TargetFailedDefenseReductionFactor {
-  Stamina = 0.1,
-  Block = 0.15,
-  Flee = 0.25,
-  Counter = 0.2,
-}
-
-enum TargetSkillWeightDivisor {
-  Dexterity = 2,
-  Stamina = 10,
-  Fortitude = 2,
-}
-
-enum TargetSkillWeightMultiplier {
-  Dexterity = 0.4,
-  Stamina = 0.8,
-  Strength = 0.4,
-  Charisma = 0.1,
-}
-
-enum AgentSkillWeightDivisor {
-  Stamina = 20,
-}
 
 export default class CharacterCombat {
   public agent: Character;
@@ -154,12 +124,13 @@ export default class CharacterCombat {
         case "counter":
           // Se o contra-ataque teve sucesso, o dano é refletido de volta ao atacante
           const targetWeapon = await this.getWeapon({ from: "target" });
-          console.log(targetWeapon.item);
           const counterDamage = await this.resolveDuel(targetWeapon.item, agentItem, true);
           return {
             defenseSuccess: defenseSuccess.success,
             damageDealt: counterDamage.damageDealt,
             isKillingBlow: counterDamage.isKillingBlow,
+            weaponUsed: targetWeapon.itemName,
+            equipmentTypes: [targetWeapon.item.type, agentItem.type],
             odds: {
               ...defenseSuccess,
             },
@@ -181,6 +152,7 @@ export default class CharacterCombat {
       isKillingBlow,
       status,
       weaponUsed: itemName,
+      equipmentTypes: [agentItem.type, targetItem?.type],
     };
   }
 
@@ -270,27 +242,24 @@ export default class CharacterCombat {
     } = this.agent;
 
     agentStatus.stamina = Math.max(agentStatus.stamina, 1);
-    const dodgeChance = Math.max(
-      Math.ceil(this.calculateDodgeChance(targetStatus, agentStatus, targetSkills)),
-      0
-    );
-    const blockChance = Math.max(
-      Math.ceil(this.calculateBlockChance(targetStatus, agentStatus, targetSkills)),
-      0
-    );
-    const fleeChance = Math.max(
-      Math.ceil(this.calculateFleeChance(targetStatus, agentSkills, targetSkills)),
-      0
-    );
-    const counterChance = Math.max(
-      Math.ceil(this.calculateCounterChance(targetStatus, agentStatus, targetSkills)),
-      0
+    const dodgeChance = Math.ceil(
+      this.calculateDodgeChance(targetStatus, agentStatus, targetSkills)
     );
 
-    const dodgeRandom = random(0, 100);
-    const blockRandom = random(0, 90);
-    const fleeRandom = random(0, 100);
-    const counterRandom = random(0, 100);
+    const blockChance = Math.ceil(
+      this.calculateBlockChance(targetStatus, agentStatus, targetSkills)
+    );
+
+    const fleeChance = Math.ceil(this.calculateFleeChance(targetStatus, agentSkills, targetSkills));
+
+    const counterChance = Math.ceil(
+      this.calculateCounterChance(targetStatus, agentStatus, targetSkills)
+    );
+
+    const dodgeRandom = random(1, 100);
+    const blockRandom = random(1, 90);
+    const fleeRandom = random(1, 100);
+    const counterRandom = random(1, 100);
     let success = false;
 
     switch (defenseOption) {
@@ -345,12 +314,29 @@ export default class CharacterCombat {
     defender: EquipmentItem | SpellItem | undefined,
     isCounter = false
   ) {
-    const attackerFinalQuotient = attacker ? this.calculateMultiplier(attacker) : 0;
+    const attackerFinalQuotient = attacker ? this.calculateMultiplier(attacker) : 1;
     const defenderFinalQuotient = defender ? this.calculateMultiplier(defender) : 1;
     const defenderPercentage = defenderFinalQuotient / 100;
 
-    const damageToNegate = Math.ceil(Math.max(attackerFinalQuotient * defenderPercentage, 0));
-    const damageDealt = Math.ceil(Math.max(attackerFinalQuotient - damageToNegate, 0));
+    const defenderItemSkillType = defender?.type ?? "vigor";
+    const attackerItemSkillType = attacker?.type ?? "vigor";
+
+    const damageNegationMaxAmount = attackerFinalQuotient * DAMAGE_NEGATION_MAX_AMOUNT_PERCENTAGE;
+    const rawDamageToNegate = Math.min(
+      damageNegationMaxAmount,
+      Math.ceil(Math.max(attackerFinalQuotient * defenderPercentage, 1))
+    );
+
+    const damageToNegate =
+      EFFICIENCY_MAP[defenderItemSkillType] === attackerItemSkillType
+        ? rawDamageToNegate * EFFICIENCY_WEIGHT[defenderItemSkillType]
+        : rawDamageToNegate;
+
+    const rawDamageDealt = Math.ceil(Math.max(attackerFinalQuotient - damageToNegate, 1));
+    const damageDealt =
+      EFFICIENCY_MAP[attackerItemSkillType] === defenderItemSkillType
+        ? rawDamageDealt * EFFICIENCY_WEIGHT[attackerItemSkillType]
+        : rawDamageDealt;
 
     const targetStatus = isCounter ? this.agent.expand.status : this.target.expand.status;
 
@@ -464,11 +450,12 @@ export default class CharacterCombat {
     agentStatus: Status,
     targetSkills: Skills
   ): number {
-    return (
+    const dodgeChance =
       targetSkills.dexterity / TargetSkillWeightDivisor.Dexterity +
       targetStatus.stamina / TargetSkillWeightDivisor.Stamina -
-      agentStatus.stamina / AgentSkillWeightDivisor.Stamina
-    );
+      agentStatus.stamina / AgentSkillWeightDivisor.Stamina;
+
+    return isNaN(dodgeChance) ? 1 : Math.max(dodgeChance, 1);
   }
 
   private calculateBlockChance(
@@ -476,11 +463,11 @@ export default class CharacterCombat {
     agentStatus: Status,
     targetSkills: Skills
   ): number {
-    return (
+    const blockChance =
       targetSkills.fortitude / TargetSkillWeightDivisor.Fortitude +
       targetStatus.stamina / TargetSkillWeightDivisor.Stamina -
-      agentStatus.stamina / AgentSkillWeightDivisor.Stamina
-    );
+      agentStatus.stamina / AgentSkillWeightDivisor.Stamina;
+    return isNaN(blockChance) ? 1 : Math.max(blockChance, 1);
   }
 
   private calculateFleeChance(
@@ -492,7 +479,9 @@ export default class CharacterCombat {
       (targetStatus.stamina / TargetSkillWeightDivisor.Stamina) * targetSkills.stealth;
     const discoveryQuotient =
       (targetStatus.stamina / TargetSkillWeightDivisor.Stamina) * agentSkills.discovery;
-    return (fleeQuotient / (fleeQuotient + discoveryQuotient)) * 100;
+
+    const fleeChance = (fleeQuotient / (fleeQuotient + discoveryQuotient)) * 100;
+    return isNaN(fleeChance) ? 1 : Math.max(fleeChance, 1);
   }
 
   private calculateCounterChance(
@@ -505,6 +494,6 @@ export default class CharacterCombat {
         targetSkills.dexterity * TargetSkillWeightMultiplier.Dexterity +
         targetSkills.charisma * TargetSkillWeightMultiplier.Charisma) *
       ((targetStatus.stamina * TargetSkillWeightMultiplier.Stamina) / agentStatus.stamina);
-    return counterChance;
+    return isNaN(counterChance) ? 1 : Math.max(counterChance, 1);
   }
 }

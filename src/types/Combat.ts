@@ -2,7 +2,7 @@ import type { ButtonInteraction, Snowflake, StringSelectMenuInteraction } from "
 
 import type { equipmentDictionary, statusDictionary } from "../data/translations";
 import type { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
-import type { Status } from "./Character";
+import type { SkillKey, Status } from "./Character";
 
 export type SelectMenuAttackKind = "spell" | "body";
 export type SelectMenuSupportKind = "spell";
@@ -80,6 +80,7 @@ export interface AttackTurnResult {
   isKillingBlow: boolean;
   weaponUsed?: string;
   status?: Status;
+  equipmentTypes: [SkillKey | undefined, SkillKey | undefined];
   odds: {
     dodge: [number, number];
     counter: [number, number];
@@ -96,3 +97,47 @@ export interface SupportTurnResult {
 }
 
 export type TurnResult = AttackTurnResult | SupportTurnResult;
+
+export interface ResolvedSupportTurn {
+  statusesReplenished: Array<keyof typeof statusDictionary>;
+  amount: number;
+  status: Status;
+}
+
+export enum AgentDamageReductionFactor {
+  Dodge = 0.25,
+  Block = 0,
+  Flee = 0,
+  Sacrifice = 3,
+}
+
+export enum TargetDefenseReductionFactor {
+  Stamina = 0.05,
+  Block = 0.1,
+  Flee = 0.15,
+  Counter = 0.1,
+}
+
+export enum TargetFailedDefenseReductionFactor {
+  Stamina = 0.1,
+  Block = 0.15,
+  Flee = 0.25,
+  Counter = 0.2,
+}
+
+export enum TargetSkillWeightDivisor {
+  Dexterity = 2,
+  Stamina = 10,
+  Fortitude = 2,
+}
+
+export enum TargetSkillWeightMultiplier {
+  Dexterity = 0.4,
+  Stamina = 0.8,
+  Strength = 0.4,
+  Charisma = 0.1,
+}
+
+export enum AgentSkillWeightDivisor {
+  Stamina = 20,
+}
