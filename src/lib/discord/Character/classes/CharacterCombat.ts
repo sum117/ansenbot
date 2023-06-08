@@ -30,6 +30,44 @@ export interface ResolvedSupportTurn {
   status: Status;
 }
 
+enum AgentDamageReductionFactor {
+  Dodge = 0.25,
+  Block = 0,
+  Flee = 0,
+  Sacrifice = 3,
+}
+
+enum TargetDefenseReductionFactor {
+  Stamina = 0.05,
+  Block = 0.1,
+  Flee = 0.15,
+  Counter = 0.1,
+}
+
+enum TargetFailedDefenseReductionFactor {
+  Stamina = 0.1,
+  Block = 0.15,
+  Flee = 0.25,
+  Counter = 0.2,
+}
+
+enum TargetSkillWeightDivisor {
+  Dexterity = 2,
+  Stamina = 10,
+  Fortitude = 2,
+}
+
+enum TargetSkillWeightMultiplier {
+  Dexterity = 0.4,
+  Stamina = 0.8,
+  Strength = 0.4,
+  Charisma = 0.1,
+}
+
+enum AgentSkillWeightDivisor {
+  Stamina = 20,
+}
+
 export default class CharacterCombat {
   public agent: Character;
   public target: Character;
@@ -103,19 +141,15 @@ export default class CharacterCombat {
     const defenseSuccess = this.prepareDefense(turn.kind);
 
     if (defenseSuccess.success) {
-      // Se a defesa teve sucesso, o dano será reduzido conforme a opção de defesa
       switch (turn.kind) {
         case "dodge":
-          // Se esquivou com sucesso, o dano é reduzido em 75%
-          agentItem.quotient *= 0.25;
+          agentItem.quotient *= AgentDamageReductionFactor.Dodge;
           break;
         case "block":
-          // Se bloqueou com sucesso, o dano é totalmente reduzido
-          agentItem.quotient = 0;
+          agentItem.quotient = AgentDamageReductionFactor.Block;
           break;
         case "flee":
-          // Se fugiu com sucesso, o dano é totalmente reduzido e o turno é encerrado. Os jogadores devem encerrar o combate.
-          agentItem.quotient = 0;
+          agentItem.quotient = AgentDamageReductionFactor.Flee;
           break;
         case "counter":
           // Se o contra-ataque teve sucesso, o dano é refletido de volta ao atacante
@@ -156,7 +190,7 @@ export default class CharacterCombat {
       // gives 1/3 of the health to the target
       const agentHealth = this.agent.expand.status.health;
       const targetHealth = this.target.expand.status.health;
-      const finalHealQuotient = Math.floor(agentHealth / 3);
+      const finalHealQuotient = Math.floor(agentHealth / AgentDamageReductionFactor.Sacrifice);
       const finalHealth = targetHealth + finalHealQuotient;
       statusesReplenished.push("health");
 
@@ -262,15 +296,17 @@ export default class CharacterCombat {
     switch (defenseOption) {
       case "dodge": {
         success = dodgeRandom < dodgeChance;
-        targetStatus.stamina -= success ? targetStatus.stamina * 0.05 : targetStatus.stamina * 0.1;
+        targetStatus.stamina -= success
+          ? targetStatus.stamina * TargetDefenseReductionFactor.Stamina
+          : targetStatus.stamina * TargetFailedDefenseReductionFactor.Stamina;
         break;
       }
       case "block": {
         if (!this.target.expand.body.expand?.leftArm?.isWeapon) {
           success = blockRandom < blockChance;
           targetStatus.stamina -= success
-            ? targetStatus.stamina * 0.1
-            : targetStatus.stamina * 0.15;
+            ? targetStatus.stamina * TargetDefenseReductionFactor.Block
+            : targetStatus.stamina * TargetFailedDefenseReductionFactor.Block;
         } else {
           throw new CombatError("O personagem não está utilizando um escudo.");
         }
@@ -278,12 +314,16 @@ export default class CharacterCombat {
       }
       case "flee": {
         success = fleeRandom < fleeChance;
-        targetStatus.stamina -= success ? targetStatus.stamina * 0.15 : targetStatus.stamina * 0.25;
+        targetStatus.stamina -= success
+          ? targetStatus.stamina * TargetDefenseReductionFactor.Flee
+          : targetStatus.stamina * TargetFailedDefenseReductionFactor.Flee;
         break;
       }
       case "counter": {
         success = counterRandom < counterChance;
-        targetStatus.stamina -= success ? targetStatus.stamina * 0.1 : targetStatus.stamina * 0.2;
+        targetStatus.stamina -= success
+          ? targetStatus.stamina * TargetDefenseReductionFactor.Counter
+          : targetStatus.stamina * TargetFailedDefenseReductionFactor.Counter;
         break;
       }
       default: {
@@ -424,7 +464,11 @@ export default class CharacterCombat {
     agentStatus: Status,
     targetSkills: Skills
   ): number {
-    return targetSkills.dexterity / 2 + targetStatus.stamina / 10 - agentStatus.stamina / 20;
+    return (
+      targetSkills.dexterity / TargetSkillWeightDivisor.Dexterity +
+      targetStatus.stamina / TargetSkillWeightDivisor.Stamina -
+      agentStatus.stamina / AgentSkillWeightDivisor.Stamina
+    );
   }
 
   private calculateBlockChance(
@@ -432,7 +476,11 @@ export default class CharacterCombat {
     agentStatus: Status,
     targetSkills: Skills
   ): number {
-    return targetSkills.fortitude / 2 + targetStatus.stamina / 10 - agentStatus.stamina / 20;
+    return (
+      targetSkills.fortitude / TargetSkillWeightDivisor.Fortitude +
+      targetStatus.stamina / TargetSkillWeightDivisor.Stamina -
+      agentStatus.stamina / AgentSkillWeightDivisor.Stamina
+    );
   }
 
   private calculateFleeChance(
@@ -440,8 +488,10 @@ export default class CharacterCombat {
     agentSkills: Skills,
     targetSkills: Skills
   ): number {
-    const fleeQuotient = (targetStatus.stamina / 10) * targetSkills.stealth;
-    const discoveryQuotient = (targetStatus.stamina / 10) * agentSkills.discovery;
+    const fleeQuotient =
+      (targetStatus.stamina / TargetSkillWeightDivisor.Stamina) * targetSkills.stealth;
+    const discoveryQuotient =
+      (targetStatus.stamina / TargetSkillWeightDivisor.Stamina) * agentSkills.discovery;
     return (fleeQuotient / (fleeQuotient + discoveryQuotient)) * 100;
   }
 
@@ -451,8 +501,10 @@ export default class CharacterCombat {
     targetSkills: Skills
   ): number {
     const counterChance =
-      (targetSkills.strength * 0.4 + targetSkills.dexterity * 0.4 + targetSkills.charisma * 0.1) *
-      ((targetStatus.stamina * 0.8) / agentStatus.stamina);
+      (targetSkills.strength * TargetSkillWeightMultiplier.Strength +
+        targetSkills.dexterity * TargetSkillWeightMultiplier.Dexterity +
+        targetSkills.charisma * TargetSkillWeightMultiplier.Charisma) *
+      ((targetStatus.stamina * TargetSkillWeightMultiplier.Stamina) / agentStatus.stamina);
     return counterChance;
   }
 }
