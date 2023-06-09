@@ -36,6 +36,7 @@ import type { EquipmentItem, SpellItem } from "../../../../types/Item";
 import { CombatError } from "../../../../utils/Errors";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import { ItemFetcher } from "../../../pocketbase/ItemFetcher";
+import getMaxStatus from "../helpers/getMaxStatus";
 import type { CharacterManager } from "./CharacterManager";
 
 export default class CharacterCombat {
@@ -242,18 +243,28 @@ export default class CharacterCombat {
     } = this.agent;
 
     agentStatus.stamina = Math.max(agentStatus.stamina, 1);
+
+    const agentMaxStatus = getMaxStatus(this.agent.expand.skills);
+    const targetMaxStatus = getMaxStatus(this.target.expand.skills);
+
+    const targetStaminaPercentage = (targetStatus.stamina / targetMaxStatus.fortitude) * 100;
+    const agentStaminaPercentage = (agentStatus.stamina / agentMaxStatus.fortitude) * 100;
+
+    const targetToCalc = { ...targetStatus, stamina: targetStaminaPercentage };
+    const agentToCalc = { ...agentStatus, stamina: agentStaminaPercentage };
+
     const dodgeChance = Math.ceil(
-      this.calculateDodgeChance(targetStatus, agentStatus, targetSkills)
+      this.calculateDodgeChance(targetToCalc, agentToCalc, targetSkills)
     );
 
     const blockChance = Math.ceil(
-      this.calculateBlockChance(targetStatus, agentStatus, targetSkills)
+      this.calculateBlockChance(targetToCalc, agentToCalc, targetSkills)
     );
 
-    const fleeChance = Math.ceil(this.calculateFleeChance(targetStatus, agentSkills, targetSkills));
+    const fleeChance = Math.ceil(this.calculateFleeChance(targetToCalc, agentSkills, targetSkills));
 
     const counterChance = Math.ceil(
-      this.calculateCounterChance(targetStatus, agentStatus, targetSkills)
+      this.calculateCounterChance(targetToCalc, agentToCalc, targetSkills)
     );
 
     const dodgeRandom = random(1, 100);

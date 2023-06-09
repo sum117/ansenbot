@@ -9,9 +9,6 @@ export default function getMaxStatus(
   const maxStatus: Record<string, number> = {};
   for (const [status, skill] of getSafeEntries(STATUS_SKILLS_RELATION)) {
     const value = skills[skill];
-    if (typeof value !== "number") {
-      continue;
-    }
     maxStatus[skill] = 100 + STATUS_GAIN_PER_LEVEL[status] * value;
   }
   return maxStatus;
