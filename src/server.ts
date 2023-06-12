@@ -20,7 +20,7 @@ server.post("/post", async (req: express.Request, res: express.Response) => {
   }
   try {
     const character = await CharacterFetcher.getCharacterById(req.body.characterId);
-    const messageOptions = new CharacterPost(character).createMessageOptions({
+    const messageOptions = await new CharacterPost(character).createMessageOptions({
       to: "message",
       embedContent: req.body.message,
     });

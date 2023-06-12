@@ -13,7 +13,6 @@ import server from "./server";
 
 global.EventSource = EventSource as any;
 
-// For testing purposes.
 // const isBotOwner: GuardFunction<Interaction | Message> = async (
 //   interaction: Message | Interaction,
 //   _client,

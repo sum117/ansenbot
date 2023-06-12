@@ -17,6 +17,7 @@ import type {
 } from "./Character";
 import type { BaseItem, Item, Recipe } from "./Item";
 import type { Form } from "./MultiForm";
+import type { Reign } from "./Reign";
 
 export type Collection =
   | Recipe
@@ -37,4 +38,5 @@ export type Collection =
   | Item
   | Effect
   | Channel
+  | Reign
   | Spec;
