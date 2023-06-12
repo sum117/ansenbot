@@ -193,6 +193,7 @@ export class CharacterInteractionController {
       action: "defense",
       spellId: currentInteraction?.spellId,
     });
+
     await interaction.channel?.send(message);
   }
 
@@ -294,6 +295,8 @@ export class CharacterInteractionController {
     target: CharacterManager,
     turn: Turn
   ): Promise<string> {
+    this.turn.delete(agent.character.playerId);
+    this.turn.delete(target.character.playerId);
     const combat = new CharacterCombat({ agent, target });
     let turnResult: AttackTurnResult | SupportTurnResult;
     let message: string;
