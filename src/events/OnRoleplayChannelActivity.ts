@@ -83,19 +83,18 @@ export class OnRoleplayChannelActivity {
   async dismissPresentation(interaction: ButtonInteraction): Promise<void> {
     try {
       await interaction.deferReply();
+      await interaction.message.delete().catch(() => null);
+      await interaction.deleteReply().catch(() => null);
       const channel = interaction.channel;
       if (!channel) {
         return;
       }
       const presentationMessage = this._presentationMessages.get(channel.id);
       if (!presentationMessage) {
-        await interaction.deleteReply().catch(() => null);
         return;
       }
       presentationMessage.updated = new Date().toISOString();
       this._presentationMessages.set(channel.id, presentationMessage);
-      await interaction.message.delete().catch(() => null);
-      await interaction.deleteReply().catch(() => null);
     } catch (error) {
       handleError(interaction, error);
     }
