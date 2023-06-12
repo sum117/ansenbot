@@ -14,6 +14,7 @@ import type { Character } from "../../../../types/Character";
 import { BotError } from "../../../../utils/Errors";
 import getSafeEntries from "../../../../utils/getSafeEntries";
 import PocketBase from "../../../pocketbase/PocketBase";
+import ReignFetcher from "../../../pocketbase/ReignFetcher";
 
 export default class CharacterPost {
   public embed: EmbedBuilder = new EmbedBuilder();
@@ -25,7 +26,7 @@ export default class CharacterPost {
     this.embed.setColor((this.character.expand.race[0].color as ColorResolvable) ?? null);
   }
 
-  public createMessageOptions({
+  public async createMessageOptions({
     to,
     embedContent,
     attachmentUrl,
@@ -33,7 +34,7 @@ export default class CharacterPost {
     attachmentUrl?: string;
     embedContent?: string;
     to: "message" | "profile";
-  }): BaseMessageOptions {
+  }): Promise<BaseMessageOptions> {
     const options: BaseMessageOptions = {};
     let embed: EmbedBuilder = new EmbedBuilder();
 
@@ -43,7 +44,7 @@ export default class CharacterPost {
           "Você não pode fornecer uma mensagem de conteúdo sobre um embed de perfil."
         );
       }
-      embed = this.getProfileEmbed();
+      embed = await this.getProfileEmbed();
     } else {
       if (!embedContent) {
         throw new BotError("Você deve fornecer um conteúdo para o embed.");
@@ -115,7 +116,7 @@ export default class CharacterPost {
     return this.embed;
   }
 
-  private getProfileEmbed(): EmbedBuilder {
+  private async getProfileEmbed(): Promise<EmbedBuilder> {
     if (!this.character.expand) {
       throw new BotError(
         "Não consegui encontrar as informações adicionais para criar o perfil do personagem."
@@ -129,6 +130,11 @@ export default class CharacterPost {
     fields.set("Raça", this.character.expand.race.map((race) => race.name).join(" & "));
     fields.set("Classe", this.character.expand.specs.map((spec) => spec.name).join(" & "));
     fields.set("Dama do Destino", this.character.expand.destinyMaiden.name);
+
+    const reign = await ReignFetcher.getReignByCharacterId(this.character.id);
+    if (reign) {
+      fields.set("Reino", reign.name);
+    }
 
     if (this.character.expand.faction) {
       fields.set("Facção", this.character.expand.faction.name);

@@ -4,6 +4,7 @@ export const SPINNER_EMOJI = "<a:spinner:1094479348037324820>";
 
 export const COLLECTIONS = {
   recipes: "recipes",
+  reigns: "reigns",
   characters: "characters",
   posts: "posts",
   factions: "factions",
@@ -249,7 +250,9 @@ export const STATUS_GIVEN_PER_RARITY_RANGE = {
 export const SPIRIT_GAIN_PER_TICK = 125;
 export const MATERIAL_GAIN_PER_TICK_RANGE = [1, 3] as const;
 export const ENDURANCE_GAIN_PER_SAFE_TICK_MULTIPLIER = 2;
-
+export const REIGN_CREATION_COST = 30_000;
+export const REIGN_CHANNEL_CREATION_BASE_COST = 10_000;
+export const REIGN_CHANNEL_MAX_AMOUNT = 10;
 export const RARITY_IMAGES = {
   n: "https://i.imgur.com/OEqauf9.png",
   r: "https://i.imgur.com/d4X0vu2.png",

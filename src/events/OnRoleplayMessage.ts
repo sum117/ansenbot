@@ -67,7 +67,7 @@ export class OnRoleplayMessage {
       const messageMentions = message.mentions.users;
       const sanitizedContent = message.content.replace(/<@!?\d+>/g, "").trim();
 
-      const messageOptions = characterPost.createMessageOptions({
+      const messageOptions = await characterPost.createMessageOptions({
         to: "message",
         embedContent: sanitizedContent,
         attachmentUrl: message.attachments.first()?.url,

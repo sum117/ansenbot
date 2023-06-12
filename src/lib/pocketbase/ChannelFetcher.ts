@@ -1,5 +1,7 @@
 import type { Channel } from "../../types/Channel";
 import type { CreateData } from "../../types/PocketBaseCRUD";
+import getImageBlob from "../../utils/getImageBlob";
+import jsonToFormData from "../../utils/jsonToFormData";
 import PocketBase from "./PocketBase";
 
 export class ChannelFetcher {
@@ -15,6 +17,15 @@ export class ChannelFetcher {
       entityType: "channels",
       entityData: data,
     });
+  }
+  public static async createChannelWithFormData(data: CreateData<Channel>): Promise<Channel> {
+    const { blob, fileName } = await getImageBlob(data.image);
+
+    const formData = jsonToFormData(data);
+    formData.delete("image");
+    formData.append("image", blob, fileName);
+
+    return PocketBase.createEntityWithFormData<Channel>("channels", formData);
   }
 
   public static deleteChannelById(id: string): Promise<boolean> {

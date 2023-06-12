@@ -160,7 +160,7 @@ export class CharacterCreatorController {
       owner: userMention(character.playerId),
     };
 
-    const characterProfile = new CharacterPost(character).createMessageOptions({
+    const characterProfile = await new CharacterPost(character).createMessageOptions({
       to: "profile",
     });
     characterProfile.content = mustache.render(
