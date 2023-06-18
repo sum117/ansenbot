@@ -5,6 +5,7 @@ import { ButtonComponent, Discord, On } from "discordx";
 import random from "lodash.random";
 import mustache from "mustache";
 
+import config from "../../config.json" assert { type: "json" };
 import {
   ENDURANCE_GAIN_PER_SAFE_TICK_MULTIPLIER,
   MATERIAL_GAIN_PER_TICK_RANGE,
@@ -56,7 +57,6 @@ export class OnRoleplayMessage {
       const roleplayData = await getRoleplayDataFromUserId(message.author.id).catch(() => {
         return null;
       });
-
       if (!roleplayData) {
         return;
       }
@@ -320,7 +320,14 @@ export class OnRoleplayMessage {
   }
 
   private isValidRoleplayMessage(message: Message): boolean {
-    if (!message.inGuild() || !message.channel.parent) {
+    const isNarratorPrefix = message.content.startsWith("#");
+
+    if (
+      !message.inGuild() ||
+      !message.channel.parent ||
+      this.isClassicMember(message) ||
+      isNarratorPrefix
+    ) {
       return false;
     }
 
@@ -329,5 +336,11 @@ export class OnRoleplayMessage {
       message.channel.parent.name.startsWith("RP") &&
       !message.author.bot
     );
+  }
+
+  // Some players dislike using our bot to roleplay, so we made a role that lets them be able to play with tupperbox instead.
+  private isClassicMember(message: Message): boolean {
+    const classicRoleId = config.roles.classic;
+    return message.member?.roles.cache.has(classicRoleId) ?? false;
   }
 }

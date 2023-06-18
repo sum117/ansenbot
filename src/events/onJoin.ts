@@ -30,15 +30,13 @@ export class OnJoin {
       );
 
       const WELCOME_TIMEOUT = 5 * 60 * 1000;
-      const WELCOME_REGEX = /bem[- ]?vindo/i;
+      const WELCOME_REGEX = /bem[- ]?vind(o|a)/i;
       const WELCOME_REWARD = 100;
       const WELCOME_RESPONSE_DELAY = 5_000;
 
       const welcomeCollector = generalChat.createMessageCollector({
         filter: (message) =>
-          !this.alreadyWelcomed.has(message.author.id) &&
-          WELCOME_REGEX.test(message.content) &&
-          message.mentions.has(member.id),
+          !this.alreadyWelcomed.has(message.author.id) && WELCOME_REGEX.test(message.content),
         time: WELCOME_TIMEOUT,
       });
 

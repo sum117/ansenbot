@@ -16,6 +16,7 @@ import { ButtonComponent, Discord, ModalComponent, SelectMenuComponent, Slash } 
 import mustache from "mustache";
 
 import config from "../../../config.json" assert { type: "json" };
+import { requiredCreateCharacterFieldsDictionary } from "../../data/translations";
 import characterApprovalBtnRow from "../../lib/discord/UI/character/characterApprovalBtnRow";
 import characterCreateForm from "../../lib/discord/UI/character/characterCreateForm";
 import {
@@ -35,20 +36,22 @@ import getCombinedImageUrl from "../../utils/getCombinedImageUrl";
 import handleError from "../../utils/handleError";
 import numberInRange from "../../utils/numberInRange";
 
+export type CharacterCreatorInstance = {
+  interaction: ButtonInteraction | StringSelectMenuInteraction;
+  form?: Partial<CreateUpdateCharacter>;
+};
+
 @Discord()
 export class CharacterCreatorController {
-  private characterCreatorInstances: Map<
-    Snowflake,
-    {
-      interaction: ButtonInteraction | StringSelectMenuInteraction;
-      form?: Partial<CreateUpdateCharacter>;
-    }
-  > = new Map();
+  private characterCreatorInstances: Map<Snowflake, CharacterCreatorInstance> = new Map();
   private modals = {
     required: characterCreateModal,
     optional: characterCreateModalOptional,
   };
   private totalSteps = "0";
+  private sanitizeCollections = ["races", "factions", "destinyMaidens"];
+  private arrayInBackendCollections = ["races", "specs"];
+  private requiredCollections = ["races", "destinyMaidens", "specs"];
 
   @Slash({
     name: "gerar-painel-criar-personagem",
@@ -222,6 +225,8 @@ export class CharacterCreatorController {
     const form = await characterCreateForm(interaction);
     const mainInstance = await this.getCreatorInstance(interaction);
 
+    const isArrayInBackend = this.arrayInBackendCollections.includes(form.step.collection);
+
     if (state === "cancel" && mainInstance) {
       this.characterCreatorInstances.delete(interaction.user.id);
       await mainInstance.interaction.deleteReply().catch(() => null);
@@ -236,72 +241,96 @@ export class CharacterCreatorController {
     );
 
     if (Number(step) > form.totalSteps && interaction instanceof ButtonInteraction) {
-      await mainInstance.interaction.editReply(
-        characterCreateModalTrigger(false, form.totalSteps.toString())
-      );
-      this.totalSteps = form.totalSteps.toString();
-
+      await this.handleTotalStepsExceeded(form, mainInstance);
       return;
     }
 
     if (variant === "createCharChoice") {
       const entities = await this.fetchEntities(interaction, form, itemId);
+      const sanitizedFieldName = this.getSanitizedFieldName(form.step.collection);
 
-      // Define a list of collections that should be sanitized
-      const sanitizeCollections = ["races", "factions", "destinyMaidens"];
-
-      // Define a list of collections that have an array in the backend
-      const arrayInBackendCollections = ["races", "specs"];
-
-      /**
-       * Get the sanitized field name for the form.
-       * @param collection The collection name.
-       * @returns The sanitized field name.
-       */
-      function getSanitizedFieldName(collection: string): string {
-        if (sanitizeCollections.includes(collection)) {
-          return collection.replace(/s$/, "");
-        }
-        return collection;
-      }
-
-      /**
-       * Get the value for the form field based on entities and the backend structure.
-       * @param entities The entities list.
-       * @param isArrayInBackend Indicates if the collection has an array in the backend.
-       * @returns The value for the form field.
-       */
-      function getFormFieldValue(
-        entities: (Race | Faction | Spec)[],
-        isArrayInBackend: boolean
-      ): string | string[] {
-        if (entities.length > 1) {
-          return entities.map((entity) => entity.id);
-        }
-
-        if (isArrayInBackend) {
-          return [entities[0].id];
-        }
-
-        return entities[0].id;
-      }
-
-      // Obtain the sanitized field name
-      const sanitizedFieldName = getSanitizedFieldName(form.step.collection);
-
-      // Determine if the collection has an array in the backend
-      const isArrayInBackend = arrayInBackendCollections.includes(form.step.collection);
-
-      // Update the main instance form
       mainInstance.form = {
         ...mainInstance.form,
-        [sanitizedFieldName]: getFormFieldValue(entities, isArrayInBackend),
+        [sanitizedFieldName]: this.getFormFieldValue(entities, isArrayInBackend),
       };
 
       this.characterCreatorInstances.set(interaction.user.id, mainInstance);
       this.updateFormPrompt(form, entities);
     }
     await mainInstance.interaction.editReply(form.prompt);
+  }
+
+  private getSanitizedFieldName(collection: string): keyof CreateUpdateCharacter {
+    if (this.sanitizeCollections.includes(collection)) {
+      collection = collection.replace(/s$/, "");
+    }
+    if (!(collection in createUpdateCharacterSchema.keyof().Enum)) {
+      throw new BotError(
+        `Não foi possível encontrar o campo sanitizado para a coleção ${collection}. Contate um administrador.`
+      );
+    }
+
+    return collection as keyof CreateUpdateCharacter;
+  }
+
+  private getFormFieldValue(
+    entities: (Race | Faction | Spec)[],
+    isArrayInBackend: boolean
+  ): string | string[] {
+    if (entities.length > 1) {
+      return entities.map((entity) => entity.id);
+    }
+
+    if (isArrayInBackend) {
+      return [entities[0].id];
+    }
+
+    return entities[0].id;
+  }
+
+  private async handleTotalStepsExceeded(
+    form: Awaited<ReturnType<typeof characterCreateForm>>,
+    mainInstance: CharacterCreatorInstance
+  ): Promise<void> {
+    const lastStepForm = characterCreateModalTrigger(false, form.totalSteps.toString());
+
+    const missingRequiredFields = this.requiredCollections.map((collection) => {
+      const sanitizedFieldName = this.getSanitizedFieldName(collection);
+      if (!mainInstance.form?.[sanitizedFieldName]) {
+        return collection;
+      }
+      return null;
+    });
+
+    if (missingRequiredFields.some((field) => Boolean(field))) {
+      const listFmt = new Intl.ListFormat("pt-BR", {
+        style: "long",
+        type: "conjunction",
+      });
+
+      lastStepForm.setEmbedDescription(
+        mustache.render(
+          "# ⚠️ Você ainda não preencheu os campos obrigatórios: {{{fields}}}. Isso resultará em um erro ao tentar criar o personagem. Por favor retorne e escolha-os.",
+          {
+            fields: listFmt.format(
+              missingRequiredFields
+                .filter(
+                  (field): field is keyof typeof requiredCreateCharacterFieldsDictionary =>
+                    Boolean(field) &&
+                    typeof field === "string" &&
+                    field in requiredCreateCharacterFieldsDictionary
+                )
+                .map((field) => {
+                  return requiredCreateCharacterFieldsDictionary[field];
+                })
+            ),
+          }
+        )
+      );
+    }
+
+    await mainInstance.interaction.editReply(lastStepForm);
+    this.totalSteps = form.totalSteps.toString();
   }
 
   private async fetchEntities(

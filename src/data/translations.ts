@@ -60,3 +60,9 @@ export const itemTypesDictionary = {
   equipment: "<:equipmentemoji:1110953970832244886> Equipamento",
   spell: "<:spellemoji:1110953972941979799> Feitiço",
 };
+
+export const requiredCreateCharacterFieldsDictionary = {
+  races: "Raças",
+  destinyMaidens: "Donzelas do Destino",
+  specs: "Classes",
+};

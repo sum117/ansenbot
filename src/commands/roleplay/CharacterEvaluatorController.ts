@@ -132,13 +132,11 @@ export class CharacterEvaluatorController {
     approvedCharacterEmbed.setFields(
       embedFields.filter((field) => field.name !== "Dono" && field.name !== "Skills")
     );
-    approvedCharacterEmbed.setDescription(
-      mustache.render("Personagem de {{{owner}}} aprovado por {{{staff}}}", view)
-    );
+
     await this.interaction.deleteReply().catch(() => null);
     await deleteDiscordMessage(this.interaction.message, 0);
     await approvedCharacterChannel.send({
-      content: mustache.render("||{{{owner}}} {{{staff}}}||", view),
+      content: mustache.render("Personagem de {{{owner}}} aprovado por {{{staff}}}", view),
       embeds: [approvedCharacterEmbed],
     });
   }
