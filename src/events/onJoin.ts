@@ -62,7 +62,7 @@ export class OnJoin {
           mustache.render(
             "{{{emoji}}} {{{welcomer}}} recebeu **{{{reward}}}** de Lascas Espirituais no(a) {{{character}}} por dar as boas-vindas à {{{member}}}!",
             {
-              member: member.toString(),
+              member: member.user.username,
               reward: WELCOME_REWARD,
               welcomer: message.author.toString(),
               emoji: "<:spe:1112959211576508437>",
