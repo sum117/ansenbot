@@ -26,11 +26,11 @@ export default async function getInteractionMetadata(
 
   const [attackerImage, targetImage] = [
     PocketBase.getImageUrl({ record: agent, fileName: agent.image }).replace(
-      "https://pocketbase.sumserver.xyz/api/files/",
+      `${process.env.POCKETBASE_URL}api/files/`,
       ""
     ),
     PocketBase.getImageUrl({ record: target, fileName: target.image }).replace(
-      "https://pocketbase.sumserver.xyz/api/files/",
+      `${process.env.POCKETBASE_URL}api/files/`,
       ""
     ),
   ];
