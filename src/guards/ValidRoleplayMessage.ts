@@ -9,6 +9,9 @@ function isClassicMember(message: Message): boolean {
   return message.member?.roles.cache.has(classicRoleId) ?? false;
 }
 
+/**
+ * Checks if the message is a roleplaying message
+ */
 export const ValidRoleplayMessage: GuardFunction<ArgsOf<"messageCreate">> = async (
   [message],
   _client,
