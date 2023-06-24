@@ -1,6 +1,6 @@
-import type { Client } from "discord.js";
-import type { ArgsOf } from "discordx";
-import { Discord, On } from "discordx";
+import { NotBot } from "@discordx/utilities";
+import type { SimpleCommandMessage } from "discordx";
+import { Discord, Guard, SimpleCommand } from "discordx";
 import type { ConversationalRetrievalQAChain } from "langchain/chains";
 import { OpenAIEmbeddings } from "langchain/embeddings";
 import { PineconeStore } from "langchain/vectorstores";
@@ -30,13 +30,10 @@ export class OnOracleChat {
     this._chain = chain;
   }
 
-  @On()
-  async messageCreate([message]: ArgsOf<"messageCreate">, _client: Client): Promise<void> {
+  @SimpleCommand({ name: "oracle" })
+  @Guard(NotBot)
+  async main({ message }: SimpleCommandMessage): Promise<void> {
     try {
-      if (!message.content.startsWith("!oracle")) {
-        return;
-      }
-
       if (!this.vectorStore) {
         const index = pineconeClient?.Index(PINECONE_INDEX_NAME);
         if (!index) {

@@ -7,6 +7,9 @@ dependencies:
   '@discordx/pagination':
     specifier: ^3.4.1
     version: 3.4.1(discord.js@14.11.0)
+  '@discordx/utilities':
+    specifier: ^5.2.1
+    version: 5.2.1(discord.js@14.11.0)(discordx@11.7.6)
   '@pinecone-database/pinecone':
     specifier: ^0.1.6
     version: 0.1.6
@@ -496,6 +499,18 @@ packages:
     dependencies:
       discord.js: 14.11.0
       lodash: 4.17.21
+      tslib: 2.5.2
+    dev: false
+
+  /@discordx/utilities@5.2.1(discord.js@14.11.0)(discordx@11.7.6):
+    resolution: {integrity: sha512-wEGMwRvp7vMZqy0E6sXzeQHsNc7hYaCH7c+bRJqHb+iDN/paX6+oWrcLaRKVpw0DGEpdqF4bh/y3M8iP0VtRzg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    peerDependencies:
+      discord.js: '>=14 || ^14.0.0-dev'
+      discordx: '>=10 || ^10.0.0-dev'
+    dependencies:
+      discord.js: 14.11.0
+      discordx: 11.7.6(discord.js@14.11.0)
       tslib: 2.5.2
     dev: false
 

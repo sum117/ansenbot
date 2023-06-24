@@ -1,17 +1,18 @@
+import { NotBot } from "@discordx/utilities";
 import type { BaseMessageOptions, ButtonInteraction, Message } from "discord.js";
-import { AttachmentBuilder, ChannelType, EmbedBuilder, userMention } from "discord.js";
+import { AttachmentBuilder, EmbedBuilder, userMention } from "discord.js";
 import type { ArgsOf } from "discordx";
-import { ButtonComponent, Discord, On } from "discordx";
+import { ButtonComponent, Discord, Guard, On } from "discordx";
 import random from "lodash.random";
 import mustache from "mustache";
 
-import config from "../../config.json" assert { type: "json" };
 import {
   ENDURANCE_GAIN_PER_SAFE_TICK_MULTIPLIER,
   MATERIAL_GAIN_PER_TICK_RANGE,
   SPIRIT_GAIN_PER_TICK,
   STATUS_SKILLS_RELATION,
 } from "../data/constants";
+import { ValidRoleplayMessage } from "../guards/ValidRoleplayMessage";
 import type { CharacterManager } from "../lib/discord/Character/classes/CharacterManager";
 import getMaxStatus from "../lib/discord/Character/helpers/getMaxStatus";
 import getRoleplayDataFromUserId from "../lib/discord/Character/helpers/getRoleplayDataFromUserId";
@@ -36,12 +37,9 @@ import handleError from "../utils/handleError";
 @Discord()
 export class OnRoleplayMessage {
   @On({ event: "messageCreate" })
+  @Guard(NotBot, ValidRoleplayMessage)
   async main([message]: ArgsOf<"messageCreate">): Promise<void> {
     try {
-      if (!this.isValidRoleplayMessage(message)) {
-        return;
-      }
-
       const isOffTopic =
         message.content.startsWith("//") ||
         message.content.startsWith("!") ||
@@ -317,30 +315,5 @@ export class OnRoleplayMessage {
         console.error(error);
       });
     }
-  }
-
-  private isValidRoleplayMessage(message: Message): boolean {
-    const isNarratorPrefix = message.content.startsWith("#");
-
-    if (
-      !message.inGuild() ||
-      !message.channel.parent ||
-      this.isClassicMember(message) ||
-      isNarratorPrefix
-    ) {
-      return false;
-    }
-
-    return (
-      message.channel.type === ChannelType.GuildText &&
-      message.channel.parent.name.startsWith("RP") &&
-      !message.author.bot
-    );
-  }
-
-  // Some players dislike using our bot to roleplay, so we made a role that lets them be able to play with tupperbox instead.
-  private isClassicMember(message: Message): boolean {
-    const classicRoleId = config.roles.classic;
-    return message.member?.roles.cache.has(classicRoleId) ?? false;
   }
 }

@@ -1,7 +1,8 @@
+import { NotBot } from "@discordx/utilities";
 import axios from "axios";
 import { AttachmentBuilder } from "discord.js";
 import type { ArgsOf } from "discordx";
-import { Discord, On } from "discordx";
+import { Discord, Guard, On } from "discordx";
 import ffmpegPath from "ffmpeg-static";
 import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
@@ -11,6 +12,7 @@ import type { videoInfo } from "ytdl-core";
 import ytdl from "ytdl-core";
 
 import { SPINNER_EMOJI } from "../../data/constants";
+import { inChannel } from "../../guards/InChannel";
 import deleteDiscordMessage from "../../utils/deleteDiscordMessage";
 import handleError from "../../utils/handleError";
 import Queue from "../../utils/Queue";
@@ -30,33 +32,30 @@ export class MergeImageVideo {
   private queue = new Queue();
 
   @On({ event: "messageCreate" })
+  @Guard(NotBot, inChannel("commands"))
   public main([message]: ArgsOf<"messageCreate">): void {
+    if (!ffmpegPath) {
+      return;
+    }
+
+    const audioLink = message.content;
+    if (!ytdl.validateURL(audioLink)) {
+      return;
+    }
+
+    const imageAttachment = message.attachments.first();
+    if (!imageAttachment) {
+      return;
+    }
+
+    const imageLink = imageAttachment.url;
+    const imageSuffix = imageLink?.split("/").pop();
+    if (!imageSuffix) {
+      return;
+    }
+
     this.queue.enqueue(async () => {
       try {
-        if (message.author.bot) {
-          return;
-        }
-
-        if (!ffmpegPath) {
-          return;
-        }
-
-        const audioLink = message.content;
-        if (!ytdl.validateURL(audioLink)) {
-          return;
-        }
-
-        const imageAttachment = message.attachments.first();
-        if (!imageAttachment) {
-          return;
-        }
-
-        const imageLink = imageAttachment.url;
-        const imageSuffix = imageLink?.split("/").pop();
-        if (!imageSuffix) {
-          return;
-        }
-
         const paths = this.getPaths(imageSuffix);
         if (typeof paths.audioPath !== "string") {
           return;

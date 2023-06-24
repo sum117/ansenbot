@@ -1,3 +1,4 @@
+import { NotBot } from "@discordx/utilities";
 import type {
   ButtonInteraction,
   CategoryChannel,
@@ -9,9 +10,10 @@ import type {
 } from "discord.js";
 import { ChannelType } from "discord.js";
 import type { ArgsOf } from "discordx";
-import { ButtonComponent, Discord, On, Once } from "discordx";
+import { ButtonComponent, Discord, Guard, On, Once } from "discordx";
 
 import config from "../../config.json" assert { type: "json" };
+import { ValidRoleplayMessage } from "../guards/ValidRoleplayMessage";
 import channelPlaceholderDismissButton from "../lib/discord/UI/channel/channelPlaceholderDismissButton";
 import { channelPlaceHolderEmbed } from "../lib/discord/UI/channel/channelPlaceholderEmbed";
 import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
@@ -62,11 +64,9 @@ export class OnRoleplayChannelActivity {
   }
 
   @On({ event: "messageCreate" })
+  @Guard(NotBot, ValidRoleplayMessage)
   resetTimer([message]: ArgsOf<"messageCreate">): void {
     try {
-      if (message.author.bot) {
-        return;
-      }
       const channel = message.channel;
       const presentationMessage = this._presentationMessages.get(channel.id);
       if (!presentationMessage) {

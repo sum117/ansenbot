@@ -17,6 +17,7 @@
   "dependencies": {
     "@discordx/importer": "^1.2.2",
     "@discordx/pagination": "^3.4.1",
+    "@discordx/utilities": "^5.2.1",
     "@pinecone-database/pinecone": "^0.1.6",
     "@vitalets/google-translate-api": "^9.2.0",
     "axios": "^1.4.0",

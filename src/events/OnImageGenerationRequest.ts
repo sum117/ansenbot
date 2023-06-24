@@ -1,10 +1,11 @@
+import { NotBot } from "@discordx/utilities";
 import type { Message, Snowflake } from "discord.js";
-import { AttachmentBuilder, ChannelType, Collection, userMention } from "discord.js";
+import { AttachmentBuilder, Collection, userMention } from "discord.js";
 import type { ArgsOf, Client } from "discordx";
-import { Discord, On } from "discordx";
+import { Discord, Guard, On } from "discordx";
 
-import config from "../../config.json" assert { type: "json" };
 import { SPINNER_EMOJI } from "../data/constants";
+import { ValidGenerationRequest } from "../guards/ValidGenerationRequest";
 import { novelRequestImageGen } from "../lib/anime-img-gen/novelAIApi";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import { BotError } from "../utils/Errors";
@@ -31,18 +32,9 @@ export class OnImageGenerationRequest {
   }
 
   @On()
+  @Guard(NotBot, ValidGenerationRequest)
   async messageCreate([message]: ArgsOf<"messageCreate">, _client: Client): Promise<void> {
     try {
-      const canExecute =
-        message.channel.type === ChannelType.GuildText &&
-        message.channelId === config.channels.imageGen &&
-        message.content.startsWith("```") &&
-        !message.author.bot;
-
-      if (!canExecute) {
-        return;
-      }
-
       if (this.pendingUserImageRequests.get(message.author.id)?.isPending) {
         await message.reply("❌ Você já tem uma imagem sendo gerada.");
         return;
