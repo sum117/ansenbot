@@ -20,6 +20,7 @@ import { ChannelFetcher } from "../lib/pocketbase/ChannelFetcher";
 import type { Channel } from "../types/Channel";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import handleError from "../utils/handleError";
+import logger from "../utils/loggerFactory";
 
 @Discord()
 export class OnRoleplayChannelActivity {
@@ -35,14 +36,14 @@ export class OnRoleplayChannelActivity {
           .get(config.guilds.ansenfall)
           ?.channels.cache.filter(this.isRoleplayingCategory);
         if (!roleplayingCategories) {
-          console.error("Nenhuma categoria de Roleplay foi encontrada no servidor.");
+          logger.error("Nenhuma categoria de Roleplay foi encontrada no servidor.");
           return;
         }
         const roleplayingChannels = this.getRoleplayingChannels(roleplayingCategories);
         await this.cachePresentationMessages(roleplayingChannels);
         await this.processRoleplayingChannels(roleplayingChannels);
       } catch (error) {
-        console.error(error);
+        logger.error(error);
       }
     }, this.LoopInterval);
   }
@@ -59,7 +60,7 @@ export class OnRoleplayChannelActivity {
       this._presentationMessages.delete(channel.id);
       await ChannelFetcher.deleteChannelById(channel.id);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   }
 
@@ -150,7 +151,7 @@ export class OnRoleplayChannelActivity {
       }
       return presentationMessage;
     } catch (error) {
-      console.error("Incapaz de carregar as mensagens do canal de RP " + channel.id + ": " + error);
+      logger.error("Incapaz de carregar as mensagens do canal de RP " + channel.id + ": " + error);
       return null;
     }
   }

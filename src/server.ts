@@ -6,6 +6,7 @@ import CharacterPost from "./lib/discord/UI/classes/CharacterPost";
 import CharacterFetcher from "./lib/pocketbase/CharacterFetcher";
 import PostFetcher from "./lib/pocketbase/PostFetcher";
 import { bot } from "./main";
+import logger from "./utils/loggerFactory";
 
 const server = express();
 
@@ -27,10 +28,10 @@ server.post("/post", async (req: express.Request, res: express.Response) => {
     const message = await channel.send(messageOptions);
     message.author.id = req.body.userId;
     const post = await PostFetcher.createPost(message);
-    console.log(post);
+    logger.info(post);
     res.status(200).json(post);
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     res.status(500).json(error);
   }
 });

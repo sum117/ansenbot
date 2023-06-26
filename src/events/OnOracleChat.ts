@@ -10,6 +10,7 @@ import { makeChain } from "../lib/ansen-gpt";
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from "../lib/ansen-gpt/config/pinecone";
 import { pineconeClient } from "../lib/ansen-gpt/utils/pineconeClient";
 import { BotError } from "../utils/Errors";
+import logger from "../utils/loggerFactory";
 
 @Discord()
 export class OnOracleChat {
@@ -37,7 +38,7 @@ export class OnOracleChat {
       if (!this.vectorStore) {
         const index = pineconeClient?.Index(PINECONE_INDEX_NAME);
         if (!index) {
-          console.error("Pinecone Client not initialized");
+          logger.error("Pinecone Client not initialized");
           return;
         }
         this.vectorStore = await PineconeStore.fromExistingIndex(new OpenAIEmbeddings({}), {
@@ -66,7 +67,7 @@ export class OnOracleChat {
       }
       this.history.push([sanitizedMessage, ""]);
     } catch (error) {
-      console.error("Error on oracle chat", error);
+      logger.error("Error on oracle chat", error);
       await message
         .reply(
           "Me desculpe... estou com problemas internos no momento, tente novamente mais tarde."

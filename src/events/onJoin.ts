@@ -6,6 +6,7 @@ import mustache from "mustache";
 import config from "../../config.json" assert { type: "json" };
 import getRoleplayDataFromUserId from "../lib/discord/Character/helpers/getRoleplayDataFromUserId";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
+import logger from "../utils/loggerFactory";
 
 @Discord()
 export class OnJoin {
@@ -16,7 +17,7 @@ export class OnJoin {
     try {
       const generalChat = await member.guild.channels.fetch(config.channels.general);
       if (!generalChat || generalChat.type !== ChannelType.GuildText) {
-        console.error("General Channel not found");
+        logger.error("General Channel not found");
         return;
       }
 
@@ -77,7 +78,7 @@ export class OnJoin {
         this.alreadyWelcomed.clear();
       });
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   }
 
@@ -92,7 +93,7 @@ export class OnJoin {
 
       const channel = await newMember.guild.channels.fetch(config.channels.mentor);
       if (!channel || channel.type !== ChannelType.GuildText) {
-        console.error("Mentor Channel not found");
+        logger.error("Mentor Channel not found");
         return;
       }
 
@@ -103,7 +104,7 @@ export class OnJoin {
         )
         .random();
       if (!randomStaff) {
-        console.error("No staff found for mentor channel");
+        logger.error("No staff found for mentor channel");
         return;
       }
 
@@ -117,7 +118,7 @@ export class OnJoin {
         )
       );
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   }
 }

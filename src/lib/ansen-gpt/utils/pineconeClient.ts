@@ -1,6 +1,7 @@
 import { PineconeClient } from "@pinecone-database/pinecone";
 
 import { BotError } from "../../../utils/Errors";
+import logger from "../../../utils/loggerFactory";
 
 if (!process.env.PINECONE_ENVIRONMENT || !process.env.PINECONE_API_KEY) {
   throw new BotError("As variáveis de ambiente do Pinecone não foram encontradas.");
@@ -17,7 +18,7 @@ async function initPinecone() {
 
     return pinecone;
   } catch (error) {
-    console.error("Error initializing pinecone client", error);
+    logger.error("Error initializing pinecone client", error);
   }
 }
 

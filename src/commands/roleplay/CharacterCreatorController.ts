@@ -34,6 +34,7 @@ import type { Character, CreateUpdateCharacter, Faction, Race, Spec } from "../.
 import { BotError, PocketBaseError } from "../../utils/Errors";
 import getCombinedImageUrl from "../../utils/getCombinedImageUrl";
 import handleError from "../../utils/handleError";
+import logger from "../../utils/loggerFactory";
 import numberInRange from "../../utils/numberInRange";
 
 export type CharacterCreatorInstance = {
@@ -143,7 +144,7 @@ export class CharacterCreatorController {
         components: [],
         embeds: [],
       })
-      .catch((error) => console.error(error));
+      .catch(logger.error);
 
     const queueChannel = interaction.guild?.channels.cache.get(
       config.channels.createCharacterQueue

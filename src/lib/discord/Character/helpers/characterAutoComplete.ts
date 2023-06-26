@@ -1,6 +1,7 @@
 import type { AutocompleteInteraction, User } from "discord.js";
 import type { RecordFullListQueryParams } from "pocketbase";
 
+import logger from "../../../../utils/loggerFactory";
 import CharacterFetcher from "../../../pocketbase/CharacterFetcher";
 
 export function characterAutoCompleteFromPlayer(
@@ -17,7 +18,7 @@ export function characterAutoCompleteFromPlayer(
       value: character.id,
     }));
 
-    interaction.respond(choices).catch(console.error);
+    interaction.respond(choices).catch(logger.error);
   });
 }
 
@@ -30,7 +31,7 @@ export function characterAutoCompleteFromAll(interaction: AutocompleteInteractio
         value: character.id,
       }));
 
-      interaction.respond(choices).catch(console.error);
+      interaction.respond(choices).catch(logger.error);
     });
 
   if (!userInput) {

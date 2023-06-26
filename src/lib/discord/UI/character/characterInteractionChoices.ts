@@ -1,6 +1,7 @@
 import { ApplicationCommandOptionType, ChannelType } from "discord.js";
 import type { SlashOptionOptions } from "discordx";
 
+import logger from "../../../../utils/loggerFactory";
 import MemoryFetcher from "../../../pocketbase/MemoryFetcher";
 import {
   characterAutoCompleteFromAll,
@@ -48,7 +49,7 @@ const memoryChoice: SlashOptionOptions<"memoria", "A memória que irá utilizar.
         name: memory.title,
         value: memory.title,
       }));
-      interaction.respond(choices).catch(console.error);
+      interaction.respond(choices).catch(logger.error);
     });
   },
 };

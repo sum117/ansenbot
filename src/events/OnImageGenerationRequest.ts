@@ -9,6 +9,7 @@ import { ValidGenerationRequest } from "../guards/ValidGenerationRequest";
 import { novelRequestImageGen } from "../lib/anime-img-gen/novelAIApi";
 import deleteDiscordMessage from "../utils/deleteDiscordMessage";
 import { BotError } from "../utils/Errors";
+import logger from "../utils/loggerFactory";
 import Queue from "../utils/Queue";
 
 @Discord()
@@ -55,12 +56,12 @@ export class OnImageGenerationRequest {
 
       await this.imageGenerationQueue.enqueue(async () => {
         await this.generateAnimeImage().catch((error) => {
-          console.error("Error while generating image", error);
+          logger.error("Error while generating image", error);
           this.pendingUserImageRequests.delete(message.author.id);
         });
       });
     } catch (error) {
-      console.error("Error while sending image to discord", error);
+      logger.error("Error while sending image to discord", error);
       this.pendingUserImageRequests.delete(message.author.id);
     }
   }

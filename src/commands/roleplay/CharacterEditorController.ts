@@ -31,6 +31,7 @@ import PocketBase from "../../lib/pocketbase/PocketBase";
 import type { Player } from "../../types/Character";
 import { BotError, PocketBaseError } from "../../utils/Errors";
 import handleError from "../../utils/handleError";
+import logger from "../../utils/loggerFactory";
 import replyOrFollowUp from "../../utils/replyOrFollowUp";
 
 @Discord()
@@ -57,7 +58,7 @@ export class CharacterEditorController {
         content: `Seu personagem principal foi setado para ${character.name}.`,
       });
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       if (error instanceof PocketBaseError) {
         await interaction
           .editReply({

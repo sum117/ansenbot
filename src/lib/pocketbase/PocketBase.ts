@@ -18,14 +18,15 @@ import type {
   GetFirstEntityByFilterParams,
   UpdateEntityParams,
 } from "../../types/PocketBaseCRUD";
+import logger from "../../utils/loggerFactory";
 import channelPlaceholderDismissButton from "../discord/UI/channel/channelPlaceholderDismissButton";
 import { channelPlaceHolderEmbed } from "../discord/UI/channel/channelPlaceholderEmbed";
 
 const pb = new PB(process.env.POCKETBASE_URL);
 await pb.admins.authWithPassword(
-  process.env.POCKETBASE_ADMIN_EMAIL ?? (console.error("No admin email provided"), process.exit(1)),
+  process.env.POCKETBASE_ADMIN_EMAIL ?? (logger.error("No admin email provided"), process.exit(1)),
   process.env.POCKETBASE_ADMIN_PASSWORD ??
-    (console.error("No admin password provided"), process.exit(1))
+    (logger.error("No admin password provided"), process.exit(1))
 );
 pb.autoCancellation(false);
 
@@ -47,7 +48,7 @@ export default class PocketBase {
     record: Pick<DBRecord, "id" | "collectionId" | "collectionName">;
     thumb?: boolean;
   }): string {
-    const url = new URL(process.env.POCKETBASE_IMAGE_URL ?? "");
+    const url = new URL(process.env.POCKETBASE_URL ?? "");
     url.pathname = `/api/files/${record.collectionName}/${record.id}/${fileName}`;
     if (thumb) {
       url.searchParams.set("thumb", "512x512");
@@ -204,7 +205,7 @@ export async function channelSubscriptionCallback(
       placeholderMessageId: placeholderMessage.id,
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
   }
 }
 

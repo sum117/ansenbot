@@ -87,7 +87,3 @@ export class CharacterLeveling {
     }
   }
 }
-
-// while (user.canLevelUpCharacter()) {
-//   console.log(user.levelUpCharacter());
-// }

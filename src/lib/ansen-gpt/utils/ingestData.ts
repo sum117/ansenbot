@@ -6,6 +6,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import { BotError } from "../../../utils/Errors";
+import logger from "../../../utils/loggerFactory";
 import { PINECONE_INDEX_NAME, PINECONE_NAME_SPACE } from "../config/pinecone";
 import { pineconeClient } from "./pineconeClient";
 
@@ -36,13 +37,13 @@ export const run = async (): Promise<void> => {
     });
 
     const docs = await textSplitter.splitDocuments(rawDocs);
-    console.log("split docs", docs);
+    logger.info("split docs", docs);
 
-    console.log("creating vector store...");
+    logger.info("creating vector store...");
     const embeddings = new OpenAIEmbeddings();
 
     if (!pineconeClient) {
-      console.error("O cliente do pinecone não foi inicializado.");
+      logger.error("O cliente do pinecone não foi inicializado.");
       return;
     }
 
@@ -54,7 +55,7 @@ export const run = async (): Promise<void> => {
       textKey: "text",
     });
   } catch (error) {
-    console.error("Error ingesting data", error);
+    logger.error("Error ingesting data", error);
     throw new BotError(
       "Houve um erro ao tentar inserir os dados no Pinecone. Por favor, entre em contato com um administrad"
     );
@@ -63,5 +64,5 @@ export const run = async (): Promise<void> => {
 
 (async () => {
   await run();
-  console.log("ingestion complete");
+  logger.info("ingestion complete");
 })();

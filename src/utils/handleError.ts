@@ -12,6 +12,7 @@ import { ZodError } from "zod";
 import deleteDiscordMessage from "./deleteDiscordMessage";
 import { BotError, CombatError, PocketBaseError } from "./Errors";
 import getSafeEntries from "./getSafeEntries";
+import logger from "./loggerFactory";
 
 export default function handleError(
   interaction:
@@ -22,7 +23,7 @@ export default function handleError(
     | StringSelectMenuInteraction,
   error: unknown
 ): void {
-  console.error(error);
+  logger.error(error);
   let errorMessage = "Ocorreu um erro ao executar essa ação.";
   if (error instanceof DiscordAPIError) {
     return;

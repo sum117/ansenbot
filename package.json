@@ -43,6 +43,8 @@
     "sharp": "^0.32.1",
     "string-progressbar": "^1.0.4",
     "text-table": "^0.2.0",
+    "winston": "^3.9.0",
+    "winston-transport": "^4.5.0",
     "ytdl-core": "github:milanbabiclibrafire/node-ytdl-core",
     "zod": "^3.21.4"
   },

@@ -33,6 +33,7 @@ import { BotError } from "../utils/Errors";
 import getSafeEntries from "../utils/getSafeEntries";
 import getSafeKeys from "../utils/getSafeKeys";
 import handleError from "../utils/handleError";
+import logger from "../utils/loggerFactory";
 
 @Discord()
 export class OnRoleplayMessage {
@@ -312,7 +313,7 @@ export class OnRoleplayMessage {
     const equality = equalityPercentage(lastPost.content, message.content);
     if (equality > 80) {
       return message.channel.messages.fetch(lastPost.messageId).catch((error) => {
-        console.error(error);
+        logger.error(error);
       });
     }
   }

@@ -1,5 +1,7 @@
 import type { Message } from "discord.js";
 
+import logger from "./loggerFactory";
+
 export default function deleteDiscordMessage(message: Message, timeout: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -9,7 +11,7 @@ export default function deleteDiscordMessage(message: Message, timeout: number):
           resolve();
         })
         .catch((error) => {
-          console.error(error);
+          logger.error(error);
           resolve();
         });
     }, timeout);
