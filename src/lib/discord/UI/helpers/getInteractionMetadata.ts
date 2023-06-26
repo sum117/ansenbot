@@ -26,11 +26,11 @@ export default async function getInteractionMetadata(
 
   const [attackerImage, targetImage] = [
     PocketBase.getImageUrl({ record: agent, fileName: agent.image }).replace(
-      `${process.env.POCKETBASE_URL}api/files/`,
+      `${process.env.POCKETBASE_IMAGE_URL}api/files/`,
       ""
     ),
     PocketBase.getImageUrl({ record: target, fileName: target.image }).replace(
-      `${process.env.POCKETBASE_URL}api/files/`,
+      `${process.env.POCKETBASE_IMAGE_URL}api/files/`,
       ""
     ),
   ];

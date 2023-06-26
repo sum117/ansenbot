@@ -48,7 +48,7 @@ export default class PocketBase {
     record: Pick<DBRecord, "id" | "collectionId" | "collectionName">;
     thumb?: boolean;
   }): string {
-    const url = new URL(process.env.POCKETBASE_URL ?? "");
+    const url = new URL(process.env.POCKETBASE_IMAGE_URL ?? "");
     url.pathname = `/api/files/${record.collectionName}/${record.id}/${fileName}`;
     if (thumb) {
       url.searchParams.set("thumb", "512x512");
