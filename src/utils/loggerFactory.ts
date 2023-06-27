@@ -6,7 +6,7 @@ class LoggerFactory {
   private readonly _logger: Logger;
 
   public constructor() {
-    const { combine, splat, timestamp, printf, colorize } = format;
+    const { combine, splat, timestamp, printf, colorize, errors } = format;
 
     const myFormat = printf(({ level: l, message: m, timestamp: t, ...metadata }) => {
       let msg = `⚡ ${t} [${l}] : ${m} `;
@@ -22,7 +22,7 @@ class LoggerFactory {
     const transportsArray: Transport[] = [
       new transports.Console({
         level: "silly",
-        format: combine(colorize(), splat(), timestamp(), myFormat),
+        format: combine(colorize(), splat(), timestamp(), errors({ stack: true }), myFormat),
       }),
     ];
 

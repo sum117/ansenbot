@@ -23,7 +23,7 @@ export default function handleError(
     | StringSelectMenuInteraction,
   error: unknown
 ): void {
-  logger.error(error);
+  logger.error(error instanceof Error ? error.stack : error);
   let errorMessage = "Ocorreu um erro ao executar essa ação.";
   if (error instanceof DiscordAPIError) {
     return;
