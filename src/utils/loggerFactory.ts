@@ -13,7 +13,7 @@ class LoggerFactory {
       if (metadata && JSON.stringify(metadata) !== "{}") {
         msg += JSON.stringify(metadata);
       }
-      if (m.constructor === Object) {
+      if (m && m.constructor === Object) {
         msg += JSON.stringify(m, null, 4);
       }
       return msg;
