@@ -21,13 +21,13 @@ class LoggerFactory {
 
     const transportsArray: Transport[] = [
       new transports.Console({
-        level: "debug",
+        level: "silly",
         format: combine(colorize(), splat(), timestamp(), myFormat),
       }),
     ];
 
     this._logger = createLogger({
-      level: "debug",
+      level: "silly",
       transports: transportsArray,
     });
   }
