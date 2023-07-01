@@ -32,7 +32,7 @@ export default class CharacterPost {
     attachmentUrl,
   }: {
     attachmentUrl?: string;
-    embedContent?: string;
+    embedContent: string;
     to: "message" | "profile";
   }): Promise<BaseMessageOptions> {
     const options: BaseMessageOptions = {};
@@ -46,10 +46,6 @@ export default class CharacterPost {
       }
       embed = await this.getProfileEmbed();
     } else {
-      if (!embedContent) {
-        throw new BotError("Você deve fornecer um conteúdo para o embed.");
-      }
-
       if (attachmentUrl) {
         const name = attachmentUrl.split("/").pop();
         if (!name) {

@@ -64,7 +64,12 @@ export class OnRoleplayMessage {
 
       const characterPost = new CharacterPost(currentCharacter);
       const messageMentions = message.mentions.users;
+
       const sanitizedContent = message.content.replace(/<@!?\d+>/g, "").trim();
+      if (!sanitizedContent) {
+        await message.reply("Você deve fornecer um conteúdo para o embed.");
+        return;
+      }
 
       const messageOptions = await characterPost.createMessageOptions({
         to: "message",
