@@ -18,5 +18,6 @@ export default async function getCharProfile(user: User): Promise<BaseMessageOpt
   const characterPost = new CharacterPost(characterData);
   return characterPost.createMessageOptions({
     to: "profile",
+    embedContent: "",
   });
 }

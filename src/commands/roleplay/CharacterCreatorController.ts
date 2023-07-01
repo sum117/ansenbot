@@ -166,6 +166,7 @@ export class CharacterCreatorController {
 
     const characterProfile = await new CharacterPost(character).createMessageOptions({
       to: "profile",
+      embedContent: "",
     });
     characterProfile.content = mustache.render(
       "Um novo personagem de {{{owner}}} foi criado e está aguardando aprovação, {{{mentions}}}!",

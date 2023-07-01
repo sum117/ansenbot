@@ -113,6 +113,7 @@ export class CharacterEditorController {
         const characterPost = new CharacterPost(character);
         const messageOptions = await characterPost.createMessageOptions({
           to: "profile",
+          embedContent: "",
         });
         await interaction.editReply(messageOptions);
       } else {
